@@ -8,6 +8,7 @@ import Karriere from './pages/Karriere';
 import Prufungssimulator from './pages/Prufungssimulator';
 import Uebung from './pages/Uebung';
 import Profile from './pages/Profile';
+import Stammtisch from './pages/Stammtisch';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route path="/simulator" element={<Prufungssimulator />} />
           <Route path="/uebung" element={<Uebung />} />
           {/* Fallbacks for navigation links to prevent crashing */}
-          <Route path="/stammtisch" element={<Dashboard />} />
+          <Route path="/stammtisch" element={<Stammtisch />} />
           <Route path="/profil" element={<Profile />} />
         </Routes>
       </Navbar>

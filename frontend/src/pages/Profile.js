@@ -11,7 +11,7 @@ export default function Profile() {
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-germany-black via-germany-red to-germany-gold"></div>
 
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-surface-container flex items-center justify-center shadow-sm relative shrink-0 mt-2 border border-surface-variant">
-            <span className="material-symbols-outlined text-[48px] md:text-[64px] text-secondary">person</span>
+            <img alt="Mikajy Ranaivo" className="w-full h-full object-cover rounded-full" src="/mikajy-ranaivo.png"/>
             <button className="absolute bottom-0 right-0 w-8 h-8 md:w-10 md:h-10 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md hover:bg-surface-tint transition-colors">
               <span className="material-symbols-outlined text-[18px] md:text-[20px]">edit</span>
             </button>
