@@ -62,9 +62,13 @@ module.exports = {
         "primary-container": "#d51f26"
       },
       borderRadius: {
-        "DEFAULT": "0.25rem",
-        "lg": "0.5rem",
-        "xl": "0.75rem",
+        "sm": "0.375rem",
+        "DEFAULT": "0.5rem",
+        "md": "0.75rem",
+        "lg": "1rem",
+        "xl": "1.5rem",
+        "2xl": "2rem",
+        "3xl": "2.5rem",
         "full": "9999px"
       },
       spacing: {

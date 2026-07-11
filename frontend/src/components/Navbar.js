@@ -47,9 +47,11 @@ export default function Navbar({ children }) {
         {navItems.map(item => {
           const isActive = path === item.match;
           return (
-            <Link key={item.path} to={item.path} className={`flex flex-col items-center justify-center px-3 py-1.5 md:px-4 md:py-3 rounded-2xl transition-all duration-300 ${isActive ? 'bg-primary-container text-on-primary-container scale-105' : 'text-secondary hover:bg-surface-variant/50 hover:text-on-surface'}`}>
+            <Link key={item.path} to={item.path} className={`flex-1 w-full flex flex-col items-center justify-center py-2 md:py-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-primary' : 'text-secondary hover:bg-surface-variant/30 hover:text-on-surface'}`}>
               <span className={`material-symbols-outlined text-[24px] ${isActive ? 'icon-filled' : ''}`}>{item.icon}</span>
-              <span className="font-label-sm text-[10px] md:text-xs font-medium mt-1">{item.label}</span>
+              <span className={`font-label-sm text-[10px] md:text-xs mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
+              {/* Subtle active dot indicator */}
+              <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? 'bg-primary' : 'bg-transparent'}`}></div>
             </Link>
           )
         })}

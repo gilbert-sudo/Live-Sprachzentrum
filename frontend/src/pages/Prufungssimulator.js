@@ -32,19 +32,19 @@ export default function Prufungssimulator() {
       <main className="flex-1 max-w-container-max-width mx-auto w-full px-margin-mobile md:px-margin-desktop py-6 flex flex-col gap-6 relative">
         {/* Section Tabs */}
         <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 border-b border-surface-variant -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-surface-container-low text-secondary font-label-md text-label-md opacity-50 cursor-not-allowed whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-t-full bg-surface-container-low text-secondary font-label-md text-label-md opacity-50 cursor-not-allowed whitespace-nowrap">
             <span className="material-symbols-outlined text-sm">headphones</span>
             Hören
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-surface text-primary border-b-2 border-primary font-label-md text-label-md whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-t-full bg-surface text-primary border-b-2 border-primary font-label-md text-label-md whitespace-nowrap">
             <span className="material-symbols-outlined icon-filled text-sm">menu_book</span>
             Lesen
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-surface-container-lowest text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-t-full bg-surface-container-lowest text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
             <span className="material-symbols-outlined text-sm">edit</span>
             Schreiben
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-surface-container-lowest text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-t-full bg-surface-container-lowest text-secondary font-label-md text-label-md hover:bg-surface-container-low transition-colors whitespace-nowrap">
             <span className="material-symbols-outlined text-sm">mic</span>
             Sprechen
           </button>
@@ -119,7 +119,7 @@ export default function Prufungssimulator() {
       {/* Footer / Action Area */}
       <footer className="bg-surface border-t border-surface-variant sticky bottom-0 z-40">
         <div className="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop h-20 flex items-center justify-between gap-4">
-          <button className="px-6 py-3 rounded-lg border border-germany-black text-germany-black font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors flex items-center gap-2">
+          <button className="px-6 py-3 rounded-full border border-germany-black text-germany-black font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Zurück
           </button>
@@ -133,7 +133,7 @@ export default function Prufungssimulator() {
             <div className="w-2 h-2 rounded-full bg-surface-variant"></div>
           </div>
 
-          <button className="px-6 py-3 rounded-lg bg-germany-red text-white font-label-md text-label-md font-bold hover:bg-primary transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md flex items-center gap-2">
+          <button className="px-6 py-3 rounded-full bg-germany-red text-white font-label-md text-label-md font-bold hover:bg-primary transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md flex items-center gap-2">
             Weiter
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </button>

@@ -35,7 +35,7 @@ export default function Dashboard() {
                 <p className="font-body-lg text-body-lg text-on-surface">Passiv mit Modalverben</p>
               </div>
             </div>
-            <Link to="/uebung" className="w-full md:w-auto bg-germany-red text-on-primary font-label-md text-label-md py-3 px-6 rounded-lg shadow-sm hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
+            <Link to="/uebung" className="w-full md:w-auto bg-germany-red text-on-primary font-label-md text-label-md py-3 px-6 rounded-full shadow-sm hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
               Lektion fortsetzen
               <span className="material-symbols-outlined">arrow_forward</span>
             </Link>

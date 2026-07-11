@@ -34,7 +34,7 @@ export default function Profile() {
           <section className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col gap-4 interactive-card">
             <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Kontoeinstellungen</h3>
             
-            <button className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors text-left group">
+            <button className="flex items-center justify-between p-3 rounded-full hover:bg-surface-container-low transition-colors text-left group">
               <div className="flex items-center gap-4">
                  <div className="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
                     <span className="material-symbols-outlined">lock</span>
@@ -49,7 +49,7 @@ export default function Profile() {
             
             <div className="h-[1px] bg-surface-variant w-full my-1"></div>
             
-            <button className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors text-left group">
+            <button className="flex items-center justify-between p-3 rounded-full hover:bg-surface-container-low transition-colors text-left group">
               <div className="flex items-center gap-4">
                  <div className="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
                     <span className="material-symbols-outlined">payments</span>
@@ -100,7 +100,7 @@ export default function Profile() {
             
             <div className="h-[1px] bg-surface-variant w-full my-1"></div>
             
-            <button className="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors text-left group">
+            <button className="flex items-center justify-between p-3 rounded-full hover:bg-surface-container-low transition-colors text-left group">
               <div className="flex items-center gap-4">
                  <div className="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
                     <span className="material-symbols-outlined">language</span>
@@ -118,11 +118,11 @@ export default function Profile() {
 
         {/* Action Buttons */}
         <section className="flex flex-col md:flex-row gap-4 mt-2">
-          <button className="flex-1 bg-surface-container-lowest text-on-surface font-label-md text-label-md py-4 px-6 rounded-xl hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2 border border-surface-variant shadow-sm interactive-card">
+          <button className="flex-1 bg-surface-container-lowest text-on-surface font-label-md text-label-md py-4 px-6 rounded-full hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2 border border-surface-variant shadow-sm interactive-card">
             <span className="material-symbols-outlined">help</span>
             Hilfe & Support
           </button>
-          <button className="flex-1 bg-error-container text-on-error-container font-label-md text-label-md py-4 px-6 rounded-xl hover:bg-error/20 transition-colors flex items-center justify-center gap-2 border border-error/20 shadow-sm interactive-card">
+          <button className="flex-1 bg-error-container text-on-error-container font-label-md text-label-md py-4 px-6 rounded-full hover:bg-error/20 transition-colors flex items-center justify-center gap-2 border border-error/20 shadow-sm interactive-card">
             <span className="material-symbols-outlined">logout</span>
             Abmelden
           </button>

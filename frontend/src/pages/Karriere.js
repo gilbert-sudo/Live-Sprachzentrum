@@ -36,11 +36,11 @@ export default function Karriere() {
                 <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Lebenslauf (CV)</h3>
                 <p className="font-body-md text-body-md text-secondary mb-6 flex-1">Standardized German CV templates optimized for Ausbildung applications.</p>
                 <div className="space-y-3 mt-auto">
-                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-lg transition-colors group">
+                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-full transition-colors group">
                     <span className="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Template 1 (Classic)</span>
                     <span className="material-symbols-outlined text-secondary group-hover:text-primary">download</span>
                   </button>
-                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-lg transition-colors group">
+                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-full transition-colors group">
                     <span className="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Template 2 (Modern)</span>
                     <span className="material-symbols-outlined text-secondary group-hover:text-primary">download</span>
                   </button>
@@ -55,11 +55,11 @@ export default function Karriere() {
                 <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Anschreiben</h3>
                 <p className="font-body-md text-body-md text-secondary mb-6 flex-1">Structure your motivation letter perfectly for German employers.</p>
                 <div className="space-y-3 mt-auto">
-                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-lg transition-colors group">
+                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-full transition-colors group">
                     <span className="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Pflege (Nursing) PDF</span>
                     <span className="material-symbols-outlined text-secondary group-hover:text-primary">download</span>
                   </button>
-                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-lg transition-colors group">
+                  <button className="w-full flex items-center justify-between px-4 py-2 bg-surface hover:bg-surface-container-low border border-surface-variant rounded-full transition-colors group">
                     <span className="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">IT & Tech PDF</span>
                     <span className="material-symbols-outlined text-secondary group-hover:text-primary">download</span>
                   </button>
@@ -74,7 +74,7 @@ export default function Karriere() {
                 </div>
                 <h3 className="font-title-lg text-title-lg mb-2">Interkulturelles Training</h3>
                 <p className="font-body-md text-body-md text-white/80 mb-6 flex-1">Understand German workplace culture, punctuality, and communication styles.</p>
-                <button className="mt-auto w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm">
+                <button className="mt-auto w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-primary rounded-full font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm">
                   <span className="material-symbols-outlined text-[18px]">play_circle</span>
                   Watch Video Guide
                 </button>
