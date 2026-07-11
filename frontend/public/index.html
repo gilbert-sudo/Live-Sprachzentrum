@@ -31,7 +31,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD,opsz@400,0..1,0,24&display=swap" rel="stylesheet" />
     <title>Live-Sprachzentrum</title>
     <script>
-      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      // Default to light mode unless explicitly set to dark in localStorage
+      if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.classList.add('dark');
         document.documentElement.classList.remove('light');
       } else {
