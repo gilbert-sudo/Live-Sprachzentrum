@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '../hooks/useTheme';
+
 
 const LanguageSelector = () => {
   const [currentLang, setCurrentLang] = useState('DE');
@@ -44,21 +46,7 @@ const LanguageSelector = () => {
 };
 
 const ThemeToggle = () => {
-  const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
-
-  const toggleTheme = () => {
-    if (document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      localStorage.setItem('theme', 'light');
-      setIsDarkMode(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      localStorage.setItem('theme', 'dark');
-      setIsDarkMode(true);
-    }
-  };
+  const { isDarkMode, toggleTheme } = useTheme();
 
   return (
     <button id="theme-toggle" onClick={toggleTheme} className="flex items-center gap-1 sm:gap-2 p-1.5 sm:px-3 sm:py-2 rounded-full focus:outline-none group hover:bg-surface-container-low transition-colors duration-200 md:shadow-sm bg-surface" aria-label="Toggle Dark Mode">
@@ -93,7 +81,7 @@ export default function Navbar({ children }) {
       <header className="md:hidden bg-surface/95 backdrop-blur-md shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-16 flex justify-between items-center px-4">
         <Link to="/" className="flex items-center gap-3">
           <img alt="Live-Sprachzentrum Logo" className="h-9 w-9 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
-          <h1 className="font-title-md text-title-md font-bold text-primary truncate">Live-Sprachzentrum</h1>
+          <h1 className="font-title-md text-title-md font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -108,7 +96,7 @@ export default function Navbar({ children }) {
       {/* Floating Logo (Desktop Top-Left) */}
       <Link to="/" className="hidden md:flex fixed top-6 left-6 items-center gap-4 z-50">
         <img alt="Live-Sprachzentrum Logo" className="h-10 w-10 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
-        <h1 className="font-headline-md text-headline-md font-bold text-primary">Live-Sprachzentrum</h1>
+        <h1 className="font-headline-md text-headline-md font-bold"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
       </Link>
 
       {/* Floating Actions (Desktop Top-Right) */}
@@ -123,23 +111,23 @@ export default function Navbar({ children }) {
 
       {/* Floating Nav (Mobile & Desktop) */}
       <nav className="fixed z-50 bg-surface/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[2rem] transition-all duration-300
-        bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] px-3 py-2 flex flex-row justify-between items-center
+        bottom-2 left-1/2 -translate-x-1/2 w-[96%] max-w-[400px] px-3 py-2 flex flex-row justify-between items-center
         md:top-1/2 md:-translate-y-1/2 md:left-6 md:bottom-auto md:translate-x-0 md:w-auto md:h-auto md:flex-col md:px-2 md:py-6 md:gap-4">
         {navItems.map(item => {
           const isActive = path === item.match;
           return (
-            <Link key={item.path} to={item.path} className={`flex-1 w-full flex flex-col items-center justify-center py-2 md:py-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-primary' : 'text-secondary hover:bg-surface-variant/30 hover:text-on-surface'}`}>
+            <Link key={item.path} to={item.path} className={`flex-1 w-full flex flex-col items-center justify-center py-2 md:py-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-red-600 dark:text-red-400' : 'text-secondary hover:bg-surface-variant/30 hover:text-on-surface'}`}>
               <span className={`material-symbols-outlined text-[24px] ${isActive ? 'icon-filled' : ''}`}>{item.icon}</span>
               <span className={`font-label-sm text-[10px] md:text-xs mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
               {/* Subtle active dot indicator */}
-              <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? 'bg-primary' : 'bg-transparent'}`}></div>
+              <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? 'bg-red-600 dark:bg-red-400' : 'bg-transparent'}`}></div>
             </Link>
           )
         })}
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-28 md:pb-8 pt-4 md:pt-24 md:pl-32 lg:pl-40">
+      <main className="flex-1 w-full pb-24 md:pb-8 pt-4 md:pt-24 md:pl-32 lg:pl-40">
         {children}
       </main>
 

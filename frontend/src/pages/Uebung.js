@@ -1,5 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const AutoResizingInput = (props) => {
+  const [value, setValue] = useState('');
+  return (
+    <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      style={{ width: `calc(${Math.max(value.length, 5)}ch + 20px)`, maxWidth: '100%' }}
+    />
+  );
+};
 
 export default function Uebung() {
   return (
@@ -54,16 +66,16 @@ export default function Uebung() {
 
           <div className="font-body-lg text-body-lg text-on-surface leading-loose md:leading-[2.5]">
             In Deutschland ist Pünktlichkeit am Arbeitsplatz sehr 
-            <span className="relative inline-block mx-1 group">
-              <input autoComplete="off" className="exercise-input w-28 md:w-32 bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-primary focus:border-primary focus:bg-primary-fixed/20 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+            <span className="relative inline-block mx-1 group max-w-full">
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
             </span>
             . Man sollte immer 
-            <span className="relative inline-block mx-1 group">
-              <input autoComplete="off" className="exercise-input w-32 md:w-36 bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-primary focus:border-primary focus:bg-primary-fixed/20 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+            <span className="relative inline-block mx-1 group max-w-full">
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
             </span>
             zum Meeting erscheinen. Wenn man krank ist, muss man dem Arbeitgeber sofort 
-            <span className="relative inline-block mx-1 group">
-              <input autoComplete="off" className="exercise-input w-32 md:w-36 bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-primary focus:border-primary focus:bg-primary-fixed/20 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+            <span className="relative inline-block mx-1 group max-w-full">
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
             </span>
             geben.
           </div>
@@ -71,13 +83,13 @@ export default function Uebung() {
       </main>
 
       {/* Contextual Action Bar */}
-      <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-surface-variant p-4 pb-safe z-40 shadow-[0_-8px_16px_rgba(0,0,0,0.05)] md:static md:bg-transparent md:border-none md:shadow-none md:p-0 md:max-w-container-max-width md:mx-auto md:px-margin-desktop md:pb-12">
-        <div className="flex flex-col-reverse md:flex-row gap-3 max-w-md mx-auto md:max-w-none md:justify-end md:items-center">
-          <Link to="/kurse" className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-full border-2 border-germany-black dark:border-white text-germany-black dark:text-white font-label-md text-label-md hover:bg-surface-variant/30 active:scale-95 transition-all w-full md:w-auto">
+      <div className="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] bg-surface/95 backdrop-blur-md border border-surface-variant rounded-3xl p-3 z-40 shadow-lg md:static md:transform-none md:w-full md:bg-transparent md:border-none md:shadow-none md:p-0 md:max-w-container-max-width md:mx-auto md:px-margin-desktop md:pb-12">
+        <div className="flex flex-row justify-between md:justify-end items-center gap-3 max-w-md mx-auto md:max-w-none">
+          <Link to="/kurse" className="flex-1 md:flex-none flex items-center justify-center gap-2 py-3 md:py-3.5 px-4 md:px-6 rounded-full border-2 border-germany-black dark:border-white text-germany-black dark:text-white font-label-md text-label-md hover:bg-surface-variant/30 active:scale-95 transition-all">
             <span className="material-symbols-outlined">lightbulb</span>
             Hilfe
           </Link>
-          <button className="flex items-center justify-center gap-2 py-3.5 px-8 rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-surface-tint active:scale-95 hover:-translate-y-0.5 transition-all shadow-md w-full md:w-auto">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 py-3 md:py-3.5 px-4 md:px-8 rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-surface-tint active:scale-95 hover:-translate-y-0.5 transition-all shadow-md">
             <span className="material-symbols-outlined icon-filled">check_circle</span>
             Prüfen
           </button>
