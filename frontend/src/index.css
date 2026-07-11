@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  min-height: max(884px, 100dvh);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined.fill, .icon-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Ambient shadows for Level 1 & 2 cards */
+.ambient-shadow-lvl1 {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.04);
+}
+.ambient-shadow-lvl2 {
+    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Micro-interactions */
+.interactive-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.interactive-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Germany Flag Accent */
+.germany-accent-bar {
+    background: linear-gradient(to right, #000000 33.3%, #D51F26 33.3%, #D51F26 66.6%, #FFCC00 66.6%);
+}
