@@ -7,7 +7,7 @@ export default function Dashboard() {
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
         {/* Welcome Header */}
         <section className="mb-4">
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, Ranaivonampoizina!</h2>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, Ranaivo!</h2>
           <p className="font-body-md text-body-md text-on-surface-variant mt-2">Bereit für deine nächste Lektion?</p>
         </section>
 
@@ -92,17 +92,17 @@ export default function Dashboard() {
         </Link>
         <Link to="/simulator" className="mt-2 bg-surface-container-lowest rounded-xl p-6 h-full flex items-center justify-between relative overflow-hidden border border-surface-variant hover:-translate-y-0.5 transition-transform duration-200 block shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-4 relative z-10">
-             <div className="w-12 h-12 rounded-full bg-germany-red/10 text-germany-red flex items-center justify-center">
-                <span className="material-symbols-outlined">quiz</span>
-              </div>
-              <div>
-                <h4 className="font-title-lg text-title-lg text-on-surface">TELC B1 Prüfungssimulator</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Bereite dich auf die TELC Prüfung vor</p>
-              </div>
+            <div className="w-12 h-12 rounded-full bg-germany-red/10 text-germany-red flex items-center justify-center">
+              <span className="material-symbols-outlined">quiz</span>
+            </div>
+            <div>
+              <h4 className="font-title-lg text-title-lg text-on-surface">TELC B1 Prüfungssimulator</h4>
+              <p className="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Bereite dich auf die TELC Prüfung vor</p>
+            </div>
           </div>
-           <button className="text-germany-red hover:text-primary transition-colors relative z-10 p-2 rounded-full hover:bg-surface-container-low">
-              <span className="material-symbols-outlined">chevron_right</span>
-            </button>
+          <button className="text-germany-red hover:text-primary transition-colors relative z-10 p-2 rounded-full hover:bg-surface-container-low">
+            <span className="material-symbols-outlined">chevron_right</span>
+          </button>
         </Link>
       </main>
 

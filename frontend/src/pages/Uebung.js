@@ -55,7 +55,7 @@ export default function Uebung() {
         {/* Interactive Exercise: Textes à trous */}
         <section className="bg-surface-container-lowest rounded-xl p-5 md:p-8 shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-surface-variant/40 relative">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-tertiary-container rounded-l-xl"></div>
-          
+
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="font-title-lg text-title-lg text-on-surface mb-1">Ergänzen Sie den Text</h3>
@@ -65,17 +65,17 @@ export default function Uebung() {
           </div>
 
           <div className="font-body-lg text-body-lg text-on-surface leading-loose md:leading-[2.5]">
-            In Deutschland ist Pünktlichkeit am Arbeitsplatz sehr 
+            In Deutschland ist Pünktlichkeit am Arbeitsplatz sehr
             <span className="relative inline-block mx-1 group max-w-full">
-              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface-variant/60 dark:bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/80 dark:focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-none" spellCheck="false" type="text" />
             </span>
-            . Man sollte immer 
+            . Man sollte immer
             <span className="relative inline-block mx-1 group max-w-full">
-              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface-variant/60 dark:bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/80 dark:focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-none" spellCheck="false" type="text" />
             </span>
-            zum Meeting erscheinen. Wenn man krank ist, muss man dem Arbeitgeber sofort 
+            zum Meeting erscheinen. Wenn man krank ist, muss man dem Arbeitgeber sofort
             <span className="relative inline-block mx-1 group max-w-full">
-              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-t-md" spellCheck="false" type="text"/>
+              <AutoResizingInput autoComplete="off" className="exercise-input bg-surface-variant/60 dark:bg-surface border-b-2 border-surface-variant text-center font-title-lg text-title-lg text-on-surface focus:border-on-surface focus:bg-surface-variant/80 dark:focus:bg-surface-variant/30 focus:outline-none transition-all px-2 py-1 rounded-none" spellCheck="false" type="text" />
             </span>
             geben.
           </div>
