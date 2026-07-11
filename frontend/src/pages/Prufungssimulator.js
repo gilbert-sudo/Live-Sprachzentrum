@@ -119,7 +119,7 @@ export default function Prufungssimulator() {
       {/* Footer / Action Area */}
       <footer className="bg-surface border-t border-surface-variant sticky bottom-0 z-40">
         <div className="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop h-20 flex items-center justify-between gap-4">
-          <button className="px-6 py-3 rounded-full border border-germany-black text-germany-black font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors flex items-center gap-2">
+          <button className="px-6 py-3 rounded-full border border-germany-black dark:border-white text-germany-black dark:text-white font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Zurück
           </button>

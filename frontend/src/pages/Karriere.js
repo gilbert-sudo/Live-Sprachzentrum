@@ -13,7 +13,7 @@ export default function Karriere() {
               <div className="space-y-4 max-w-xl">
                 <span className="inline-block px-3 py-1 rounded-full bg-germany-red text-white font-label-sm text-label-sm uppercase tracking-wider">Objectif Ausbildung & Karriere</span>
                 <h1 className="font-display-lg text-display-lg md:text-[56px] leading-tight text-white">Dein Weg nach <span className="text-germany-gold">Deutschland</span> starts here.</h1>
-                <p className="font-body-lg text-body-lg text-surface-container-high max-w-md">Master the language, prepare your documents, and ace your interviews with our tailored resources for Malagasy students.</p>
+                <p className="font-body-lg text-body-lg text-white/80 max-w-md">Master the language, prepare your documents, and ace your interviews with our tailored resources for Malagasy students.</p>
               </div>
               <div className="w-full md:w-1/3 flex justify-center">
                 <div className="w-48 h-48 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">

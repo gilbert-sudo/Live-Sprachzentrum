@@ -11,7 +11,7 @@ export default function Kurse() {
             <span className="material-symbols-outlined text-germany-gold icon-filled">star</span>
             <span className="font-label-md text-label-md text-secondary">AKTUELLER KURS</span>
           </div>
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-germany-black">Mein Kurs: B1 Standard</h2>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-germany-black dark:text-white">Mein Kurs: B1 Standard</h2>
           <div className="mt-4 flex items-center gap-4">
             <div className="flex-1 h-2 bg-surface-variant rounded-full overflow-hidden">
               <div className="h-full bg-germany-red w-[45%] rounded-full"></div>
@@ -29,7 +29,7 @@ export default function Kurse() {
                 <span className="material-symbols-outlined text-success-green icon-filled">check_circle</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black">Kapitel 1: Wohnformen</h3>
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Kapitel 1: Wohnformen</h3>
                 <p className="font-body-md text-body-md text-secondary">10/10 Lektionen</p>
               </div>
               <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
@@ -43,7 +43,7 @@ export default function Kurse() {
                 <span className="material-symbols-outlined text-germany-red icon-filled">play_arrow</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black">Kapitel 2: Arbeitswelt</h3>
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Kapitel 2: Arbeitswelt</h3>
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden max-w-[200px]">
                     <div className="h-full bg-germany-red w-[40%] rounded-full"></div>
@@ -59,13 +59,13 @@ export default function Kurse() {
               <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 hover:bg-surface-subtle transition-colors">
                 <span className="material-symbols-outlined text-success-green text-[20px] icon-filled">check_circle</span>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black">Lektion 2.1: Berufe und Tätigkeiten</h4>
+                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.1: Berufe und Tätigkeiten</h4>
                 </div>
               </Link>
               <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 bg-surface-container-low hover:bg-surface-subtle transition-colors">
                 <span className="material-symbols-outlined text-germany-red text-[20px] icon-filled">play_circle</span>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black font-semibold">Lektion 2.2: Bewerbungsgespräch</h4>
+                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white font-semibold">Lektion 2.2: Bewerbungsgespräch</h4>
                 </div>
               </Link>
               <div className="flex items-center gap-4 px-6 py-3 opacity-50">

@@ -49,9 +49,13 @@ const ThemeToggle = () => {
   const toggleTheme = () => {
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
       setIsDarkMode(false);
     } else {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
       setIsDarkMode(true);
     }
   };

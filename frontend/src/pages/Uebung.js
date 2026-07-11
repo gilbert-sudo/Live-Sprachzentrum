@@ -73,7 +73,7 @@ export default function Uebung() {
       {/* Contextual Action Bar */}
       <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-surface-variant p-4 pb-safe z-40 shadow-[0_-8px_16px_rgba(0,0,0,0.05)] md:static md:bg-transparent md:border-none md:shadow-none md:p-0 md:max-w-container-max-width md:mx-auto md:px-margin-desktop md:pb-12">
         <div className="flex flex-col-reverse md:flex-row gap-3 max-w-md mx-auto md:max-w-none md:justify-end md:items-center">
-          <Link to="/kurse" className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-full border-2 border-germany-black text-germany-black font-label-md text-label-md hover:bg-surface-variant/30 active:scale-95 transition-all w-full md:w-auto">
+          <Link to="/kurse" className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-full border-2 border-germany-black dark:border-white text-germany-black dark:text-white font-label-md text-label-md hover:bg-surface-variant/30 active:scale-95 transition-all w-full md:w-auto">
             <span className="material-symbols-outlined">lightbulb</span>
             Hilfe
           </Link>
