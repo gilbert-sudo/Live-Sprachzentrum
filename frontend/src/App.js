@@ -1,17 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Layout from './components/Layout';
+import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import Kurse from './pages/Kurse';
 import Karriere from './pages/Karriere';
 import Prufungssimulator from './pages/Prufungssimulator';
 import Uebung from './pages/Uebung';
+import Profile from './pages/Profile';
 
 function App() {
   return (
     <Router>
-      <Layout>
+      <Navbar>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/kurse" element={<Kurse />} />
@@ -20,9 +21,9 @@ function App() {
           <Route path="/uebung" element={<Uebung />} />
           {/* Fallbacks for navigation links to prevent crashing */}
           <Route path="/stammtisch" element={<Dashboard />} />
-          <Route path="/profil" element={<Dashboard />} />
+          <Route path="/profil" element={<Profile />} />
         </Routes>
-      </Layout>
+      </Navbar>
     </Router>
   );
 }
