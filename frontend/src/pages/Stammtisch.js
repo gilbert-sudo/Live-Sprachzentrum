@@ -31,7 +31,7 @@ export default function Stammtisch() {
       </header>
 
       {/* Scrollable Message History */}
-      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 flex flex-col gap-4 bg-surface-container-low/30 hide-scrollbar">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 pt-4 pb-28 md:pb-8 flex flex-col gap-4 bg-surface-container-low/30 hide-scrollbar">
         {/* Post 1: Official Announcement (Highlighted) */}
         <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle shrink-0">
           <div className="flex justify-between items-start">
@@ -218,33 +218,11 @@ export default function Stammtisch() {
         </article>
       </div>
 
-      {/* Message Input Bar */}
-      <div className="p-2 md:p-3 bg-surface-container-lowest border-t border-surface-variant flex items-end gap-1.5 md:gap-2 flex-shrink-0 z-10 pb-[90px] md:pb-3">
-        <div className="flex gap-0.5 md:gap-1 mb-0.5 md:mb-1">
-          <button className="p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined text-[20px] md:text-[24px]">add_circle</span>
-          </button>
-          <button className="hidden sm:flex p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors items-center justify-center">
-            <span className="material-symbols-outlined text-[20px] md:text-[24px]">image</span>
-          </button>
-          <button className="hidden sm:flex p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors items-center justify-center">
-            <span className="material-symbols-outlined text-[20px] md:text-[24px]">attach_file</span>
-          </button>
-        </div>
-        <div className="flex-1 bg-surface-container-high rounded-3xl flex items-end overflow-hidden border border-surface-variant min-h-[36px] md:min-h-[44px]">
-          <textarea
-            placeholder="Nachricht..."
-            className="w-full bg-transparent resize-none outline-none py-2 px-3 md:py-3 md:px-4 max-h-32 text-on-surface text-sm md:text-base"
-            rows="1"
-          ></textarea>
-          <button className="p-1.5 m-0.5 md:p-2 md:m-1 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-[20px] md:text-[24px]">sentiment_satisfied</span>
-          </button>
-        </div>
-        <button className="p-2 md:p-3 bg-primary text-on-primary hover:bg-primary/90 rounded-full transition-colors flex items-center justify-center shadow-sm shrink-0 mb-0.5 md:mb-0.5">
-          <span className="material-symbols-outlined text-[18px] md:text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
-        </button>
-      </div>
+      {/* Floating Action Button for New Post */}
+      <button className="absolute bottom-4 md:bottom-8 right-3 md:right-8 px-5 py-2.5 md:px-6 md:py-3.5 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all z-20 gap-2 group">
+        <span className="material-symbols-outlined text-[22px] md:text-[24px]">post_add</span>
+        <span className="font-label-sm text-[13px] md:text-base font-bold">Neuer Beitrag</span>
+      </button>
     </div>
   );
 }

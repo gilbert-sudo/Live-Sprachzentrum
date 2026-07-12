@@ -40,6 +40,15 @@ code {
     box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* Hide scrollbar for mobile carousels */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Germany Flag Accent */
 .germany-accent-bar {
     background: linear-gradient(to right, #000000 33.3%, #D51F26 33.3%, #D51F26 66.6%, #FFCC00 66.6%);

@@ -3,15 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 
 
-const LanguageSelector = () => {
-  const [currentLang, setCurrentLang] = useState('DE');
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const langMenuRef = useRef(null);
+const UserMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
-        setIsLangMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -19,26 +18,32 @@ const LanguageSelector = () => {
   }, []);
 
   return (
-    <div className="relative" ref={langMenuRef}>
-      <button id="lang-menu-button" type="button" onClick={() => setIsLangMenuOpen(!isLangMenuOpen)} className="flex items-center gap-1 sm:gap-2 p-1.5 sm:px-3 sm:py-2 rounded-full text-sm font-medium transition-all duration-200 text-secondary hover:text-on-surface hover:bg-surface-container-low bg-surface md:shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-        <span className="block font-bold sm:font-medium">{currentLang}</span>
+    <div className="relative" ref={menuRef}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container-low transition-colors duration-200 focus:outline-none"
+      >
+        <img 
+          src="/mikajy-ranaivo.png" 
+          alt="Mikajy Ranaivo" 
+          className="w-8 h-8 rounded-full bg-surface-container-highest border border-surface-variant object-cover shadow-sm" 
+        />
       </button>
 
-      <div id="lang-dropdown" className={`absolute right-0 mt-3 p-2 min-w-max rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-surface/95 backdrop-blur-md border border-surface-variant focus:outline-none transition-all duration-300 z-50 ${isLangMenuOpen ? 'opacity-100 transform translate-y-0 pointer-events-auto' : 'opacity-0 transform translate-y-4 pointer-events-none'}`}>
-        <div className="flex items-center gap-1.5" role="menu" aria-orientation="horizontal" aria-labelledby="lang-menu-button">
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentLang('FR'); setIsLangMenuOpen(false); }} className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-on-surface hover:bg-surface-container-low transition-all hover:-translate-y-1 ${currentLang === 'FR' ? 'bg-surface-container-high' : ''}`} role="menuitem">
-            <img src="https://flagcdn.com/w40/fr.png" alt="Français" className={`w-6 h-6 rounded-full object-cover shadow-sm ring-2 transition-all ${currentLang === 'FR' ? 'ring-germany-red' : 'ring-transparent hover:ring-germany-red'}`} />
-            <span>FR</span>
-          </a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentLang('EN'); setIsLangMenuOpen(false); }} className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-on-surface hover:bg-surface-container-low transition-all hover:-translate-y-1 ${currentLang === 'EN' ? 'bg-surface-container-high' : ''}`} role="menuitem">
-            <img src="https://flagcdn.com/w40/gb.png" alt="English" className={`w-6 h-6 rounded-full object-cover shadow-sm ring-2 transition-all ${currentLang === 'EN' ? 'ring-germany-gold' : 'ring-transparent hover:ring-germany-gold'}`} />
-            <span>EN</span>
-          </a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentLang('DE'); setIsLangMenuOpen(false); }} className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-on-surface hover:bg-surface-container-low transition-all hover:-translate-y-1 ${currentLang === 'DE' ? 'bg-surface-container-high' : ''}`} role="menuitem">
-            <img src="https://flagcdn.com/w40/de.png" alt="Deutsch" className={`w-6 h-6 rounded-full object-cover shadow-sm ring-2 transition-all ${currentLang === 'DE' ? 'ring-germany-gold' : 'ring-transparent hover:ring-germany-gold'}`} />
-            <span>DE</span>
-          </a>
+      <div className={`absolute right-0 mt-3 p-2 min-w-[200px] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-surface/95 backdrop-blur-md border border-surface-variant focus:outline-none transition-all duration-300 z-50 ${isOpen ? 'opacity-100 transform translate-y-0 pointer-events-auto' : 'opacity-0 transform translate-y-4 pointer-events-none'}`}>
+        <div className="px-3 py-2 border-b border-surface-variant mb-2">
+          <p className="text-sm font-bold text-on-surface">Mikajy Ranaivo</p>
+          <p className="text-xs text-secondary truncate">mikajy@example.com</p>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Link to="/profil" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-all">
+            <span className="material-symbols-outlined text-[20px]">person</span>
+            Mein Profil
+          </Link>
+          <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
+            <span className="material-symbols-outlined text-[20px]">logout</span>
+            Abmelden
+          </button>
         </div>
       </div>
     </div>
@@ -85,11 +90,11 @@ export default function Navbar({ children }) {
         </Link>
         <div className="flex items-center gap-1.5">
           <ThemeToggle />
-          <LanguageSelector />
-          <button className="p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full relative flex-shrink-0">
-            <span className="material-symbols-outlined">notifications</span>
+          <button className="flex items-center justify-center p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full relative flex-shrink-0">
+            <span className="material-symbols-outlined leading-none">notifications</span>
             <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-germany-red rounded-full border border-surface"></span>
           </button>
+          <UserMenu />
         </div>
       </header>
 
@@ -102,11 +107,11 @@ export default function Navbar({ children }) {
       {/* Floating Actions (Desktop Top-Right) */}
       <div className="hidden md:flex fixed top-6 right-8 items-center gap-4 z-50">
         <ThemeToggle />
-        <LanguageSelector />
-        <button className="p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full bg-surface shadow-sm relative">
-          <span className="material-symbols-outlined">notifications</span>
+        <button className="flex items-center justify-center p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full bg-surface shadow-sm relative">
+          <span className="material-symbols-outlined leading-none">notifications</span>
           <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-germany-red rounded-full border border-surface"></span>
         </button>
+        <UserMenu />
       </div>
 
       {/* Floating Nav (Mobile & Desktop) */}
