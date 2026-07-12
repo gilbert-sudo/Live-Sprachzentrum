@@ -1,112 +1,55 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import EBookSidebar from '../components/EBook/EBookSidebar';
+import LessonContent from '../components/EBook/LessonContent';
+import { lektion1Chapters, lektion1 } from '../data/lektion1';
 
 export default function Kurse() {
+  const [activeLessonId, setActiveLessonId] = useState('l1-a'); // Default to first in-progress lesson
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // In a real app, this would fetch the lesson data based on activeLessonId
+  // For this demo, we use the single lektion1 if it's the one selected
+  const currentLessonData = (activeLessonId.startsWith('l1-')) ? lektion1 : null;
+
   return (
-    <>
-      <main className="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-6">
-        {/* Course Header */}
-        <div className="mb-8 bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] p-6 border border-surface-variant">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-germany-gold icon-filled">star</span>
-            <span className="font-label-md text-label-md text-secondary">AKTUELLER KURS</span>
-          </div>
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-germany-black dark:text-white">Mein Kurs: B1 Standard</h2>
-          <div className="mt-4 flex items-center gap-4">
-            <div className="flex-1 h-2 bg-surface-variant rounded-full overflow-hidden">
-              <div className="h-full bg-germany-red w-[45%] rounded-full"></div>
-            </div>
-            <span className="font-label-md text-label-md text-secondary">45% Abgeschlossen</span>
-          </div>
+    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-surface-container-lowest">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-germany-black/50 z-40 md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Area */}
+      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 w-80 shadow-2xl md:shadow-none ${
+        isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <EBookSidebar 
+          chapters={lektion1Chapters} 
+          activeLessonId={activeLessonId} 
+          onSelectLesson={(id) => {
+            setActiveLessonId(id);
+            setIsMobileSidebarOpen(false); // Close sidebar on mobile after selection
+          }} 
+        />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Mobile Header (Hamburger Menu) */}
+        <div className="md:hidden flex items-center p-4 border-b border-surface-variant bg-surface-container-lowest sticky top-0 z-30">
+          <button 
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="p-2 -ml-2 rounded-full hover:bg-surface-subtle text-germany-black dark:text-white"
+          >
+            <span className="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          <span className="font-title-md text-title-md ml-2 font-bold">Kursübersicht</span>
         </div>
 
-        {/* Chapters List */}
-        <div className="space-y-4">
-          {/* Chapter 1: Completed */}
-          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden group">
-            <div className="p-4 md:p-6 flex items-center gap-4 cursor-pointer hover:bg-surface-subtle transition-colors">
-              <div className="w-10 h-10 rounded-full bg-[#E8F3EB] flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-success-green icon-filled">check_circle</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 1: Beruf & Kunden</h3>
-                <p className="font-body-md text-body-md text-secondary">4/4 Lektionen</p>
-              </div>
-              <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
-            </div>
-          </div>
-
-          {/* Chapter 2: In Progress */}
-          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] border-2 border-germany-red overflow-hidden">
-            <div className="p-4 md:p-6 flex items-center gap-4 border-b border-surface-variant bg-surface-subtle">
-              <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-germany-red icon-filled">play_arrow</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 2: Der erste Arbeitstag</h3>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden max-w-[200px]">
-                    <div className="h-full bg-germany-red w-[33%] rounded-full"></div>
-                  </div>
-                  <span className="font-label-sm text-label-sm text-secondary">33%</span>
-                </div>
-              </div>
-              <span className="material-symbols-outlined text-germany-red rotate-90">chevron_right</span>
-            </div>
-
-            {/* Expanded Lessons */}
-            <div className="bg-surface-container-lowest py-2">
-              <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 hover:bg-surface-subtle transition-colors">
-                <span className="material-symbols-outlined text-success-green text-[20px] icon-filled">check_circle</span>
-                <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.1: Sorin Mateis' erster Arbeitstag</h4>
-                </div>
-              </Link>
-              <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 bg-surface-container-low hover:bg-surface-subtle transition-colors">
-                <span className="material-symbols-outlined text-germany-red text-[20px] icon-filled">play_circle</span>
-                <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white font-semibold">Lektion 2.2: Ratschläge verstehen und geben</h4>
-                </div>
-              </Link>
-              <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 hover:bg-surface-subtle transition-colors">
-                <span className="material-symbols-outlined text-secondary text-[20px] icon-filled">play_circle</span>
-                <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.3: Eine Betriebsvereinbarung verstehen</h4>
-                </div>
-              </Link>
-            </div>
-          </div>
-
-          {/* Chapter 3: Not Started */}
-          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden group">
-            <div className="p-4 md:p-6 flex items-center gap-4 cursor-pointer hover:bg-surface-subtle transition-colors">
-              <div className="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-secondary icon-filled">import_contacts</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 3: Bewerbung um eine Stelle</h3>
-                <p className="font-body-md text-body-md text-secondary">0/5 Lektionen</p>
-              </div>
-              <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
-            </div>
-          </div>
-
-          {/* Chapter 4: Not Started */}
-          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden group">
-            <div className="p-4 md:p-6 flex items-center gap-4 cursor-pointer hover:bg-surface-subtle transition-colors">
-              <div className="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-secondary icon-filled">import_contacts</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 4: Besprechungen</h3>
-                <p className="font-body-md text-body-md text-secondary">0/4 Lektionen</p>
-              </div>
-              <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
-            </div>
-          </div>
-        </div>
-      </main>
-
-    </>
+        <LessonContent lesson={currentLessonData} />
+      </div>
+    </div>
   );
 }
