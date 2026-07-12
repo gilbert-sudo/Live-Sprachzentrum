@@ -38,7 +38,7 @@ export default function Dashboard() {
             {/* Next Live Class */}
             <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-tertiary-container/20 text-tertiary-container rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-tertiary-container/20 text-tertiary-container dark:bg-tertiary/10 dark:text-tertiary rounded-lg flex items-center justify-center">
                   <span className="material-symbols-outlined">school</span>
                 </div>
                 <div>
@@ -46,7 +46,7 @@ export default function Dashboard() {
                   <h4 className="font-title-md text-title-md text-on-surface">Live-Unterricht B1</h4>
                 </div>
               </div>
-              <button className="w-full bg-surface text-primary font-label-md text-label-md py-2 rounded-lg border border-surface-variant hover:bg-surface-container-low transition-colors">
+              <button className="w-full bg-surface text-primary dark:text-inverse-primary font-label-md text-label-md py-2 rounded-lg border border-surface-variant dark:border-surface-subtle hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors">
                 Zum Kursraum
               </button>
             </div>
@@ -105,7 +105,7 @@ export default function Dashboard() {
             
             {/* Streak Stat */}
             <div className="min-w-[140px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between hover:-translate-y-0.5 transition-transform duration-200">
-              <div className="w-10 h-10 rounded-full bg-tertiary-container/20 text-tertiary-container flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-tertiary-container/20 text-tertiary-container dark:bg-tertiary/10 dark:text-tertiary flex items-center justify-center mb-3">
                 <span className="material-symbols-outlined icon-filled">local_fire_department</span>
               </div>
               <div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
 
             {/* Vocab Stat */}
             <div className="min-w-[140px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between hover:-translate-y-0.5 transition-transform duration-200">
-              <div className="w-10 h-10 rounded-full bg-success-green/10 text-success-green flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-success-green/10 text-success-green dark:bg-success-green/20 dark:text-green-400 flex items-center justify-center mb-3">
                 <span className="material-symbols-outlined">spellcheck</span>
               </div>
               <div>
@@ -155,7 +155,7 @@ export default function Dashboard() {
             {/* TELC Simulator */}
             <Link to="/simulator" className="min-w-[240px] md:min-w-0 md:col-span-2 md:col-start-3 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 h-full flex flex-col justify-between relative overflow-hidden border border-surface-variant hover:-translate-y-0.5 transition-transform duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3 relative z-10 mb-2">
-                <div className="w-10 h-10 shrink-0 rounded-full bg-germany-red/10 text-germany-red flex items-center justify-center">
+                <div className="w-10 h-10 shrink-0 rounded-full bg-germany-red/10 text-germany-red dark:bg-germany-red/20 dark:text-red-400 flex items-center justify-center">
                   <span className="material-symbols-outlined">quiz</span>
                 </div>
                 <h4 className="font-title-md text-title-md text-on-surface">Prüfungssimulator</h4>

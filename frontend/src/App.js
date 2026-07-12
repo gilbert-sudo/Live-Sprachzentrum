@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -23,6 +23,8 @@ function App() {
           {/* Fallbacks for navigation links to prevent crashing */}
           <Route path="/stammtisch" element={<Stammtisch />} />
           <Route path="/profil" element={<Profile />} />
+          {/* Catch-all route for unknown paths */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Navbar>
     </Router>

@@ -219,7 +219,7 @@ export default function Stammtisch() {
       </div>
 
       {/* Floating Action Button for New Post */}
-      <button className="absolute bottom-4 md:bottom-8 right-3 md:right-8 px-5 py-2.5 md:px-6 md:py-3.5 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all z-20 gap-2 group">
+      <button className="absolute bottom-[calc(100vh-100dvh+4.5rem)] md:bottom-8 right-3 md:right-8 px-5 py-2.5 md:px-6 md:py-3.5 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all z-20 gap-2 group">
         <span className="material-symbols-outlined text-[22px] md:text-[24px]">post_add</span>
         <span className="font-label-sm text-[13px] md:text-base font-bold">Neuer Beitrag</span>
       </button>
