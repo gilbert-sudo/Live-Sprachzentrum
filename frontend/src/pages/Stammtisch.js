@@ -148,7 +148,7 @@ export default function Stammtisch() {
             <p className="text-on-surface mb-3">
               Mein Arbeitsplatz heute Abend. Ich bin fast fertig mit dem Dossier für die Ausbildungsvorbereitung. Wer ist noch am Lernen? ☕📚
             </p>
-            
+
             {/* Multiple Photos Stacked UI */}
             <div className="mt-3 mb-2 flex flex-col ml-4 w-fit">
               <div className="relative w-36 h-36 sm:w-44 sm:h-44 cursor-pointer group">
@@ -156,16 +156,16 @@ export default function Stammtisch() {
                 <div className="absolute inset-0 bg-surface-variant rounded-xl border-2 border-surface shadow-sm rotate-[6deg] translate-x-3 translate-y-2 overflow-hidden transition-transform group-hover:rotate-[8deg] group-hover:translate-x-5">
                   <img alt="Study photo 3" className="w-full h-full object-cover opacity-80" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80" />
                 </div>
-                
+
                 {/* Stack Layer 2 (Middle) */}
                 <div className="absolute inset-0 bg-surface-container-high rounded-xl border-2 border-surface shadow-sm -rotate-[4deg] -translate-x-1 -translate-y-1 overflow-hidden transition-transform group-hover:-rotate-[6deg] group-hover:-translate-x-3">
                   <img alt="Study photo 2" className="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80" />
                 </div>
-                
+
                 {/* Stack Layer 1 (Top) */}
                 <div className="absolute inset-0 bg-surface-container-lowest rounded-xl border-[3px] border-surface shadow-md z-10 overflow-hidden transform group-hover:scale-[1.02] transition-transform">
                   <img alt="Study space" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-i9EI8tOhDfhGBSxG0qQpP1c6t1CsBAfezLslNEW2R1dj255DC7dGB0En6AYah6g7XlAR-oolmB5Nx5cEqPYxZpqpKRA0mkb1iVpgeL3xfGS5CTOX1JneCNeUSRj-aJa7-FmSLypDqbY-M-D_rRwmgbwoYZIIuNUQy0x2NeDtXsrNo26Z121LxAizZHe4-vbL0N3cDhF36Q0n0xo1197YIWCZHOQyOrynchE3_NYawxuAk_xvVybCs3NPxBLcwCgwse3wuLXRpYQ_" />
-                  
+
                   {/* Photo Count Overlay Badge */}
                   <div className="absolute top-2 right-2 bg-germany-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                     <span className="material-symbols-outlined text-[12px]">photo_library</span>
@@ -219,7 +219,7 @@ export default function Stammtisch() {
       </div>
 
       {/* Message Input Bar */}
-      <div className="p-2 md:p-3 bg-surface-container-lowest border-t border-surface-variant flex items-end gap-1.5 md:gap-2 flex-shrink-0 z-10 pb-1 md:pb-3">
+      <div className="p-2 md:p-3 bg-surface-container-lowest border-t border-surface-variant flex items-end gap-1.5 md:gap-2 flex-shrink-0 z-10 pb-[90px] md:pb-3">
         <div className="flex gap-0.5 md:gap-1 mb-0.5 md:mb-1">
           <button className="p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center">
             <span className="material-symbols-outlined text-[20px] md:text-[24px]">add_circle</span>
