@@ -103,14 +103,14 @@ export default function Dashboard() {
           </div>
           <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-4 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
             
-            {/* Streak Stat */}
+            {/* Completed Lessons Stat */}
             <div className="min-w-[140px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between hover:-translate-y-0.5 transition-transform duration-200">
-              <div className="w-10 h-10 rounded-full bg-tertiary-container/20 text-tertiary-container dark:bg-tertiary/10 dark:text-tertiary flex items-center justify-center mb-3">
-                <span className="material-symbols-outlined icon-filled">local_fire_department</span>
+              <div className="w-10 h-10 rounded-full bg-primary-container/20 text-primary dark:bg-primary/10 dark:text-primary flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined icon-filled">check_circle</span>
               </div>
               <div>
-                <p className="font-headline-sm md:font-headline-md text-headline-sm md:text-headline-md text-on-surface">12</p>
-                <p className="font-label-sm text-label-sm text-secondary line-clamp-1">Tage Lernserie</p>
+                <p className="font-headline-sm md:font-headline-md text-headline-sm md:text-headline-md text-on-surface">24</p>
+                <p className="font-label-sm text-label-sm text-secondary line-clamp-1">Lektionen beendet</p>
               </div>
             </div>
 

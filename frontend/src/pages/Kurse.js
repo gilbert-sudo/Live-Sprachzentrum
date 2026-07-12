@@ -29,8 +29,8 @@ export default function Kurse() {
                 <span className="material-symbols-outlined text-success-green icon-filled">check_circle</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Kapitel 1: Wohnformen</h3>
-                <p className="font-body-md text-body-md text-secondary">10/10 Lektionen</p>
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 1: Beruf & Kunden</h3>
+                <p className="font-body-md text-body-md text-secondary">4/4 Lektionen</p>
               </div>
               <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
             </div>
@@ -43,12 +43,12 @@ export default function Kurse() {
                 <span className="material-symbols-outlined text-germany-red icon-filled">play_arrow</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Kapitel 2: Arbeitswelt</h3>
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 2: Der erste Arbeitstag</h3>
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden max-w-[200px]">
-                    <div className="h-full bg-germany-red w-[40%] rounded-full"></div>
+                    <div className="h-full bg-germany-red w-[33%] rounded-full"></div>
                   </div>
-                  <span className="font-label-sm text-label-sm text-secondary">40%</span>
+                  <span className="font-label-sm text-label-sm text-secondary">33%</span>
                 </div>
               </div>
               <span className="material-symbols-outlined text-germany-red rotate-90">chevron_right</span>
@@ -59,34 +59,49 @@ export default function Kurse() {
               <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 hover:bg-surface-subtle transition-colors">
                 <span className="material-symbols-outlined text-success-green text-[20px] icon-filled">check_circle</span>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.1: Berufe und Tätigkeiten</h4>
+                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.1: Sorin Mateis' erster Arbeitstag</h4>
                 </div>
               </Link>
               <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 bg-surface-container-low hover:bg-surface-subtle transition-colors">
                 <span className="material-symbols-outlined text-germany-red text-[20px] icon-filled">play_circle</span>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white font-semibold">Lektion 2.2: Bewerbungsgespräch</h4>
+                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white font-semibold">Lektion 2.2: Ratschläge verstehen und geben</h4>
                 </div>
               </Link>
-              <div className="flex items-center gap-4 px-6 py-3 opacity-50">
-                <span className="material-symbols-outlined text-secondary text-[20px] icon-filled">lock</span>
+              <Link to="/uebung" className="flex items-center gap-4 px-6 py-3 hover:bg-surface-subtle transition-colors">
+                <span className="material-symbols-outlined text-secondary text-[20px] icon-filled">play_circle</span>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md text-secondary">Lektion 2.3: Arbeitsvertrag verstehen</h4>
+                  <h4 className="font-body-md text-body-md text-germany-black dark:text-white">Lektion 2.3: Eine Betriebsvereinbarung verstehen</h4>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
 
-          {/* Chapter 3: Locked */}
-          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden opacity-75">
-            <div className="p-4 md:p-6 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-secondary icon-filled">lock</span>
+          {/* Chapter 3: Not Started */}
+          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden group">
+            <div className="p-4 md:p-6 flex items-center gap-4 cursor-pointer hover:bg-surface-subtle transition-colors">
+              <div className="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-secondary icon-filled">import_contacts</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-title-lg text-title-lg text-secondary">Kapitel 3: Feste und Traditionen</h3>
-                <p className="font-body-md text-body-md text-secondary">0/8 Lektionen</p>
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 3: Bewerbung um eine Stelle</h3>
+                <p className="font-body-md text-body-md text-secondary">0/5 Lektionen</p>
               </div>
+              <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
+            </div>
+          </div>
+
+          {/* Chapter 4: Not Started */}
+          <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant overflow-hidden group">
+            <div className="p-4 md:p-6 flex items-center gap-4 cursor-pointer hover:bg-surface-subtle transition-colors">
+              <div className="w-10 h-10 rounded-full bg-surface-variant/30 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-secondary icon-filled">import_contacts</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-title-lg text-title-lg text-germany-black dark:text-white">Lektion 4: Besprechungen</h3>
+                <p className="font-body-md text-body-md text-secondary">0/4 Lektionen</p>
+              </div>
+              <span className="material-symbols-outlined text-secondary transition-transform group-hover:translate-x-1">chevron_right</span>
             </div>
           </div>
         </div>
