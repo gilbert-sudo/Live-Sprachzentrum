@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ExerciseRenderer from './ExerciseRenderer';
 import AudioPlayer from './AudioPlayer';
+import InteractivePdfViewer from './InteractivePdfViewer';
 
 export default function LessonContent({ lesson }) {
   const [activeAudio, setActiveAudio] = useState(null);
@@ -14,6 +15,10 @@ export default function LessonContent({ lesson }) {
         </div>
       </div>
     );
+  }
+
+  if (lesson.type === 'pdf-interactive') {
+    return <InteractivePdfViewer lesson={lesson} />;
   }
 
   const renderSection = (section, index) => {

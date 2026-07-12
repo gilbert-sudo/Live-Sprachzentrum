@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function EBookSidebar({ chapters, activeLessonId, onSelectLesson }) {
+export default function EBookSidebar({ chapters, activeLessonId, onSelectLesson, onClose }) {
   const [expandedChapters, setExpandedChapters] = useState(
     chapters.reduce((acc, chapter) => {
       acc[chapter.id] = true; // all expanded by default for demo
@@ -17,8 +17,17 @@ export default function EBookSidebar({ chapters, activeLessonId, onSelectLesson 
 
   return (
     <aside className="w-full md:w-80 bg-surface-container-lowest border-r border-surface-variant flex flex-col h-full overflow-y-auto">
-      <div className="p-6 border-b border-surface-variant sticky top-0 bg-surface-container-lowest z-10">
+      <div className="p-6 border-b border-surface-variant sticky top-0 bg-surface-container-lowest z-10 flex justify-between items-center">
         <h2 className="font-title-lg text-title-lg text-germany-black dark:text-white">Inhaltsverzeichnis</h2>
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="bg-germany-red text-white p-1.5 rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
+            title="Schließen"
+          >
+            <span className="material-symbols-outlined font-bold text-[20px]">close</span>
+          </button>
+        )}
       </div>
       
       <div className="p-4 space-y-4">
