@@ -93,8 +93,15 @@ export default function ExerciseRenderer({ exercise }) {
                   type="text"
                   value={userAnswers[blankIndex] || ''}
                   onChange={(e) => handleInputChange(blankIndex, e.target.value)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const text = e.dataTransfer.getData("text/plain");
+                    if (text) handleInputChange(blankIndex, text);
+                  }}
                   disabled={isSubmitted}
-                  className={`inline-block w-32 px-3 py-1 mx-1 border-b-2 bg-surface-subtle text-center focus:outline-none focus:border-germany-red transition-colors ${
+                  style={{ width: `${Math.max(3, (userAnswers[blankIndex] || '').length) + 3}ch` }}
+                  className={`inline-block h-8 leading-normal px-3 py-0 mx-1 border-b-2 bg-surface-subtle text-center focus:outline-none focus:border-germany-red transition-colors ${
                     isCorrect ? 'border-success-green text-success-green' :
                     isWrong ? 'border-error-red text-error-red' : 'border-surface-variant'
                   }`}
@@ -109,7 +116,12 @@ export default function ExerciseRenderer({ exercise }) {
         {/* Word Bank */}
         <div className="mt-6 p-4 bg-surface-container-low rounded-lg border border-surface-variant flex flex-wrap gap-2">
           {exercise.options.map((opt, i) => (
-            <span key={i} className="px-3 py-1 bg-white dark:bg-germany-black border border-surface-variant rounded shadow-sm font-label-md text-label-md">
+            <span 
+              key={i} 
+              draggable={!isSubmitted}
+              onDragStart={(e) => e.dataTransfer.setData("text/plain", opt)}
+              className="px-3 py-1 bg-white dark:bg-germany-black border border-surface-variant rounded shadow-sm font-label-md text-label-md cursor-grab active:cursor-grabbing hover:bg-surface-subtle transition-colors select-none"
+            >
               {opt}
             </span>
           ))}

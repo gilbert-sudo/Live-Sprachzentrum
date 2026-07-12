@@ -1,5 +1,29 @@
 export const lektion1 = {
   title: "Lektion 1: Julia Santos begrüßt einen Gast",
+  type: "pdf-interactive",
+  imageUrl: "/PDF/lektion1_page.jpg",
+  vocab: [
+    { word: "die Empfangssekretärin", translation: "la réceptionniste" },
+    { word: "die Voraussetzung", translation: "le prérequis / la condition" },
+    { word: "geduldig", translation: "patient(e)" },
+    { word: "hilfsbereit", translation: "serviable" },
+    { word: "das gepflegte Aussehen", translation: "l'apparence soignée" },
+    { word: "der Neukunde", translation: "le nouveau client" },
+    { word: "die Geschäftsleitung", translation: "la direction" },
+    { word: "der Vertrieb", translation: "le service des ventes" },
+    { word: "die duale Ausbildung", translation: "la formation en alternance" },
+    { word: "der Betrieb", translation: "l'entreprise" }
+  ],
+  info: {
+    description: "In dieser Lektion lernen Sie, wie man Kunden professionell begrüßt und sich vorstellt. Sie erfahren mehr über die Aufgaben einer Empfangssekretärin bei der Firma KFR Solar.",
+    goals: [
+      "Kundenempfang: Nach der Anreise fragen, Smalltalk führen, Getränke anbieten.",
+      "Berufliche Eigenschaften: Was macht gutes Personal aus? (geduldig, höflich, etc.)",
+      "Unternehmensstrukturen: Ein Organigramm lesen und Abteilungen (z.B. Vertrieb, Einkauf) verstehen.",
+      "Die duale Ausbildung: Wie funktioniert das Ausbildungssystem in Deutschland (Berufsschule + Betrieb)?"
+    ],
+    tip: "Nutzen Sie die 'Redemittel' in den Übungen, um Standardsätze für den professionellen Kundenkontakt zu trainieren!"
+  },
   sections: [
     {
       id: "intro-text",

@@ -142,26 +142,26 @@ export default function InteractivePdfViewer({ lesson }) {
       {/* Image Controls Toolbar */}
       {lesson.imageUrl && (
         <div 
-          className={`absolute top-3 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1 bg-surface/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-xl border border-surface-variant transition-transform duration-300 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
+          className={`absolute top-2 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1 bg-surface/95 backdrop-blur-md px-2 py-0.5 rounded-full shadow-xl border border-surface-variant transition-transform duration-300 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
         >
           <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Verkleinern">
-            <span className="material-symbols-outlined text-[18px]">zoom_out</span>
+            <span className="material-symbols-outlined text-[24px]">zoom_out</span>
           </button>
           
-          <span className="font-label-md min-w-[5ch] text-center font-bold text-on-surface text-sm">{zoom}%</span>
+          <span className="font-label-md min-w-[5ch] text-center font-bold text-on-surface text-base">{Math.round(zoom)}%</span>
           
           <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Vergrößern">
-            <span className="material-symbols-outlined text-[18px]">zoom_in</span>
+            <span className="material-symbols-outlined text-[24px]">zoom_in</span>
           </button>
           
           <div className="w-[2px] h-5 bg-surface-variant mx-1 rounded-full"></div>
           
           <button onClick={handleFitWidth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="An Breite anpassen">
-            <span className="material-symbols-outlined text-[18px]">width_full</span>
+            <span className="material-symbols-outlined text-[24px]">width_full</span>
           </button>
 
           <button onClick={handleResetZoom} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Zurücksetzen (100%)">
-            <span className="material-symbols-outlined text-[18px]">restart_alt</span>
+            <span className="material-symbols-outlined text-[24px]">restart_alt</span>
           </button>
         </div>
       )}
@@ -209,7 +209,7 @@ export default function InteractivePdfViewer({ lesson }) {
 
       {/* Vertical Toggle Toolbar for Panel */}
       {!isPanelOpen && (
-        <div className="absolute right-2 md:right-12 lg:right-20 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 bg-germany-red/95 backdrop-blur-xl p-1.5 rounded-full shadow-lg shadow-germany-red/40 border border-white/20">
+        <div className="absolute right-2 md:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 bg-germany-red/95 backdrop-blur-xl p-1.5 rounded-full shadow-lg shadow-germany-red/40 border border-white/20">
           <button 
             onClick={() => { setActiveTab('audio'); setIsPanelOpen(true); }}
             className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-white/20 hover:text-white text-white/90 transition-all duration-300 hover:scale-110"
@@ -330,21 +330,73 @@ export default function InteractivePdfViewer({ lesson }) {
 
           {activeTab === 'vocab' && (
             <div className="space-y-3 md:space-y-4 pb-6 md:pb-12">
-              <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
-                <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">menu_book</span>
-                <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Schwere Vokabeln</h3>
-                <p className="text-secondary font-body-xs md:font-body-sm">Die Vokabeln für diese Lektion stehen bald zur Verfügung.</p>
-              </div>
+              {lesson.vocab && lesson.vocab.length > 0 ? (
+                <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50">
+                  <div className="text-center mb-6">
+                    <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">menu_book</span>
+                    <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Schwere Vokabeln</h3>
+                    <p className="text-secondary font-body-xs md:font-body-sm">Wichtige Begriffe aus der Lektion</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {lesson.vocab.map((v, i) => (
+                      <div key={i} className="flex justify-between items-center p-3 bg-surface-container-low rounded-lg border border-surface-variant">
+                        <span className="font-label-md text-on-surface">{v.word}</span>
+                        <span className="font-body-sm text-secondary italic">{v.translation}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
+                  <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">menu_book</span>
+                  <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Schwere Vokabeln</h3>
+                  <p className="text-secondary font-body-xs md:font-body-sm">Die Vokabeln für diese Lektion stehen bald zur Verfügung.</p>
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === 'info' && (
             <div className="space-y-3 md:space-y-4 pb-6 md:pb-12">
-              <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
-                <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">info</span>
-                <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Lektionsinfo</h3>
-                <p className="text-secondary font-body-xs md:font-body-sm">Weitere Informationen zur Lektion folgen in Kürze.</p>
-              </div>
+              {lesson.info ? (
+                <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-left">
+                  <div className="text-center mb-6">
+                    <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">info</span>
+                    <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Lektionsinfo</h3>
+                    <p className="text-secondary font-body-xs md:font-body-sm">{lesson.title}</p>
+                  </div>
+                  <div className="space-y-4 text-on-surface font-body-sm md:font-body-md">
+                    <p>{lesson.info.description}</p>
+                    
+                    {lesson.info.goals && lesson.info.goals.length > 0 && (
+                      <>
+                        <h4 className="font-label-lg mt-4 text-germany-red">Lernziele & Themen:</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-secondary">
+                          {lesson.info.goals.map((goal, i) => (
+                            <li key={i}>{goal.includes(':') ? <><strong className="text-on-surface">{goal.split(':')[0]}:</strong>{goal.split(':')[1]}</> : goal}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {lesson.info.tip && (
+                      <div className="mt-6 p-4 bg-germany-gold/10 rounded-lg border border-germany-gold/30">
+                        <h4 className="font-label-md text-germany-gold-dark mb-2 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[18px]">lightbulb</span>
+                          Tipp für den Alltag
+                        </h4>
+                        <p className="text-sm">{lesson.info.tip}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
+                  <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">info</span>
+                  <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Lektionsinfo</h3>
+                  <p className="text-secondary font-body-xs md:font-body-sm">Weitere Informationen zur Lektion folgen in Kürze.</p>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -1,7 +1,5 @@
 export const lektion2 = {
   title: "Lektion 2: Der erste Arbeitstag",
-  type: "pdf-interactive",
-  imageUrl: "/PDF/lektion2_page.jpg",
   sections: [
     {
       id: "audio-l2-1",
