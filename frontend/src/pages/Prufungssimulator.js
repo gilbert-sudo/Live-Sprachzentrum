@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Prufungssimulator() {
+  const [selectedAnswer, setSelectedAnswer] = useState('b');
+
   return (
     <>
       {/* Top Navigation Area */}
-      <header className="bg-surface border-b border-surface-variant sticky top-16 z-40 shadow-sm">
-        <div className="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" aria-label="Beenden" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-secondary">
-              <span className="material-symbols-outlined">close</span>
+      <header className="bg-surface border-b border-surface-variant sticky top-12 z-40 shadow-sm">
+        <div className="max-w-container-max-width mx-auto px-2 sm:px-margin-mobile md:px-margin-desktop h-12 md:h-14 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-4 flex-1 min-w-0">
+            <Link to="/" aria-label="Beenden" className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-secondary shrink-0">
+              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">close</span>
             </Link>
-            <h1 className="font-headline-md text-headline-md text-primary truncate max-w-[200px] md:max-w-none">
+            <h1 className="font-bold text-sm sm:text-base md:text-xl lg:text-2xl text-primary truncate">
               TELC B1 Prüfungssimulator
             </h1>
           </div>
-          <div className="flex items-center gap-2 bg-error-container text-on-error-container px-4 py-2 rounded-full font-label-md text-label-md font-bold">
-            <span className="material-symbols-outlined text-xl icon-filled">timer</span>
+          <div className="flex items-center gap-1 sm:gap-2 bg-error-container text-on-error-container px-2 sm:px-4 py-1 sm:py-2 rounded-full font-bold text-[10px] sm:text-sm shrink-0">
+            <span className="material-symbols-outlined text-[16px] sm:text-xl icon-filled">timer</span>
             <span>01:45:00</span>
           </div>
         </div>
@@ -72,7 +74,7 @@ export default function Prufungssimulator() {
               <p>In den letzten drei Jahren war ich bei einer mittelständischen Firma in München tätig, wo ich umfangreiche Erfahrungen im First- und Second-Level-Support sammeln konnte. Zu meinen Hauptaufgaben gehörte die Betreuung der internen Netzwerkinfrastruktur sowie die Lösung von Hard- und Softwareproblemen der Mitarbeiter.</p>
               <p>Besonders reizt mich an der von Ihnen ausgeschriebenen Stelle die Möglichkeit, in einem internationalen Team zu arbeiten und meine Englischkenntnisse täglich anwenden zu können. Ich bin es gewohnt, selbstständig zu arbeiten, schätze aber auch den Austausch im Team sehr.</p>
               <p>Für ein persönliches Gespräch stehe ich Ihnen jederzeit gerne zur Verfügung.</p>
-              <p>Mit freundlichen Grüßen<br/>Max Mustermann</p>
+              <p>Mit freundlichen Grüßen<br />Max Mustermann</p>
             </div>
           </div>
 
@@ -85,29 +87,29 @@ export default function Prufungssimulator() {
               </p>
             </div>
             <div className="flex flex-col gap-3">
-              <label className="flex items-start gap-4 p-4 rounded-lg border-2 border-surface-variant hover:border-primary/50 hover:bg-surface transition-all cursor-pointer group">
+              <label className={`flex items-start gap-4 p-4 rounded-lg border-2 transition-all cursor-pointer group ${selectedAnswer === 'a' ? 'border-germany-red bg-primary-fixed/20' : 'border-surface-variant hover:border-primary/50 hover:bg-surface'}`}>
                 <div className="mt-0.5">
-                  <input className="w-5 h-5 text-germany-red focus:ring-germany-red border-surface-variant bg-surface-container-lowest" name="q4" type="radio"/>
+                  <input className="w-5 h-5 text-germany-red focus:ring-germany-red border-surface-variant bg-surface-container-lowest accent-germany-red" name="q4" type="radio" value="a" checked={selectedAnswer === 'a'} onChange={(e) => setSelectedAnswer(e.target.value)} />
                 </div>
-                <span className="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
+                <span className={`font-body-md text-body-md ${selectedAnswer === 'a' ? 'text-on-primary-fixed-variant font-medium' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
                   a) Weil er nach München umziehen möchte.
                 </span>
               </label>
 
-              <label className="flex items-start gap-4 p-4 rounded-lg border-2 border-germany-red bg-primary-fixed/20 cursor-pointer">
+              <label className={`flex items-start gap-4 p-4 rounded-lg border-2 transition-all cursor-pointer group ${selectedAnswer === 'b' ? 'border-germany-red bg-primary-fixed/20' : 'border-surface-variant hover:border-primary/50 hover:bg-surface'}`}>
                 <div className="mt-0.5">
-                  <input defaultChecked className="w-5 h-5 text-germany-red focus:ring-germany-red border-germany-red bg-surface-container-lowest" name="q4" type="radio"/>
+                  <input className="w-5 h-5 text-germany-red focus:ring-germany-red border-surface-variant bg-surface-container-lowest accent-germany-red" name="q4" type="radio" value="b" checked={selectedAnswer === 'b'} onChange={(e) => setSelectedAnswer(e.target.value)} />
                 </div>
-                <span className="font-body-md text-body-md text-on-primary-fixed-variant font-medium">
+                <span className={`font-body-md text-body-md ${selectedAnswer === 'b' ? 'text-on-primary-fixed-variant font-medium' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
                   b) Weil er in einem internationalen Team arbeiten möchte.
                 </span>
               </label>
 
-              <label className="flex items-start gap-4 p-4 rounded-lg border-2 border-surface-variant hover:border-primary/50 hover:bg-surface transition-all cursor-pointer group">
+              <label className={`flex items-start gap-4 p-4 rounded-lg border-2 transition-all cursor-pointer group ${selectedAnswer === 'c' ? 'border-germany-red bg-primary-fixed/20' : 'border-surface-variant hover:border-primary/50 hover:bg-surface'}`}>
                 <div className="mt-0.5">
-                  <input className="w-5 h-5 text-germany-red focus:ring-germany-red border-surface-variant bg-surface-container-lowest" name="q4" type="radio"/>
+                  <input className="w-5 h-5 text-germany-red focus:ring-germany-red border-surface-variant bg-surface-container-lowest accent-germany-red" name="q4" type="radio" value="c" checked={selectedAnswer === 'c'} onChange={(e) => setSelectedAnswer(e.target.value)} />
                 </div>
-                <span className="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
+                <span className={`font-body-md text-body-md ${selectedAnswer === 'c' ? 'text-on-primary-fixed-variant font-medium' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
                   c) Weil er keine Erfahrungen im IT-Support hat.
                 </span>
               </label>
@@ -117,13 +119,13 @@ export default function Prufungssimulator() {
       </main>
 
       {/* Footer / Action Area */}
-      <footer className="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] bg-surface/95 backdrop-blur-md border border-surface-variant rounded-3xl p-3 z-40 shadow-lg md:sticky md:bottom-0 md:transform-none md:w-full md:max-w-none md:bg-surface md:border-t md:border-surface-variant md:rounded-none md:p-0 md:shadow-none">
+      <footer className="fixed bottom-[64px] left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] bg-surface/95 backdrop-blur-md border border-surface-variant rounded-3xl p-3 z-40 shadow-lg md:sticky md:bottom-0 md:transform-none md:w-full md:max-w-none md:bg-surface md:border-t md:border-surface-variant md:rounded-none md:p-0 md:shadow-none">
         <div className="max-w-container-max-width mx-auto md:px-margin-desktop h-auto md:h-20 flex items-center justify-between gap-4">
           <button className="px-6 py-3 rounded-full border border-germany-black dark:border-white text-germany-black dark:text-white font-label-md text-label-md font-bold hover:bg-surface-container-low transition-colors flex items-center gap-2">
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Zurück
           </button>
-          
+
           <div className="hidden md:flex gap-1">
             <div className="w-2 h-2 rounded-full bg-germany-red"></div>
             <div className="w-2 h-2 rounded-full bg-germany-red"></div>

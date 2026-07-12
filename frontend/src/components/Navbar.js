@@ -78,12 +78,12 @@ export default function Navbar({ children }) {
     <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col">
       
       {/* Mobile Top AppBar */}
-      <header className="md:hidden bg-surface/95 backdrop-blur-md shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-16 flex justify-between items-center px-4">
-        <Link to="/" className="flex items-center gap-3">
-          <img alt="Live-Sprachzentrum Logo" className="h-9 w-9 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
-          <h1 className="font-title-md text-title-md font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
+      <header className="md:hidden bg-surface/95 backdrop-blur-md shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-12 flex justify-between items-center px-3">
+        <Link to="/" className="flex items-center gap-2">
+          <img alt="Live-Sprachzentrum Logo" className="h-7 w-7 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
+          <h1 className="font-title-md text-title-sm font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <ThemeToggle />
           <LanguageSelector />
           <button className="p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full relative flex-shrink-0">
@@ -110,24 +110,22 @@ export default function Navbar({ children }) {
       </div>
 
       {/* Floating Nav (Mobile & Desktop) */}
-      <nav className="fixed z-50 bg-surface/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[2rem] transition-all duration-300
-        bottom-2 left-1/2 -translate-x-1/2 w-[96%] max-w-[400px] px-3 py-2 flex flex-row justify-between items-center
-        md:top-1/2 md:-translate-y-1/2 md:left-6 md:bottom-auto md:translate-x-0 md:w-auto md:h-auto md:flex-col md:px-2 md:py-6 md:gap-4">
+      <nav className="fixed z-50 bg-surface/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[1.5rem] transition-all duration-300
+        bottom-1 left-1/2 -translate-x-1/2 w-[98%] max-w-[400px] px-2 py-1 flex flex-row justify-between items-center
+        md:top-1/2 md:-translate-y-1/2 md:left-4 md:bottom-auto md:translate-x-0 md:w-auto md:h-auto md:flex-col md:px-2 md:py-4 md:gap-2">
         {navItems.map(item => {
           const isActive = path === item.match;
           return (
-            <Link key={item.path} to={item.path} className={`flex-1 w-full flex flex-col items-center justify-center py-2 md:py-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-red-600 dark:text-red-400' : 'text-secondary hover:bg-surface-variant/30 hover:text-on-surface'}`}>
-              <span className={`material-symbols-outlined text-[24px] ${isActive ? 'icon-filled' : ''}`}>{item.icon}</span>
-              <span className={`font-label-sm text-[10px] md:text-xs mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
-              {/* Subtle active dot indicator */}
-              <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? 'bg-red-600 dark:bg-red-400' : 'bg-transparent'}`}></div>
+            <Link key={item.path} to={item.path} className={`flex-1 w-full flex flex-col items-center justify-center py-1 md:py-2 rounded-xl transition-all duration-300 ${isActive ? 'text-red-600 dark:text-red-400' : 'text-secondary hover:bg-surface-variant/30 hover:text-on-surface'}`}>
+              <span className={`material-symbols-outlined text-[20px] md:text-[24px] ${isActive ? 'icon-filled' : ''}`}>{item.icon}</span>
+              <span className={`font-label-sm text-[10px] leading-tight md:text-xs mt-0.5 md:mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
             </Link>
           )
         })}
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-24 md:pb-8 pt-4 md:pt-24 md:pl-32 lg:pl-40">
+      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-20 md:pl-24 lg:pl-32">
         {children}
       </main>
 

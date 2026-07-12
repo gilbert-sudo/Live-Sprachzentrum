@@ -2,35 +2,48 @@ import React from 'react';
 
 export default function Stammtisch() {
   return (
-    <div className="max-w-[1120px] mx-auto px-4 md:px-8 flex flex-col gap-6 relative">
-      {/* Group Header Card */}
-      <section className="bg-surface-container-lowest rounded-xl shadow-sm p-5 border border-surface-subtle relative overflow-hidden">
-        {/* Subtle decorative top bar reflecting German flag colors subtly */}
-        <div className="absolute top-0 left-0 w-full h-1 flex">
-          <div className="flex-1 bg-germany-black"></div>
-          <div className="flex-1 bg-germany-red"></div>
-          <div className="flex-1 bg-germany-gold"></div>
+    <div className="h-[calc(100vh-102px)] md:h-[calc(100vh-64px)] w-full max-w-[1120px] mx-auto flex flex-col bg-surface-container-lowest relative -mt-4 md:-mt-8 rounded-none md:rounded-t-2xl md:rounded-b-none overflow-hidden border-x border-t border-surface-variant shadow-sm">
+      {/* Chat Header */}
+      <header className="bg-surface-container-lowest shadow-sm p-3 md:p-4 border-b border-surface-subtle flex items-center justify-between z-10 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+            B1
+          </div>
+          <div>
+            <h2 className="font-title-md text-title-md text-on-surface font-bold leading-tight">B1 Projekt - Janvier</h2>
+            <div className="flex items-center gap-1 text-secondary text-xs">
+              <span className="material-symbols-outlined text-[14px]">group</span>
+              <span>24 Mitglieder</span>
+            </div>
+          </div>
         </div>
-        <h2 className="font-headline-md text-headline-md text-on-surface mt-2 font-bold">B1 Projekt - Janvier</h2>
-        <div className="flex items-center gap-2 mt-2 text-secondary">
-          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>group</span>
-          <span className="font-label-md text-label-md">24 Mitglieder</span>
+        <div className="flex gap-2">
+          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors">
+            <span className="material-symbols-outlined">call</span>
+          </button>
+          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors">
+            <span className="material-symbols-outlined">videocam</span>
+          </button>
+          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors md:hidden">
+            <span className="material-symbols-outlined">info</span>
+          </button>
         </div>
-        <p className="mt-3 text-on-surface-variant">
-          Le Stammtisch virtuel pour votre cohorte B1 Projekt. Posez vos questions, partagez des ressources et pratiquez votre allemand ensemble !
-        </p>
-      </section>
+      </header>
 
-      {/* Feed Container */}
-      <div className="flex flex-col gap-5">
+      {/* Scrollable Message History */}
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 flex flex-col gap-4 bg-surface-container-low/30 hide-scrollbar">
         {/* Post 1: Official Announcement (Highlighted) */}
-        <article className="bg-surface-container-low border border-primary-fixed rounded-xl shadow-sm p-4 relative">
-          {/* Highlight Indicator */}
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
-          <div className="flex justify-between items-start ml-2">
+        <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle shrink-0">
+          <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
-                <img alt="Frau Luisa" className="w-full h-full object-cover" src="/frau-luisa.png"/>
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-[2.5px] border-primary bg-surface">
+                  <img alt="Frau Luisa" className="w-full h-full object-cover" src="/frau-luisa.png" />
+                </div>
+                {/* Admin/Verified Badge */}
+                <div className="absolute -bottom-0.5 -right-0.5 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center border-2 border-surface-container-lowest shadow-sm">
+                  <span className="material-symbols-outlined" style={{ fontSize: '12px', fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </div>
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -47,14 +60,14 @@ export default function Stammtisch() {
               <span className="material-symbols-outlined">more_vert</span>
             </button>
           </div>
-          <div className="mt-3 ml-2">
+          <div className="mt-3">
             <p className="text-on-surface">
-              Guten Morgen zusammen! ☀️<br/><br/>
-              Bitte denkt daran, die Hausaufgaben für Kapitel 4 bis diesen Freitag hochzuladen. Ich habe außerdem ein neues Übungsblatt zum Konjunktiv II im Bereich "Lernen" hinzugefügt. <br/><br/>
+              Guten Morgen zusammen! ☀️<br /><br />
+              Bitte denkt daran, die Hausaufgaben für Kapitel 4 bis diesen Freitag hochzuladen. Ich habe außerdem ein neues Übungsblatt zum Konjunktiv II im Bereich "Lernen" hinzugefügt. <br /><br />
               Viel Erfolg bei der Vorbereitung!
             </p>
           </div>
-          <div className="mt-4 ml-2 flex items-center gap-4 border-t border-surface-variant pt-3">
+          <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
             <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
               <span className="material-symbols-outlined group-hover:scale-110 transition-transform">favorite</span>
               <span className="font-label-md text-label-md">12</span>
@@ -75,7 +88,7 @@ export default function Stammtisch() {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png"/>
+                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png" />
               </div>
               <div>
                 <h3 className="font-label-md text-label-md font-bold text-on-surface">Mikajy ranaivo</h3>
@@ -123,7 +136,7 @@ export default function Stammtisch() {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Student Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsY3L4LiRmOB-SIYLtXvKPdN8m6Iy6DbyQAJCUmd_GbJLUOK_6N7xJubIRXoZH_1jo1H5BNywq683cRnzW67FvlhCSMo8AfqpH71G7jSzV2K8J_9hU1_1uI2hc2cDuZZKvm2p22rCuuDxsyUbiHz6O_nCAiJugDRxF8FMsm-ANmLHQzPz-aXsvWM6MNA6386I4uQUctCNPytFQ-PaYA20nYWjmAiIzys7lWwEX0qMheNca1fUpJjwo6gathnT8lBXAdeHSA87u-tJr"/>
+                <img alt="Student Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsY3L4LiRmOB-SIYLtXvKPdN8m6Iy6DbyQAJCUmd_GbJLUOK_6N7xJubIRXoZH_1jo1H5BNywq683cRnzW67FvlhCSMo8AfqpH71G7jSzV2K8J_9hU1_1uI2hc2cDuZZKvm2p22rCuuDxsyUbiHz6O_nCAiJugDRxF8FMsm-ANmLHQzPz-aXsvWM6MNA6386I4uQUctCNPytFQ-PaYA20nYWjmAiIzys7lWwEX0qMheNca1fUpJjwo6gathnT8lBXAdeHSA87u-tJr" />
               </div>
               <div>
                 <h3 className="font-label-md text-label-md font-bold text-on-surface">Marie Rasoa</h3>
@@ -135,8 +148,31 @@ export default function Stammtisch() {
             <p className="text-on-surface mb-3">
               Mein Arbeitsplatz heute Abend. Ich bin fast fertig mit dem Dossier für die Ausbildungsvorbereitung. Wer ist noch am Lernen? ☕📚
             </p>
-            <div className="w-full h-48 rounded-lg overflow-hidden bg-surface-container-high border border-surface-variant">
-              <img alt="Study space" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-i9EI8tOhDfhGBSxG0qQpP1c6t1CsBAfezLslNEW2R1dj255DC7dGB0En6AYah6g7XlAR-oolmB5Nx5cEqPYxZpqpKRA0mkb1iVpgeL3xfGS5CTOX1JneCNeUSRj-aJa7-FmSLypDqbY-M-D_rRwmgbwoYZIIuNUQy0x2NeDtXsrNo26Z121LxAizZHe4-vbL0N3cDhF36Q0n0xo1197YIWCZHOQyOrynchE3_NYawxuAk_xvVybCs3NPxBLcwCgwse3wuLXRpYQ_"/>
+            
+            {/* Multiple Photos Stacked UI */}
+            <div className="mt-3 mb-2 flex flex-col ml-4 w-fit">
+              <div className="relative w-36 h-36 sm:w-44 sm:h-44 cursor-pointer group">
+                {/* Stack Layer 3 (Bottom) */}
+                <div className="absolute inset-0 bg-surface-variant rounded-xl border-2 border-surface shadow-sm rotate-[6deg] translate-x-3 translate-y-2 overflow-hidden transition-transform group-hover:rotate-[8deg] group-hover:translate-x-5">
+                  <img alt="Study photo 3" className="w-full h-full object-cover opacity-80" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80" />
+                </div>
+                
+                {/* Stack Layer 2 (Middle) */}
+                <div className="absolute inset-0 bg-surface-container-high rounded-xl border-2 border-surface shadow-sm -rotate-[4deg] -translate-x-1 -translate-y-1 overflow-hidden transition-transform group-hover:-rotate-[6deg] group-hover:-translate-x-3">
+                  <img alt="Study photo 2" className="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80" />
+                </div>
+                
+                {/* Stack Layer 1 (Top) */}
+                <div className="absolute inset-0 bg-surface-container-lowest rounded-xl border-[3px] border-surface shadow-md z-10 overflow-hidden transform group-hover:scale-[1.02] transition-transform">
+                  <img alt="Study space" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-i9EI8tOhDfhGBSxG0qQpP1c6t1CsBAfezLslNEW2R1dj255DC7dGB0En6AYah6g7XlAR-oolmB5Nx5cEqPYxZpqpKRA0mkb1iVpgeL3xfGS5CTOX1JneCNeUSRj-aJa7-FmSLypDqbY-M-D_rRwmgbwoYZIIuNUQy0x2NeDtXsrNo26Z121LxAizZHe4-vbL0N3cDhF36Q0n0xo1197YIWCZHOQyOrynchE3_NYawxuAk_xvVybCs3NPxBLcwCgwse3wuLXRpYQ_" />
+                  
+                  {/* Photo Count Overlay Badge */}
+                  <div className="absolute top-2 right-2 bg-germany-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                    <span className="material-symbols-outlined text-[12px]">photo_library</span>
+                    +3
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
@@ -156,7 +192,7 @@ export default function Stammtisch() {
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png"/>
+                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png" />
               </div>
               <div>
                 <h3 className="font-label-md text-label-md font-bold text-on-surface">Mikajy ranaivo</h3>
@@ -182,11 +218,33 @@ export default function Stammtisch() {
         </article>
       </div>
 
-
-      {/* Floating Action Button (FAB) for writing a post */}
-      <button className="fixed bottom-24 right-4 md:bottom-8 md:right-8 lg:right-12 bg-primary text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-surface-tint hover:-translate-y-0.5 transition-all duration-200 z-40 focus:outline-none focus:ring-4 focus:ring-primary-fixed">
-        <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>edit_square</span>
-      </button>
+      {/* Message Input Bar */}
+      <div className="p-2 md:p-3 bg-surface-container-lowest border-t border-surface-variant flex items-end gap-1.5 md:gap-2 flex-shrink-0 z-10 pb-1 md:pb-3">
+        <div className="flex gap-0.5 md:gap-1 mb-0.5 md:mb-1">
+          <button className="p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center">
+            <span className="material-symbols-outlined text-[20px] md:text-[24px]">add_circle</span>
+          </button>
+          <button className="hidden sm:flex p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors items-center justify-center">
+            <span className="material-symbols-outlined text-[20px] md:text-[24px]">image</span>
+          </button>
+          <button className="hidden sm:flex p-1.5 md:p-2 text-primary hover:bg-primary/10 rounded-full transition-colors items-center justify-center">
+            <span className="material-symbols-outlined text-[20px] md:text-[24px]">attach_file</span>
+          </button>
+        </div>
+        <div className="flex-1 bg-surface-container-high rounded-3xl flex items-end overflow-hidden border border-surface-variant min-h-[36px] md:min-h-[44px]">
+          <textarea
+            placeholder="Nachricht..."
+            className="w-full bg-transparent resize-none outline-none py-2 px-3 md:py-3 md:px-4 max-h-32 text-on-surface text-sm md:text-base"
+            rows="1"
+          ></textarea>
+          <button className="p-1.5 m-0.5 md:p-2 md:m-1 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-[20px] md:text-[24px]">sentiment_satisfied</span>
+          </button>
+        </div>
+        <button className="p-2 md:p-3 bg-primary text-on-primary hover:bg-primary/90 rounded-full transition-colors flex items-center justify-center shadow-sm shrink-0 mb-0.5 md:mb-0.5">
+          <span className="material-symbols-outlined text-[18px] md:text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
+        </button>
+      </div>
     </div>
   );
 }
