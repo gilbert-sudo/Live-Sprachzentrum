@@ -142,26 +142,29 @@ export default function InteractivePdfViewer({ lesson }) {
       {/* Image Controls Toolbar */}
       {lesson.imageUrl && (
         <div 
-          className={`absolute top-2 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1 bg-surface/95 backdrop-blur-md px-2 py-0.5 rounded-full shadow-xl border border-surface-variant transition-transform duration-300 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
+          className={`absolute top-3 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1.5 bg-white/80 dark:bg-germany-black/80 backdrop-blur-2xl px-2.5 py-1 rounded-full shadow-lg shadow-germany-red/20 border border-germany-red/40 dark:border-germany-red/40 ring-2 ring-germany-red/10 dark:ring-germany-red/20 transition-all duration-500 hover:bg-white/95 dark:hover:bg-germany-black/95 hover:shadow-xl hover:shadow-germany-red/30 hover:border-germany-red/60 hover:ring-germany-red/30 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
         >
-          <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Verkleinern">
-            <span className="material-symbols-outlined text-[24px]">zoom_out</span>
+          <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/40 hover:bg-germany-red text-secondary hover:text-white transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" title="Verkleinern">
+            <span className="material-symbols-outlined text-[20px]">zoom_out</span>
           </button>
           
-          <span className="font-label-md min-w-[5ch] text-center font-bold text-on-surface text-base">{Math.round(zoom)}%</span>
+          <div className="flex flex-col items-center justify-center min-w-[5ch]">
+            <span className="font-label-md text-center font-black text-germany-black dark:text-white text-sm tracking-tight">{Math.round(zoom)}%</span>
+            <div className="w-3 h-[2px] bg-germany-red rounded-full opacity-80 mt-[1px]"></div>
+          </div>
           
-          <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Vergrößern">
-            <span className="material-symbols-outlined text-[24px]">zoom_in</span>
+          <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/40 hover:bg-germany-red text-secondary hover:text-white transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" title="Vergrößern">
+            <span className="material-symbols-outlined text-[20px]">zoom_in</span>
           </button>
           
-          <div className="w-[2px] h-5 bg-surface-variant mx-1 rounded-full"></div>
+          <div className="w-[1.5px] h-5 bg-germany-black/15 dark:bg-white/15 mx-0.5 rounded-full"></div>
           
-          <button onClick={handleFitWidth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="An Breite anpassen">
-            <span className="material-symbols-outlined text-[24px]">width_full</span>
+          <button onClick={handleFitWidth} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/40 hover:bg-germany-gold hover:text-germany-black text-secondary transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" title="An Breite anpassen">
+            <span className="material-symbols-outlined text-[20px]">width_full</span>
           </button>
 
-          <button onClick={handleResetZoom} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Zurücksetzen (100%)">
-            <span className="material-symbols-outlined text-[24px]">restart_alt</span>
+          <button onClick={handleResetZoom} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/40 hover:bg-germany-gold hover:text-germany-black text-secondary transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" title="Zurücksetzen (100%)">
+            <span className="material-symbols-outlined text-[20px]">restart_alt</span>
           </button>
         </div>
       )}

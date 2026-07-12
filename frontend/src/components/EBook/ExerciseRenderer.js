@@ -178,28 +178,44 @@ export default function ExerciseRenderer({ exercise }) {
 
   const renderTrueFalse = () => {
     return (
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex gap-3 mb-5">
         {[true, false].map((val) => {
           const isSelected = userAnswers[0] === val;
           const isCorrectAnswer = isSubmitted && val === exercise.isTrue;
           const isWrongAnswer = isSubmitted && isSelected && val !== exercise.isTrue;
 
-          let borderClass = 'border-surface-variant hover:border-germany-red';
-          let bgClass = 'bg-white dark:bg-germany-black';
-
+          let btnClass = val 
+            ? "bg-white dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-success-green/50 hover:bg-success-green/5"
+            : "bg-white dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-germany-red/50 hover:bg-germany-red/5";
+          
+          let iconClass = val 
+            ? "text-surface-variant group-hover:text-success-green/70"
+            : "text-surface-variant group-hover:text-germany-red/70";
+            
+          let textClass = "font-label-lg";
+          
           if (isSubmitted) {
             if (isCorrectAnswer) {
-              borderClass = 'border-success-green';
-              bgClass = 'bg-[#E8F3EB] dark:bg-success-green/20';
+              btnClass = "bg-[#E8F3EB] dark:bg-success-green/20 border-success-green text-success-green shadow-[0_4px_20px_rgba(34,197,94,0.2)]";
+              iconClass = "text-success-green";
+              textClass = "font-label-lg font-bold";
             } else if (isWrongAnswer) {
-              borderClass = 'border-error-red';
-              bgClass = 'bg-[#FEECEB] dark:bg-error-red/20';
+              btnClass = "bg-[#FEECEB] dark:bg-error-red/20 border-error-red text-error-red shadow-[0_4px_20px_rgba(239,68,68,0.2)]";
+              iconClass = "text-error-red";
+              textClass = "font-label-lg font-bold";
             } else {
-              borderClass = 'border-surface-variant opacity-50';
+              btnClass = "bg-surface/30 border-surface-variant/30 text-secondary/40";
+              iconClass = "text-surface-variant/30";
             }
           } else if (isSelected) {
-            borderClass = 'border-germany-red';
-            bgClass = 'bg-germany-red/5';
+            if (val) {
+              btnClass = "bg-[#E8F3EB] dark:bg-success-green/20 border-success-green text-success-green shadow-[0_4px_20px_rgba(34,197,94,0.15)] scale-[1.02] z-10";
+              iconClass = "text-success-green";
+            } else {
+              btnClass = "bg-germany-red/10 dark:bg-germany-red/20 border-germany-red text-germany-red shadow-[0_4px_20px_rgba(221,0,0,0.15)] scale-[1.02] z-10";
+              iconClass = "text-germany-red";
+            }
+            textClass = "font-label-lg font-bold";
           }
 
           return (
@@ -207,9 +223,12 @@ export default function ExerciseRenderer({ exercise }) {
               key={val.toString()}
               onClick={() => handleTrueFalse(val)}
               disabled={isSubmitted}
-              className={`flex-1 p-4 rounded-xl border-2 transition-all text-center font-body-lg text-body-lg ${borderClass} ${bgClass}`}
+              className={`group flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border-2 transition-all duration-300 ${btnClass}`}
             >
-              {val ? 'Richtig' : 'Falsch'}
+              <span className={`material-symbols-outlined text-[20px] transition-colors duration-300 ${iconClass}`}>
+                {val ? 'check_circle' : 'cancel'}
+              </span>
+              <span className={`${textClass} tracking-wide`}>{val ? 'Richtig' : 'Falsch'}</span>
             </button>
           );
         })}
@@ -276,21 +295,22 @@ export default function ExerciseRenderer({ exercise }) {
       {exercise.exerciseType === 'true-false' && renderTrueFalse()}
       {exercise.exerciseType === 'checkbox-group' && renderCheckboxGroup()}
 
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-surface-variant">
+      <div className="flex items-center justify-between mt-2 mb-2">
         {!isSubmitted ? (
           <button 
             onClick={checkAnswers}
-            className="px-6 py-2 bg-germany-red text-white rounded-full font-label-lg text-label-lg hover:bg-germany-black transition-colors"
+            className="ml-auto px-5 py-2 bg-germany-red text-white rounded-full font-label-md text-sm hover:bg-germany-red/90 transition-all active:scale-95 shadow-sm flex items-center gap-2"
           >
             Überprüfen
+            <span className="material-symbols-outlined text-[18px]">done_all</span>
           </button>
         ) : (
-          <div className="flex items-center justify-between w-full">
-            <div className={`font-title-md text-title-md flex items-center gap-2 ${score > 0 ? 'text-success-green' : 'text-error-red'}`}>
-              <span className="material-symbols-outlined icon-filled">
+          <div className="flex items-center justify-between w-full bg-surface-variant/10 dark:bg-surface-variant/5 rounded-full px-4 py-2 border border-surface-variant/30">
+            <div className={`font-label-md text-sm md:text-base flex items-center gap-2 ${score > 0 ? 'text-success-green' : 'text-error-red'}`}>
+              <span className="material-symbols-outlined icon-filled text-[20px]">
                 {score > 0 ? 'emoji_events' : 'sentiment_dissatisfied'}
               </span>
-              <span>
+              <span className="font-bold tracking-wide">
                 {exercise.exerciseType === 'fill-in-the-blanks' 
                   ? `${score} von ${exercise.answers.length} richtig!` 
                   : (exercise.exerciseType === 'checkbox-group'
@@ -300,10 +320,10 @@ export default function ExerciseRenderer({ exercise }) {
             </div>
             <button 
               onClick={resetExercise}
-              className="px-4 py-2 border-2 border-surface-variant rounded-full font-label-lg text-label-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
+              className="p-1.5 bg-white dark:bg-germany-black border border-surface-variant/50 text-secondary hover:text-germany-red hover:border-germany-red/50 rounded-full transition-all active:scale-90 flex items-center justify-center group shadow-sm"
+              title="Wiederholen"
             >
-              <span className="material-symbols-outlined text-[18px]">refresh</span>
-              Wiederholen
+              <span className="material-symbols-outlined text-[18px] group-hover:-rotate-180 transition-transform duration-500">refresh</span>
             </button>
           </div>
         )}

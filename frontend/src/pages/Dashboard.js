@@ -20,18 +20,17 @@ export default function Dashboard() {
           {/* Horizontal Scroll on Mobile, Grid on Desktop */}
           <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-2 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
             {/* Stammtisch Event */}
-            <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-germany-red text-white rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between interactive-card">
-              <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+            <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card group hover:-translate-y-0.5 transition-transform duration-200">
               <div className="flex items-center gap-3 mb-4 relative z-10">
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white">groups</span>
+                <div className="w-10 h-10 bg-surface-variant/30 text-secondary rounded-lg flex items-center justify-center group-hover:bg-germany-red/10 group-hover:text-germany-red transition-colors">
+                  <span className="material-symbols-outlined">groups</span>
                 </div>
                 <div>
-                  <p className="font-label-sm text-label-sm text-white/80 uppercase tracking-wider">Morgen, 18:00 Uhr</p>
-                  <h4 className="font-title-md text-title-md">Online Stammtisch</h4>
+                  <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Morgen, 18:00 Uhr</p>
+                  <h4 className="font-title-md text-title-md text-on-surface">Online Stammtisch</h4>
                 </div>
               </div>
-              <button className="relative z-10 w-full bg-white text-germany-red font-label-md text-label-md py-2 rounded-lg hover:bg-white/90 transition-colors">
+              <button className="w-full bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-2 rounded-lg shadow-sm hover:opacity-90 transition-opacity">
                 Teilnehmen
               </button>
             </div>
@@ -90,9 +89,9 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <Link to="/uebung" className="w-full md:w-auto shrink-0 bg-germany-red text-on-primary font-label-md text-label-md py-3 px-6 rounded-full shadow-sm hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
+          <Link to="/uebung" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
             Lektion fortsetzen
-            <span className="material-symbols-outlined">arrow_forward</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>
         </section>
 
@@ -126,7 +125,7 @@ export default function Dashboard() {
             </div>
 
             {/* Career Shortcut */}
-            <Link to="/karriere" className="min-w-[240px] md:min-w-0 md:col-span-2 snap-start bg-gradient-to-r from-germany-black via-germany-black to-surface-container-highest rounded-xl p-[1px] shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-transform duration-200 flex flex-col">
+            <Link to="/karriere" className="group min-w-[240px] md:min-w-0 md:col-span-2 snap-start bg-gradient-to-r from-germany-black via-germany-black to-surface-container-highest rounded-xl p-[1px] shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-transform duration-200 flex flex-col">
               <div className="bg-surface-container-lowest rounded-xl p-4 md:p-5 h-full flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute right-0 top-0 bottom-0 w-24 opacity-10 flex flex-col pointer-events-none">
                   <div className="flex-1 bg-germany-black"></div>
@@ -145,15 +144,15 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-end justify-between relative z-10 mt-2">
                   <p className="font-body-sm text-sm text-on-surface-variant max-w-[160px]">Dein Weg zur Karriere in Deutschland</p>
-                  <button className="text-germany-red p-1 rounded-full bg-surface hover:bg-surface-container-low border border-surface-variant">
-                    <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                  <button className="text-secondary group-hover:text-germany-black dark:group-hover:text-white p-1 rounded-full bg-surface-variant/30 hover:bg-surface-variant/50 transition-colors">
+                    <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
                   </button>
                 </div>
               </div>
             </Link>
 
             {/* TELC Simulator */}
-            <Link to="/simulator" className="min-w-[240px] md:min-w-0 md:col-span-2 md:col-start-3 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 h-full flex flex-col justify-between relative overflow-hidden border border-surface-variant hover:-translate-y-0.5 transition-transform duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+            <Link to="/simulator" className="group min-w-[240px] md:min-w-0 md:col-span-2 md:col-start-3 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 h-full flex flex-col justify-between relative overflow-hidden border border-surface-variant hover:-translate-y-0.5 transition-transform duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3 relative z-10 mb-2">
                 <div className="w-10 h-10 shrink-0 rounded-full bg-germany-red/10 text-germany-red dark:bg-germany-red/20 dark:text-red-400 flex items-center justify-center">
                   <span className="material-symbols-outlined">quiz</span>
@@ -162,8 +161,8 @@ export default function Dashboard() {
               </div>
               <div className="flex items-end justify-between relative z-10 mt-2">
                 <p className="font-body-sm text-sm text-on-surface-variant max-w-[160px]">Bereite dich auf die TELC Prüfung vor</p>
-                <button className="text-germany-red p-1 rounded-full bg-surface hover:bg-surface-container-low border border-surface-variant">
-                  <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                <button className="text-secondary group-hover:text-germany-black dark:group-hover:text-white p-1 rounded-full bg-surface-variant/30 hover:bg-surface-variant/50 transition-colors">
+                  <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
                 </button>
               </div>
             </Link>

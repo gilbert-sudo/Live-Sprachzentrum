@@ -85,7 +85,7 @@ export default function Navbar({ children }) {
       {/* Mobile Top AppBar */}
       <header className="md:hidden bg-surface/95 backdrop-blur-md shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-12 flex justify-between items-center px-3">
         <Link to="/" className="flex items-center gap-2">
-          <img alt="Live-Sprachzentrum Logo" className="h-7 w-7 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
+          <img alt="Live-Sprachzentrum Logo" className="h-7 w-7 object-contain rounded-full bg-white shadow-sm border border-surface-variant/50" src="/logo.png"/>
           <h1 className="font-title-md text-title-sm font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
         </Link>
         <div className="flex items-center gap-1.5">
@@ -100,7 +100,7 @@ export default function Navbar({ children }) {
 
       {/* Floating Logo (Desktop Top-Left) */}
       <Link to="/" className="hidden md:flex fixed top-6 left-6 items-center gap-4 z-50">
-        <img alt="Live-Sprachzentrum Logo" className="h-10 w-10 object-contain rounded-full bg-white shadow-sm" src="/logo.png"/>
+        <img alt="Live-Sprachzentrum Logo" className="h-10 w-10 object-contain rounded-full bg-white shadow-md border border-surface-variant/50" src="/logo.png"/>
         <h1 className="font-headline-md text-headline-md font-bold"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
       </Link>
 
