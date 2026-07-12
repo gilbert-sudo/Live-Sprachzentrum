@@ -253,7 +253,7 @@ export default function ExerciseRenderer({ exercise }) {
   };
 
   return (
-    <div className="my-8 bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-sm">
+    <div className="my-1 bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
         <span className="material-symbols-outlined text-germany-gold">edit_document</span>
         <h3 className="font-title-md text-title-md text-germany-black dark:text-white font-bold">{exercise.question}</h3>

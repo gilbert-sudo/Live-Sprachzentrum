@@ -58,7 +58,59 @@ export default function InteractivePdfViewer({ lesson }) {
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
-  }, []);
+  }, [minZoom]);
+
+  // Touch pinch to zoom handlers
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let lastDistance = null;
+
+    const getDistance = (touches) => {
+      return Math.hypot(
+        touches[0].pageX - touches[1].pageX,
+        touches[0].pageY - touches[1].pageY
+      );
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        lastDistance = getDistance(e.touches);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 2 && lastDistance !== null) {
+        e.preventDefault(); // Prevent default browser zoom/scroll
+        const currentDistance = getDistance(e.touches);
+        const delta = currentDistance - lastDistance;
+        
+        const zoomDelta = delta * 0.5; // Sensitivity
+        
+        setZoom(prev => Math.min(Math.max(prev + zoomDelta, minZoom), 400));
+        lastDistance = currentDistance;
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (e.touches.length < 2) {
+        lastDistance = null;
+      }
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchcancel', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [minZoom]);
 
   // Mouse drag handlers
   const handleMouseDown = (e) => {
@@ -90,26 +142,26 @@ export default function InteractivePdfViewer({ lesson }) {
       {/* Image Controls Toolbar */}
       {lesson.imageUrl && (
         <div 
-          className={`absolute top-6 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-2 bg-surface/95 backdrop-blur-md px-4 py-2 rounded-full shadow-xl border border-surface-variant transition-transform duration-300 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
+          className={`absolute top-3 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1 bg-surface/95 backdrop-blur-md px-3 py-1.5 rounded-full shadow-xl border border-surface-variant transition-transform duration-300 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
         >
-          <button onClick={handleZoomOut} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Verkleinern">
-            <span className="material-symbols-outlined text-[20px]">zoom_out</span>
+          <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Verkleinern">
+            <span className="material-symbols-outlined text-[18px]">zoom_out</span>
           </button>
           
-          <span className="font-label-md min-w-[5ch] text-center font-bold text-on-surface">{zoom}%</span>
+          <span className="font-label-md min-w-[5ch] text-center font-bold text-on-surface text-sm">{zoom}%</span>
           
-          <button onClick={handleZoomIn} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Vergrößern">
-            <span className="material-symbols-outlined text-[20px]">zoom_in</span>
+          <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Vergrößern">
+            <span className="material-symbols-outlined text-[18px]">zoom_in</span>
           </button>
           
-          <div className="w-[2px] h-6 bg-surface-variant mx-1 rounded-full"></div>
+          <div className="w-[2px] h-5 bg-surface-variant mx-1 rounded-full"></div>
           
-          <button onClick={handleFitWidth} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="An Breite anpassen">
-            <span className="material-symbols-outlined text-[20px]">width_full</span>
+          <button onClick={handleFitWidth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="An Breite anpassen">
+            <span className="material-symbols-outlined text-[18px]">width_full</span>
           </button>
 
-          <button onClick={handleResetZoom} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Zurücksetzen (100%)">
-            <span className="material-symbols-outlined text-[20px]">restart_alt</span>
+          <button onClick={handleResetZoom} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant text-secondary hover:text-on-surface transition-colors" title="Zurücksetzen (100%)">
+            <span className="material-symbols-outlined text-[18px]">restart_alt</span>
           </button>
         </div>
       )}
@@ -117,7 +169,7 @@ export default function InteractivePdfViewer({ lesson }) {
       {/* Document View (Main Area) */}
       <div 
         ref={containerRef}
-        className={`flex-1 h-full overflow-y-auto overflow-x-auto bg-surface-container-low transition-all duration-300 relative ${isPanelOpen ? 'md:pr-96' : ''} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`flex-1 h-full overflow-y-auto overflow-x-auto bg-surface-container-low transition-all duration-300 relative ${isPanelOpen ? 'md:pr-[30rem] lg:pr-[36rem]' : 'md:pr-20 lg:pr-28'} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
@@ -155,19 +207,42 @@ export default function InteractivePdfViewer({ lesson }) {
         )}
       </div>
 
-      {/* Toggle Button for Panel */}
+      {/* Vertical Toggle Toolbar for Panel */}
       {!isPanelOpen && (
-        <button 
-          onClick={() => setIsPanelOpen(true)}
-          className="absolute top-4 right-4 z-20 bg-primary text-on-primary p-3 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
-        >
-          <span className="material-symbols-outlined">menu_open</span>
-          <span className="font-label-md hidden md:block pr-2">Interaktive Tools</span>
-        </button>
+        <div className="absolute right-2 md:right-12 lg:right-20 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 bg-germany-red/95 backdrop-blur-xl p-1.5 rounded-full shadow-lg shadow-germany-red/40 border border-white/20">
+          <button 
+            onClick={() => { setActiveTab('audio'); setIsPanelOpen(true); }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-white/20 hover:text-white text-white/90 transition-all duration-300 hover:scale-110"
+            title="Audios"
+          >
+            <span className="material-symbols-outlined text-[20px]">headphones</span>
+          </button>
+          <button 
+            onClick={() => { setActiveTab('exercises'); setIsPanelOpen(true); }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-white/20 hover:text-white text-white/90 transition-all duration-300 hover:scale-110"
+            title="Übungen"
+          >
+            <span className="material-symbols-outlined text-[20px]">edit_note</span>
+          </button>
+          <button 
+            onClick={() => { setActiveTab('vocab'); setIsPanelOpen(true); }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-white/20 hover:text-white text-white/90 transition-all duration-300 hover:scale-110"
+            title="Schwere Vokabeln"
+          >
+            <span className="material-symbols-outlined text-[20px]">menu_book</span>
+          </button>
+          <button 
+            onClick={() => { setActiveTab('info'); setIsPanelOpen(true); }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-white/20 hover:text-white text-white/90 transition-all duration-300 hover:scale-110"
+            title="Info"
+          >
+            <span className="material-symbols-outlined text-[20px]">info</span>
+          </button>
+        </div>
       )}
 
       {/* Interactive Sidebar Panel */}
-      <div className={`absolute right-0 top-0 bottom-0 w-full md:w-96 bg-surface-container-low shadow-2xl border-l border-surface-variant transform transition-transform duration-300 z-40 flex flex-col ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`absolute right-0 top-0 bottom-0 w-full md:w-[30rem] lg:w-[36rem] bg-surface-container-low shadow-2xl border-l border-surface-variant transform transition-transform duration-300 z-40 flex flex-col ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         {/* Panel Header */}
         <div className="p-6 pb-0 pt-6">
@@ -183,41 +258,55 @@ export default function InteractivePdfViewer({ lesson }) {
           </div>
           
           {/* Tabs */}
-          <div className="flex border-b border-surface-variant mb-6">
+          <div className="flex border-b border-surface-variant mb-6 overflow-x-auto gap-1 pb-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <button 
-              className={`flex-1 pb-3 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'audio' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
+              className={`flex-1 min-w-max pb-2 px-2 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'audio' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
               onClick={() => setActiveTab('audio')}
             >
-              <span className="material-symbols-outlined align-middle mr-2 text-[20px]">headphones</span>
+              <span className="material-symbols-outlined align-middle mr-1 text-[18px]">headphones</span>
               Audios
             </button>
             <button 
-              className={`flex-1 pb-3 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'exercises' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
+              className={`flex-1 min-w-max pb-2 px-2 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'exercises' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
               onClick={() => setActiveTab('exercises')}
             >
-              <span className="material-symbols-outlined align-middle mr-2 text-[20px]">edit_note</span>
+              <span className="material-symbols-outlined align-middle mr-1 text-[18px]">edit_note</span>
               Übungen
+            </button>
+            <button 
+              className={`flex-1 min-w-max pb-2 px-2 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'vocab' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
+              onClick={() => setActiveTab('vocab')}
+            >
+              <span className="material-symbols-outlined align-middle mr-1 text-[18px]">menu_book</span>
+              Vokabeln
+            </button>
+            <button 
+              className={`flex-1 min-w-max pb-2 px-2 text-center font-title-sm transition-colors border-b-2 ${activeTab === 'info' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
+              onClick={() => setActiveTab('info')}
+            >
+              <span className="material-symbols-outlined align-middle mr-1 text-[18px]">info</span>
+              Info
             </button>
           </div>
         </div>
 
         {/* Panel Content (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-6 pt-0">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-0">
           {activeTab === 'audio' && (
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {audioSections.length === 0 && (
-                <p className="text-secondary font-body-md text-center py-8">Keine Audios für diese Lektion.</p>
+                <p className="text-secondary font-body-sm md:font-body-md text-center py-6 md:py-8">Keine Audios für diese Lektion.</p>
               )}
               {audioSections.map((audio, idx) => (
-                <div key={idx} className="bg-surface p-4 rounded-xl shadow-sm border border-surface-variant/50">
-                  <h3 className="font-title-sm text-on-surface mb-2">{audio.title}</h3>
-                  <div className="flex items-center justify-between mt-4">
+                <div key={idx} className="bg-surface p-3 md:p-4 rounded-xl shadow-sm border border-surface-variant/50">
+                  <h3 className="font-title-sm text-on-surface mb-1 md:mb-2 line-clamp-2">{audio.title}</h3>
+                  <div className="flex items-center justify-between mt-2 md:mt-4">
                     <span className="font-label-sm text-secondary">{audio.duration}</span>
                     <button 
                       onClick={() => setActiveAudio({ url: audio.audioUrl, title: audio.title })}
-                      className="flex items-center gap-1 bg-germany-red text-white px-4 py-1.5 rounded-full font-label-sm hover:opacity-90 transition-opacity"
+                      className="flex items-center gap-1 bg-germany-red text-white px-3 py-1.5 md:px-4 rounded-full font-label-sm hover:opacity-90 transition-opacity"
                     >
-                      <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+                      <span className="material-symbols-outlined text-[16px] md:text-[18px]">play_arrow</span>
                       Abspielen
                     </button>
                   </div>
@@ -227,15 +316,35 @@ export default function InteractivePdfViewer({ lesson }) {
           )}
 
           {activeTab === 'exercises' && (
-            <div className="space-y-8 pb-12">
+            <div className="space-y-2 md:space-y-4 pb-2 md:pb-4">
               {exerciseSections.length === 0 && (
-                <p className="text-secondary font-body-md text-center py-8">Keine Übungen für diese Lektion.</p>
+                <p className="text-secondary font-body-sm md:font-body-md text-center py-2 md:py-4">Keine Übungen für diese Lektion.</p>
               )}
               {exerciseSections.map((ex, idx) => (
-                <div key={idx} className="bg-surface rounded-xl p-1 shadow-sm border border-surface-variant/50">
+                <div key={idx} className="bg-surface rounded-lg shadow-sm border border-surface-variant/50 overflow-hidden">
                   <ExerciseRenderer exercise={ex} />
                 </div>
               ))}
+            </div>
+          )}
+
+          {activeTab === 'vocab' && (
+            <div className="space-y-3 md:space-y-4 pb-6 md:pb-12">
+              <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
+                <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">menu_book</span>
+                <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Schwere Vokabeln</h3>
+                <p className="text-secondary font-body-xs md:font-body-sm">Die Vokabeln für diese Lektion stehen bald zur Verfügung.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'info' && (
+            <div className="space-y-3 md:space-y-4 pb-6 md:pb-12">
+              <div className="bg-surface p-4 md:p-6 rounded-xl shadow-sm border border-surface-variant/50 text-center">
+                <span className="material-symbols-outlined text-[40px] md:text-[48px] text-surface-variant mb-2 md:mb-4 block">info</span>
+                <h3 className="font-title-sm md:font-title-md text-on-surface mb-1 md:mb-2">Lektionsinfo</h3>
+                <p className="text-secondary font-body-xs md:font-body-sm">Weitere Informationen zur Lektion folgen in Kürze.</p>
+              </div>
             </div>
           )}
         </div>
