@@ -30,7 +30,7 @@ const UserMenu = () => {
         />
       </button>
 
-      <div className={`absolute right-0 mt-3 p-2 min-w-[200px] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-surface/95 backdrop-blur-md border border-surface-variant focus:outline-none transition-all duration-300 z-50 ${isOpen ? 'opacity-100 transform translate-y-0 pointer-events-auto' : 'opacity-0 transform translate-y-4 pointer-events-none'}`}>
+      <div className={`absolute right-0 mt-3 p-2 min-w-[200px] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-surface border border-surface-variant focus:outline-none transition-all duration-300 z-50 ${isOpen ? 'opacity-100 transform translate-y-0 pointer-events-auto' : 'opacity-0 transform translate-y-4 pointer-events-none'}`}>
         <div className="px-3 py-2 border-b border-surface-variant mb-2">
           <p className="text-sm font-bold text-on-surface">Mikajy Ranaivo</p>
           <p className="text-xs text-secondary truncate">mikajy@example.com</p>
@@ -82,15 +82,15 @@ export default function Navbar({ children }) {
   return (
     <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col">
       
-      {/* Mobile Top AppBar */}
-      <header className="md:hidden bg-surface/95 backdrop-blur-md shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-12 flex justify-between items-center px-3">
-        <Link to="/" className="flex items-center gap-2">
-          <img alt="Live-Sprachzentrum Logo" className="h-7 w-7 object-contain rounded-full bg-white shadow-sm border border-surface-variant/50" src="/logo.png"/>
-          <h1 className="font-title-md text-title-sm font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
+      {/* Top AppBar */}
+      <header className="bg-surface shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-14 md:h-[72px] flex justify-between items-center px-4 md:px-8">
+        <Link to="/" className="flex items-center gap-2 md:gap-4">
+          <img alt="Live-Sprachzentrum Logo" className="h-8 w-8 md:h-10 md:w-10 object-contain rounded-full bg-white shadow-sm border border-surface-variant/50" src="/logo.png"/>
+          <h1 className="font-title-md md:font-headline-md text-title-md md:text-headline-md font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
         </Link>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2 md:gap-4">
           <ThemeToggle />
-          <button className="flex items-center justify-center p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full relative flex-shrink-0">
+          <button className="flex items-center justify-center p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full relative flex-shrink-0 md:bg-surface-container-lowest md:shadow-sm">
             <span className="material-symbols-outlined leading-none">notifications</span>
             <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-germany-red rounded-full border border-surface"></span>
           </button>
@@ -98,24 +98,8 @@ export default function Navbar({ children }) {
         </div>
       </header>
 
-      {/* Floating Logo (Desktop Top-Left) */}
-      <Link to="/" className="hidden md:flex fixed top-6 left-6 items-center gap-4 z-50">
-        <img alt="Live-Sprachzentrum Logo" className="h-10 w-10 object-contain rounded-full bg-white shadow-md border border-surface-variant/50" src="/logo.png"/>
-        <h1 className="font-headline-md text-headline-md font-bold"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
-      </Link>
-
-      {/* Floating Actions (Desktop Top-Right) */}
-      <div className="hidden md:flex fixed top-6 right-8 items-center gap-4 z-50">
-        <ThemeToggle />
-        <button className="flex items-center justify-center p-2 text-secondary hover:bg-surface-container-low transition-colors duration-200 rounded-full bg-surface shadow-sm relative">
-          <span className="material-symbols-outlined leading-none">notifications</span>
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-germany-red rounded-full border border-surface"></span>
-        </button>
-        <UserMenu />
-      </div>
-
       {/* Floating Nav (Mobile & Desktop) */}
-      <nav className="fixed z-50 bg-surface/95 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[1.5rem] transition-all duration-300
+      <nav className="fixed z-50 bg-surface shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[1.5rem] transition-all duration-300
         bottom-1 left-1/2 -translate-x-1/2 w-[98%] max-w-[400px] px-2 py-1 flex flex-row justify-between items-center
         md:top-1/2 md:-translate-y-1/2 md:left-4 md:bottom-auto md:translate-x-0 md:w-auto md:h-auto md:flex-col md:px-2 md:py-4 md:gap-2">
         {navItems.map(item => {
@@ -130,7 +114,7 @@ export default function Navbar({ children }) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-20 md:pl-24 lg:pl-32">
+      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32">
         {children}
       </main>
 
