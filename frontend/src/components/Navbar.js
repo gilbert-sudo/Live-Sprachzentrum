@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../context/AuthContext';
 
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -17,30 +19,31 @@ const UserMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (!user) return null;
+
   return (
     <div className="relative" ref={menuRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)} 
         className="flex items-center gap-2 p-1 rounded-full hover:bg-surface-container-low transition-colors duration-200 focus:outline-none"
       >
-        <img 
-          src="/mikajy-ranaivo.png" 
-          alt="Mikajy Ranaivo" 
-          className="w-8 h-8 rounded-full bg-surface-container-highest border border-surface-variant object-cover shadow-sm" 
-        />
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-germany-red text-white flex items-center justify-center font-bold text-lg shadow-sm border border-surface-variant">
+          {user.name.charAt(0).toUpperCase()}
+        </div>
       </button>
 
       <div className={`absolute right-0 mt-3 p-2 min-w-[200px] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] bg-surface border border-surface-variant focus:outline-none transition-all duration-300 z-50 ${isOpen ? 'opacity-100 transform translate-y-0 pointer-events-auto' : 'opacity-0 transform translate-y-4 pointer-events-none'}`}>
         <div className="px-3 py-2 border-b border-surface-variant mb-2">
-          <p className="text-sm font-bold text-on-surface">Mikajy Ranaivo</p>
-          <p className="text-xs text-secondary truncate">mikajy@example.com</p>
+          <p className="text-sm font-bold text-on-surface">{user.name}</p>
+          <p className="text-xs text-secondary truncate">{user.email}</p>
+          <p className="text-[10px] font-bold text-germany-gold uppercase tracking-wider mt-1">{user.role}</p>
         </div>
         <div className="flex flex-col gap-1">
           <Link to="/profil" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-all">
             <span className="material-symbols-outlined text-[20px]">person</span>
             Mein Profil
           </Link>
-          <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
+          <button onClick={() => { setIsOpen(false); logout(); }} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
             <span className="material-symbols-outlined text-[20px]">logout</span>
             Abmelden
           </button>
@@ -70,6 +73,7 @@ const ThemeToggle = () => {
 export default function Navbar({ children }) {
   const location = useLocation();
   const path = location.pathname;
+  const { user, openAuthModal } = useAuth();
 
   const navItems = [
     { path: '/', icon: 'home', label: 'Lernen', match: '/' },
@@ -94,7 +98,17 @@ export default function Navbar({ children }) {
             <span className="material-symbols-outlined leading-none">notifications</span>
             <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-germany-red rounded-full border border-surface"></span>
           </button>
-          <UserMenu />
+          
+          {user ? (
+            <UserMenu />
+          ) : (
+            <button 
+              onClick={openAuthModal}
+              className="bg-germany-red hover:bg-red-700 text-white px-5 py-2 rounded-full font-bold text-sm shadow-md transition-transform active:scale-95"
+            >
+              Anmelden
+            </button>
+          )}
         </div>
       </header>
 

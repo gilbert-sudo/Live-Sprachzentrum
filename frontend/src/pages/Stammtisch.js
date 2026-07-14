@@ -1,6 +1,8 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Stammtisch() {
+  const { user } = useAuth();
   return (
     <div className="h-[calc(100vh-102px)] md:h-[calc(100vh-64px)] w-full max-w-[1120px] mx-auto flex flex-col bg-surface-container-lowest relative -mt-4 md:-mt-8 rounded-none md:rounded-t-2xl md:rounded-b-none overflow-hidden border-x border-t border-surface-variant shadow-sm">
       {/* Chat Header */}
@@ -87,11 +89,11 @@ export default function Stammtisch() {
         <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png" />
+              <div className="w-10 h-10 rounded-full bg-germany-red text-white flex items-center justify-center font-bold text-lg">
+                {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="font-label-md text-label-md font-bold text-on-surface">Mikajy ranaivo</h3>
+                <h3 className="font-label-md text-label-md font-bold text-on-surface">{user?.name}</h3>
                 <span className="font-label-sm text-label-sm text-secondary">Heute, 09:15</span>
               </div>
             </div>
@@ -191,11 +193,11 @@ export default function Stammtisch() {
         <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Mikajy Ranaivo" className="w-full h-full object-cover" src="/mikajy-ranaivo.png" />
+              <div className="w-10 h-10 rounded-full bg-germany-red text-white flex items-center justify-center font-bold text-lg">
+                {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="font-label-md text-label-md font-bold text-on-surface">Mikajy ranaivo</h3>
+                <h3 className="font-label-md text-label-md font-bold text-on-surface">{user?.name}</h3>
                 <span className="font-label-sm text-label-sm text-secondary">Vor 5 Stunden</span>
               </div>
             </div>

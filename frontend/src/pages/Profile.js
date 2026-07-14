@@ -1,8 +1,10 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const { user } = useAuth();
   return (
     <>
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
@@ -10,16 +12,16 @@ export default function Profile() {
         <section className="bg-surface-container-lowest rounded-xl p-4 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-row items-center md:items-start gap-4 md:gap-6 relative overflow-hidden interactive-card">
           <div className="absolute top-0 left-0 right-0 h-1.5 md:h-2 bg-gradient-to-r from-germany-black via-germany-red to-germany-gold"></div>
 
-          <div className="w-16 h-16 md:w-32 md:h-32 rounded-full bg-surface-container flex items-center justify-center shadow-sm relative shrink-0 mt-1 md:mt-2 border border-surface-variant">
-            <img alt="Mikajy Ranaivo" className="w-full h-full object-cover rounded-full" src="/mikajy-ranaivo.png"/>
+          <div className="w-16 h-16 md:w-32 md:h-32 rounded-full bg-germany-red text-white flex items-center justify-center shadow-sm relative shrink-0 mt-1 md:mt-2 border border-surface-variant text-3xl font-bold">
+            {user?.name?.charAt(0).toUpperCase()}
             <button className="absolute -bottom-1 -right-1 md:bottom-0 md:right-0 w-6 h-6 md:w-10 md:h-10 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md hover:bg-surface-tint transition-colors">
               <span className="material-symbols-outlined text-[14px] md:text-[20px]">edit</span>
             </button>
           </div>
 
           <div className="flex-1 text-left mt-0 md:mt-4 min-w-0">
-            <h2 className="font-title-lg md:font-headline-lg text-title-lg md:text-headline-lg text-on-surface leading-tight truncate">Mikajy Ranaivo</h2>
-            <p className="font-body-sm md:font-body-md text-sm md:text-body-md text-on-surface-variant mt-0.5 md:mt-1 truncate">mikajy.ranaivo@beispiel.de</p>
+            <h2 className="font-title-lg md:font-headline-lg text-title-lg md:text-headline-lg text-on-surface leading-tight truncate">{user?.name}</h2>
+            <p className="font-body-sm md:font-body-md text-sm md:text-body-md text-on-surface-variant mt-0.5 md:mt-1 truncate">{user?.email}</p>
             <div className="flex items-center justify-start gap-2 mt-2 md:mt-3">
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 md:px-3 md:py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-[10px] md:text-label-sm rounded-full whitespace-nowrap">
                 <span className="material-symbols-outlined text-[14px] md:text-[16px]">school</span>

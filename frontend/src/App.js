@@ -10,24 +10,46 @@ import Uebung from './pages/Uebung';
 import Profile from './pages/Profile';
 import Stammtisch from './pages/Stammtisch';
 
+// New Virtual School pages
+import LiveClassroom from './pages/LiveClassroom';
+
+// Auth Components
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
-    <Router>
-      <Navbar>
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/kurse" element={<Kurse />} />
-          <Route path="/karriere" element={<Karriere />} />
-          <Route path="/simulator" element={<Prufungssimulator />} />
-          <Route path="/uebung" element={<Uebung />} />
-          {/* Fallbacks for navigation links to prevent crashing */}
-          <Route path="/stammtisch" element={<Stammtisch />} />
-          <Route path="/profil" element={<Profile />} />
-          {/* Catch-all route for unknown paths */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Full screen routes without Navbar */}
+          <Route path="/room/:roomId" element={
+            <ProtectedRoute>
+              <LiveClassroom />
+            </ProtectedRoute>
+          } />
+          
+          {/* Routes with Navbar */}
+          <Route path="*" element={
+            <Navbar>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/kurse" element={<Kurse />} />
+                <Route path="/karriere" element={<Karriere />} />
+                
+                {/* Protected Routes */}
+                <Route path="/simulator" element={<ProtectedRoute><Prufungssimulator /></ProtectedRoute>} />
+                <Route path="/uebung" element={<ProtectedRoute><Uebung /></ProtectedRoute>} />
+                <Route path="/stammtisch" element={<ProtectedRoute><Stammtisch /></ProtectedRoute>} />
+                <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Navbar>
+          } />
         </Routes>
-      </Navbar>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

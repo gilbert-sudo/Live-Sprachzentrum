@@ -1,25 +1,90 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
+  const [classrooms, setClassrooms] = useState([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch live classrooms
+    axios.get('http://localhost:5001/api/classrooms')
+      .then(res => setClassrooms(res.data))
+      .catch(err => console.error('Error fetching classrooms', err));
+  }, []);
+
+  const handleCreateRoom = async () => {
+    try {
+      const res = await axios.post('/api/classrooms', {
+        name: `${user?.name || 'Lehrer'}s Class`,
+        subject: 'General',
+        teacherName: user?.name || 'Lehrer',
+        isLive: true
+      });
+      navigate(`/room/${res.data.roomId}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleJoinRoom = (roomId) => {
+    navigate(`/room/${roomId}`);
+  };
   return (
     <>
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
         
         {/* Welcome Header */}
-        <section className="mb-2 md:mb-4">
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, Ranaivo!</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Bereit für deine nächste Lektion?</p>
+        <section className="mb-2 md:mb-4 flex justify-between items-end">
+          <div>
+            <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, {user ? user.name : 'Gast'}!</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">Bereit für deine nächste Lektion?</p>
+          </div>
         </section>
 
-        {/* Upcoming Events (New Feature) */}
+        {/* Live Classes & Upcoming Events */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-title-md text-title-md text-on-surface">Demnächst</h3>
+            <h3 className="font-title-md text-title-md text-on-surface">Live-Klassen & Demnächst</h3>
+            {user && (user.role === 'teacher' || user.role === 'admin') && (
+              <button 
+                onClick={handleCreateRoom}
+                className="bg-germany-red text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition shadow"
+              >
+                + Neue Klasse starten
+              </button>
+            )}
           </div>
           {/* Horizontal Scroll on Mobile, Grid on Desktop */}
           <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-2 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
-            {/* Stammtisch Event */}
+            
+            {/* Render fetched live classrooms */}
+            {classrooms.map(room => (
+              <div key={room._id} className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-germany-red flex flex-col justify-between interactive-card">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-germany-red/10 text-germany-red rounded-lg flex items-center justify-center relative">
+                    <span className="material-symbols-outlined">live_tv</span>
+                    {room.isLive && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full animate-pulse"></span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">{room.subject} • {room.teacherName}</p>
+                    <h4 className="font-title-md text-title-md text-on-surface line-clamp-1">{room.name}</h4>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => handleJoinRoom(room.roomId)}
+                  className="w-full bg-germany-red text-white font-label-md text-label-md py-2 rounded-lg shadow hover:opacity-90 transition-opacity"
+                >
+                  Raum betreten
+                </button>
+              </div>
+            ))}
+
+            {/* Static Stammtisch Event */}
             <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card group hover:-translate-y-0.5 transition-transform duration-200">
               <div className="flex items-center gap-3 mb-4 relative z-10">
                 <div className="w-10 h-10 bg-surface-variant/30 text-secondary rounded-lg flex items-center justify-center group-hover:bg-germany-red/10 group-hover:text-germany-red transition-colors">
@@ -34,21 +99,7 @@ export default function Dashboard() {
                 Teilnehmen
               </button>
             </div>
-            {/* Next Live Class */}
-            <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-tertiary-container/20 text-tertiary-container dark:bg-tertiary/10 dark:text-tertiary rounded-lg flex items-center justify-center">
-                  <span className="material-symbols-outlined">school</span>
-                </div>
-                <div>
-                  <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Freitag, 14:00 Uhr</p>
-                  <h4 className="font-title-md text-title-md text-on-surface">Live-Unterricht B1</h4>
-                </div>
-              </div>
-              <button className="w-full bg-surface text-primary dark:text-inverse-primary font-label-md text-label-md py-2 rounded-lg border border-surface-variant dark:border-surface-subtle hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors">
-                Zum Kursraum
-              </button>
-            </div>
+            
           </div>
         </section>
 
