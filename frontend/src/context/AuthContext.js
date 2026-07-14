@@ -15,7 +15,8 @@ export const AuthProvider = ({ children }) => {
   const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
   // Configure axios base URL
-  axios.defaults.baseURL = 'http://localhost:5001';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+  axios.defaults.baseURL = API_URL;
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');

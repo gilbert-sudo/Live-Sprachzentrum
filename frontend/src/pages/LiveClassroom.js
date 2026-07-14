@@ -18,7 +18,8 @@ function LiveClassroom() {
 
   useEffect(() => {
     // Connect to signaling/sync server
-    const newSocket = io('http://localhost:5001');
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+    const newSocket = io(API_URL);
     setSocket(newSocket);
 
     newSocket.on('connect', () => {

@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Fetch live classrooms
-    axios.get('http://localhost:5001/api/classrooms')
+    axios.get('/api/classrooms')
       .then(res => setClassrooms(res.data))
       .catch(err => console.error('Error fetching classrooms', err));
   }, []);
