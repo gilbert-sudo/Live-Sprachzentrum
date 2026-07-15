@@ -64,7 +64,6 @@ export default function VirtualSchool() {
           Campus <span className="text-germany-red">Live</span>
         </h1>
         <p className="text-sm md:text-base text-on-surface-variant max-w-lg mx-auto flex items-center justify-center gap-1">
-          <span className="material-symbols-outlined text-[16px] opacity-70">touch_app</span>
           Wähle dein Sprachniveau und betrete das virtuelle Klassenzimmer.
         </p>
       </div>
@@ -88,25 +87,31 @@ export default function VirtualSchool() {
                   }
                 }}
               >
-                {/* Live Indicator above door (Compact) */}
-                <div className="h-6 flex items-center justify-center mb-1">
+                {/* Social Media Style Live Badge */}
+                <div className="h-4 w-full flex items-center justify-center mb-2 relative z-20">
                   {isLive && (
-                    <div className="bg-germany-red text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse flex items-center gap-1 shadow-sm">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span> LIVE
+                    <div className="absolute top-2 z-30">
+                      <div className="bg-gradient-to-r from-pink-600 to-germany-red text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm border-[2px] border-surface-container-lowest uppercase tracking-wider flex items-center gap-1">
+                        LIVE
+                      </div>
                     </div>
                   )}
                 </div>
 
                 {/* The Door Frame & Door */}
-                <div className="w-full h-full relative rounded-t-md bg-surface-container-high shadow-lg border-x-[6px] border-t-[6px] border-surface-container-highest">
+                <div className={`w-full h-full relative rounded-t-md bg-surface-container-high transition-all duration-500 border-x-[6px] border-t-[6px] ${
+                  isLive 
+                    ? 'border-germany-red shadow-[0_0_20px_rgba(220,38,38,0.7)]' 
+                    : 'border-surface-container-highest shadow-lg'
+                }`}>
 
                   {/* Inside the classroom (visible when door opens) */}
                   <div className="absolute inset-0 bg-surface flex flex-col items-center justify-center overflow-hidden rounded-t-sm p-2">
                     <span className="material-symbols-outlined text-[32px] text-germany-red opacity-80 mb-2">cast_for_education</span>
                     <p className="text-on-surface font-bold text-sm text-center">{isLive ? 'Klasse beitreten' : 'Warteraum'}</p>
                     {isLive ? (
-                      <p className="text-germany-red font-medium text-[10px] mt-1 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[12px]">login</span> Los geht's!
+                      <p className="text-germany-red font-bold text-[11px] mt-1 flex items-center gap-1 animate-bounce bg-germany-red/10 px-2 py-0.5 rounded-full">
+                        <span className="material-symbols-outlined text-[14px]">login</span> Los geht's!
                       </p>
                     ) : (
                       <p className="text-secondary font-medium text-[10px] mt-1 flex items-center gap-1">
@@ -117,11 +122,11 @@ export default function VirtualSchool() {
                   </div>
 
                   {/* The actual Door pane */}
-                  <div 
+                  <div
                     className="door-frame door-inner !absolute inset-0 bg-gradient-to-br from-surface-container to-surface-container-lowest border-r-[1px] border-b-[1px] border-surface-dim rounded-t-sm flex flex-col items-center justify-start pt-6 shadow-[inset_0_0_10px_rgba(0,0,0,0.05)]"
                     style={{ transform: openedDoor === level.id ? 'rotateY(-105deg)' : undefined }}
                   >
-                    
+
                     {/* Door Sign (Compact) */}
                     <div className={`w-3/4 bg-gradient-to-r ${level.color} p-2 rounded shadow-sm mb-3 transform -translate-y-2 relative flex flex-col items-center`}>
                       <span className="material-symbols-outlined text-white/30 text-[12px] absolute top-1 right-1">star</span>
@@ -134,7 +139,7 @@ export default function VirtualSchool() {
 
                     {/* Detailed Class Info Placard */}
                     {isLive ? (
-                      <div className="w-[85%] bg-white/95 dark:bg-surface-container-highest p-2 rounded shadow-md border border-surface-variant flex flex-col items-center mb-6 mt-auto relative overflow-hidden">
+                      <div className="w-[85%] bg-surface-container-lowest/95 dark:bg-surface-container-highest p-2 rounded shadow-md border border-surface-variant flex flex-col items-center mb-6 mt-auto relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-germany-red"></div>
                         <span className="text-[9px] font-bold text-germany-red flex items-center gap-1 uppercase tracking-wider mb-1 mt-1">
                           <span className="material-symbols-outlined text-[10px]">sensors</span>
@@ -155,9 +160,10 @@ export default function VirtualSchool() {
                         </div>
                       </div>
                     ) : (
-                      <div className="w-3/4 h-16 mb-6 mt-auto border border-surface-variant rounded-sm opacity-50 flex flex-col items-center justify-center gap-0.5">
-                        <span className="material-symbols-outlined text-[16px] text-secondary opacity-50">block</span>
-                        <span className="text-[9px] text-secondary font-medium uppercase tracking-widest opacity-50">Keine Klasse</span>
+                      <div className="w-[85%] bg-surface-container-lowest/70 dark:bg-surface-container-highest/70 p-2.5 rounded shadow-sm border border-surface-variant flex flex-col items-center mb-6 mt-auto backdrop-blur-sm">
+                        <span className="material-symbols-outlined text-[20px] text-on-surface-variant mb-1">event_busy</span>
+                        <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider text-center">Keine Klasse</span>
+                        <p className="text-[8px] text-secondary mt-1 text-center font-medium">Siehe Stundenplan</p>
                       </div>
                     )}
 
