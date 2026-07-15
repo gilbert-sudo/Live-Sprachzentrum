@@ -142,7 +142,7 @@ export default function InteractivePdfViewer({ lesson }) {
       {/* Image Controls Toolbar */}
       {lesson.imageUrl && (
         <div 
-          className={`absolute top-3 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1.5 bg-white/80 dark:bg-germany-black/80 backdrop-blur-2xl px-2.5 py-1 rounded-full shadow-lg shadow-germany-red/20 border border-germany-red/40 dark:border-germany-red/40 ring-2 ring-germany-red/10 dark:ring-germany-red/20 transition-all duration-500 hover:bg-white/95 dark:hover:bg-germany-black/95 hover:shadow-xl hover:shadow-germany-red/30 hover:border-germany-red/60 hover:ring-germany-red/30 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
+          className={`absolute top-3 left-1/2 -translate-x-1/2 z-30 inline-flex items-center justify-center gap-1.5 bg-surface-container-lowest/80 dark:bg-germany-black/80 backdrop-blur-2xl px-2.5 py-1 rounded-full shadow-lg shadow-germany-red/20 border border-germany-red/40 dark:border-germany-red/40 ring-2 ring-germany-red/10 dark:ring-germany-red/20 transition-all duration-500 hover:bg-surface-container-lowest/95 dark:hover:bg-germany-black/95 hover:shadow-xl hover:shadow-germany-red/30 hover:border-germany-red/60 hover:ring-germany-red/30 ${isPanelOpen ? 'md:-translate-x-[calc(50%+12rem)]' : ''}`}
         >
           <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/40 hover:bg-germany-red text-secondary hover:text-white transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" title="Verkleinern">
             <span className="material-symbols-outlined text-[20px]">zoom_out</span>

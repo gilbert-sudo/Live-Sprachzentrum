@@ -32,7 +32,7 @@ export default function EBookSidebar({ chapters, activeLessonId, onSelectLesson,
       
       <div className="p-4 space-y-4">
         {chapters.map((chapter) => (
-          <div key={chapter.id} className="border border-surface-variant rounded-xl overflow-hidden bg-white dark:bg-germany-black">
+          <div key={chapter.id} className="border border-surface-variant rounded-xl overflow-hidden bg-surface-container-lowest dark:bg-germany-black">
             {/* Chapter Header */}
             <button 
               onClick={() => toggleChapter(chapter.id)}

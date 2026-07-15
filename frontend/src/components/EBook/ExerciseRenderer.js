@@ -120,7 +120,7 @@ export default function ExerciseRenderer({ exercise }) {
               key={i} 
               draggable={!isSubmitted}
               onDragStart={(e) => e.dataTransfer.setData("text/plain", opt)}
-              className="px-3 py-1 bg-white dark:bg-germany-black border border-surface-variant rounded shadow-sm font-label-md text-label-md cursor-grab active:cursor-grabbing hover:bg-surface-subtle transition-colors select-none"
+              className="px-3 py-1 bg-surface-container-lowest dark:bg-germany-black border border-surface-variant rounded shadow-sm font-label-md text-label-md cursor-grab active:cursor-grabbing hover:bg-surface-subtle transition-colors select-none"
             >
               {opt}
             </span>
@@ -139,7 +139,7 @@ export default function ExerciseRenderer({ exercise }) {
           const isWrongAnswer = isSubmitted && isSelected && !opt.isCorrect;
 
           let borderClass = 'border-surface-variant hover:border-germany-red';
-          let bgClass = 'bg-white dark:bg-germany-black';
+          let bgClass = 'bg-surface-container-lowest dark:bg-germany-black';
 
           if (isSubmitted) {
             if (isCorrectAnswer) {
@@ -185,8 +185,8 @@ export default function ExerciseRenderer({ exercise }) {
           const isWrongAnswer = isSubmitted && isSelected && val !== exercise.isTrue;
 
           let btnClass = val 
-            ? "bg-white dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-success-green/50 hover:bg-success-green/5"
-            : "bg-white dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-germany-red/50 hover:bg-germany-red/5";
+            ? "bg-surface-container-lowest dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-success-green/50 hover:bg-success-green/5"
+            : "bg-surface-container-lowest dark:bg-germany-black border-surface-variant/50 text-secondary hover:border-germany-red/50 hover:bg-germany-red/5";
           
           let iconClass = val 
             ? "text-surface-variant group-hover:text-success-green/70"
@@ -246,7 +246,7 @@ export default function ExerciseRenderer({ exercise }) {
           const missedCorrect = isSubmitted && !isSelected && opt.isCorrect;
 
           let borderClass = 'border-surface-variant hover:border-germany-red';
-          let bgClass = 'bg-white dark:bg-germany-black';
+          let bgClass = 'bg-surface-container-lowest dark:bg-germany-black';
           
           if (isSubmitted) {
             if (isCorrectAnswer && isSelected) {
@@ -320,7 +320,7 @@ export default function ExerciseRenderer({ exercise }) {
             </div>
             <button 
               onClick={resetExercise}
-              className="p-1.5 bg-white dark:bg-germany-black border border-surface-variant/50 text-secondary hover:text-germany-red hover:border-germany-red/50 rounded-full transition-all active:scale-90 flex items-center justify-center group shadow-sm"
+              className="p-1.5 bg-surface-container-lowest dark:bg-germany-black border border-surface-variant/50 text-secondary hover:text-germany-red hover:border-germany-red/50 rounded-full transition-all active:scale-90 flex items-center justify-center group shadow-sm"
               title="Wiederholen"
             >
               <span className="material-symbols-outlined text-[18px] group-hover:-rotate-180 transition-transform duration-500">refresh</span>

@@ -48,7 +48,7 @@ export default function LessonContent({ lesson }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {section.words.map((wordObj, i) => (
-                <div key={i} className="flex justify-between items-center p-3 bg-white dark:bg-germany-black rounded-lg border border-surface-variant shadow-sm hover:shadow-md transition-shadow">
+                <div key={i} className="flex justify-between items-center p-3 bg-surface-container-lowest dark:bg-germany-black rounded-lg border border-surface-variant shadow-sm hover:shadow-md transition-shadow">
                   <div>
                     <span className="font-body-md text-body-md font-bold text-germany-red mr-2">{wordObj.word}</span>
                     <span className="font-label-sm text-label-sm text-secondary italic">({wordObj.type})</span>
