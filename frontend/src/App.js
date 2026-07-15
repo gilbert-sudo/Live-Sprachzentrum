@@ -12,6 +12,7 @@ import Stammtisch from './pages/Stammtisch';
 
 // New Virtual School pages
 import LiveClassroom from './pages/LiveClassroom';
+import VirtualSchool from './pages/VirtualSchool';
 
 // Auth Components
 import { AuthProvider } from './context/AuthContext';
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/karriere" element={<Karriere />} />
                 
                 {/* Protected Routes */}
+                <Route path="/campus" element={<ProtectedRoute><VirtualSchool /></ProtectedRoute>} />
                 <Route path="/simulator" element={<ProtectedRoute><Prufungssimulator /></ProtectedRoute>} />
                 <Route path="/uebung" element={<ProtectedRoute><Uebung /></ProtectedRoute>} />
                 <Route path="/stammtisch" element={<ProtectedRoute><Stammtisch /></ProtectedRoute>} />

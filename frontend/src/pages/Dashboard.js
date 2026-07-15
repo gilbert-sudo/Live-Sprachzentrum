@@ -1,37 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
-  const [classrooms, setClassrooms] = useState([]);
+  const [courses, setCourses] = useState([]);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch live classrooms
-    axios.get('/api/classrooms')
-      .then(res => setClassrooms(res.data))
-      .catch(err => console.error('Error fetching classrooms', err));
+    // Replaced Live Classes with Mock "My Courses" for the new UI
+    const myCourses = [
+      { id: 'c1', level: 'A1', name: 'Intensivkurs Deutsch', progress: 80, icon: 'school' },
+      { id: 'c2', level: 'B1', name: 'Grammatik & Konversation', progress: 35, icon: 'translate' },
+      { id: 'c3', level: 'Alle', name: 'Aussprachetraining', progress: 15, icon: 'record_voice_over' }
+    ];
+    setCourses(myCourses);
   }, []);
 
-  const handleCreateRoom = async () => {
-    try {
-      const res = await axios.post('/api/classrooms', {
-        name: `${user?.name || 'Lehrer'}s Class`,
-        subject: 'General',
-        teacherName: user?.name || 'Lehrer',
-        isLive: true
-      });
-      navigate(`/room/${res.data.roomId}`);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleJoinRoom = (roomId) => {
-    navigate(`/room/${roomId}`);
-  };
   return (
     <>
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
@@ -44,61 +28,66 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Live Classes & Upcoming Events */}
+        {/* Campus Entry Banner */}
+        <section className="mb-4 md:mb-8">
+          <Link to="/campus" className="group block w-full bg-gradient-to-r from-germany-black via-surface-container-highest to-germany-black rounded-2xl p-[2px] shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-surface-container-lowest rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden h-full gap-6">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-germany-red/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-germany-gold/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+              
+              <div className="relative z-10 text-center md:text-left">
+                <h3 className="font-title-lg text-title-lg md:text-3xl text-on-surface mb-2 font-bold tracking-tight">
+                  Willkommen auf dem <span className="text-germany-red">Campus</span>
+                </h3>
+                <p className="text-on-surface-variant font-body-md max-w-lg">
+                  Betrete die virtuelle Schule. Wähle dein Niveau, finde Live-Klassen und lerne gemeinsam mit anderen.
+                </p>
+              </div>
+              
+              <div className="relative z-10 shrink-0 w-full md:w-auto">
+                <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-md group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer">
+                  <span className="material-symbols-outlined">meeting_room</span>
+                  Campus betreten
+                </div>
+              </div>
+            </div>
+          </Link>
+        </section>
+
+        {/* My Courses */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-title-md text-title-md text-on-surface">Live-Klassen & Demnächst</h3>
-            {user && (user.role === 'teacher' || user.role === 'admin') && (
-              <button 
-                onClick={handleCreateRoom}
-                className="bg-germany-red text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition shadow"
-              >
-                + Neue Klasse starten
-              </button>
-            )}
+            <h3 className="font-title-md text-title-md text-on-surface">Meine Kurse</h3>
           </div>
           {/* Horizontal Scroll on Mobile, Grid on Desktop */}
-          <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-2 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
+          <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-3 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
             
-            {/* Render fetched live classrooms */}
-            {classrooms.map(room => (
-              <div key={room._id} className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-germany-red flex flex-col justify-between interactive-card">
+            {/* Render My Courses */}
+            {courses.map(course => (
+              <div key={course.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card group hover:-translate-y-0.5 transition-transform duration-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-germany-red/10 text-germany-red rounded-lg flex items-center justify-center relative">
-                    <span className="material-symbols-outlined">live_tv</span>
-                    {room.isLive && (
-                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full animate-pulse"></span>
-                    )}
+                  <div className="w-10 h-10 bg-surface-variant/30 text-secondary rounded-lg flex items-center justify-center group-hover:bg-germany-red/10 group-hover:text-germany-red transition-colors">
+                    <span className="material-symbols-outlined">{course.icon}</span>
                   </div>
                   <div>
-                    <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">{room.subject} • {room.teacherName}</p>
-                    <h4 className="font-title-md text-title-md text-on-surface line-clamp-1">{room.name}</h4>
+                    <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Niveau {course.level}</p>
+                    <h4 className="font-title-md text-title-md text-on-surface line-clamp-1">{course.name}</h4>
                   </div>
                 </div>
-                <button 
-                  onClick={() => handleJoinRoom(room.roomId)}
-                  className="w-full bg-germany-red text-white font-label-md text-label-md py-2 rounded-lg shadow hover:opacity-90 transition-opacity"
-                >
-                  Raum betreten
-                </button>
+                <div>
+                   <div className="flex justify-between text-[10px] text-secondary mb-1">
+                     <span>Fortschritt</span>
+                     <span>{course.progress}%</span>
+                   </div>
+                   <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden mb-4">
+                     <div className="bg-germany-red h-full rounded-full" style={{ width: `${course.progress}%` }}></div>
+                   </div>
+                  <button className="w-full bg-surface-container-high text-on-surface font-label-md text-label-md py-2 rounded-lg hover:bg-surface-variant transition-colors group-hover:bg-germany-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-germany-black shadow-sm">
+                    Weiterlernen
+                  </button>
+                </div>
               </div>
             ))}
-
-            {/* Static Stammtisch Event */}
-            <div className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between interactive-card group hover:-translate-y-0.5 transition-transform duration-200">
-              <div className="flex items-center gap-3 mb-4 relative z-10">
-                <div className="w-10 h-10 bg-surface-variant/30 text-secondary rounded-lg flex items-center justify-center group-hover:bg-germany-red/10 group-hover:text-germany-red transition-colors">
-                  <span className="material-symbols-outlined">groups</span>
-                </div>
-                <div>
-                  <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Morgen, 18:00 Uhr</p>
-                  <h4 className="font-title-md text-title-md text-on-surface">Online Stammtisch</h4>
-                </div>
-              </div>
-              <button className="w-full bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-2 rounded-lg shadow-sm hover:opacity-90 transition-opacity">
-                Teilnehmen
-              </button>
-            </div>
             
           </div>
         </section>

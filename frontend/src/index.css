@@ -163,3 +163,33 @@ code {
   --color-secondary-fixed-dim: 85 87 88;
   --color-primary-container: 213 31 38;
 }
+
+/* Virtual School 3D Doors */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.door-wrapper {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.door-frame {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+  transform-origin: left;
+}
+
+.door-open-hover:hover .door-frame {
+  transform: rotateY(-35deg);
+}
+
+.door-inner {
+  backface-visibility: hidden;
+}
+
+.door-back {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
