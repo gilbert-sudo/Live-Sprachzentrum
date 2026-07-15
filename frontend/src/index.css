@@ -193,3 +193,87 @@ code {
   transform: rotateY(180deg);
   backface-visibility: hidden;
 }
+
+/* 3D Hallway Environment */
+.hallway-scene {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.hallway-floor {
+  position: absolute;
+  bottom: 0;
+  left: -50%;
+  width: 200%;
+  height: 150%;
+  transform-origin: bottom center;
+  transform: rotateX(80deg) translateY(100px) scale(1.5);
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dark .hallway-floor {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px);
+}
+
+.hallway-wall-left, .hallway-wall-right {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hallway-wall-left {
+  left: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+  transform-origin: left;
+  transform: rotateY(15deg) scaleX(0.5);
+}
+
+.hallway-wall-right {
+  right: 0;
+  background: linear-gradient(-90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+  transform-origin: right;
+  transform: rotateY(-15deg) scaleX(0.5);
+}
+
+.door-shadow {
+  position: absolute;
+  bottom: -20px;
+  left: 5%;
+  width: 90%;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+  transform: rotateX(60deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.live-floor-glow {
+  position: absolute;
+  bottom: -40px;
+  left: -20%;
+  width: 140%;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(213, 31, 38, 0.3) 0%, transparent 70%);
+  transform: rotateX(60deg);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.6; transform: rotateX(60deg) scale(1); }
+  50% { opacity: 1; transform: rotateX(60deg) scale(1.05); }
+  100% { opacity: 0.6; transform: rotateX(60deg) scale(1); }
+}
