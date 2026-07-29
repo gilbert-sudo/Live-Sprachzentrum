@@ -31,10 +31,12 @@ socketHandler(io);
 const authRoutes = require('./routes/authRoutes');
 const classroomRoutes = require('./routes/classroomRoutes');
 const userRoutes = require('./routes/userRoutes');
+const jitsiRoutes = require('./routes/jitsiRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/jitsi', jitsiRoutes);
 
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
