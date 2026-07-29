@@ -14,10 +14,10 @@ export default function VirtualSchool() {
     if (!scrollContainerRef.current) return;
     const container = scrollContainerRef.current;
     const center = container.scrollLeft + container.clientWidth / 2;
-    
+
     let minDiff = Infinity;
     let closestIndex = 0;
-    
+
     Array.from(container.children).forEach((child, index) => {
       const childCenter = child.offsetLeft + (child.clientWidth / 2);
       const diff = Math.abs(center - childCenter);
@@ -26,7 +26,7 @@ export default function VirtualSchool() {
         closestIndex = index;
       }
     });
-    
+
     setFocusedIndex(closestIndex);
   };
 
@@ -38,8 +38,8 @@ export default function VirtualSchool() {
   useEffect(() => {
     // Temporary Mock Data for UI Development
     const mockData = [
-      { roomId: 'mock-1', subject: 'A1', name: 'Deutsch für Anfänger', teacherName: 'Herr Müller', isLive: true, startTime: '10:00', endTime: '11:30' },
-      { roomId: 'mock-2', subject: 'B1', name: 'Konversation & Grammatik', teacherName: 'Frau Schmidt', isLive: true, startTime: '18:00', endTime: '19:30' }
+      { roomId: 'S-n°1', subject: 'A1', name: 'Deutsch für Anfänger', teacherName: 'Herr Müller', isLive: true, startTime: '10:00', endTime: '11:30' },
+      { roomId: 'S-n°3', subject: 'B1', name: 'Konversation & Grammatik', teacherName: 'Frau Schmidt', isLive: true, startTime: '18:00', endTime: '19:30' }
     ];
 
     // Fetch live classrooms to show active indicators
@@ -93,7 +93,7 @@ export default function VirtualSchool() {
 
       {/* Compact Header & Real-time Clock */}
       <div className="relative z-20 pt-6 pb-2 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center w-full max-w-6xl mx-auto gap-4">
-        
+
         {/* Notice Board / Welcome Sign (Left) */}
         <div className="hidden md:flex flex-col bg-surface-container-high/80 backdrop-blur border border-surface-variant rounded-md p-3 shadow-md transform rotate-[-2deg]">
           <div className="flex items-center gap-2 mb-1">
@@ -133,7 +133,7 @@ export default function VirtualSchool() {
       {/* Hallway Doors Grid - Placed on the "Floor" */}
       <div className="relative z-20 flex-1 w-full max-w-5xl mx-auto pb-28 md:pb-12 mt-4 md:mt-8 flex items-center justify-center md:justify-center">
         {/* Horizontal scroll on mobile, wrap on desktop */}
-        <div 
+        <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
           className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-2 md:gap-14 w-full items-end overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar px-[calc(50vw-110px)] md:px-0 py-8 scroll-smooth perspective-[1200px]"
@@ -143,15 +143,15 @@ export default function VirtualSchool() {
             const room = activeClasses.find(r => r.subject.includes(level.id) || r.name.includes(level.id));
             const isLive = !!room;
             const isFocused = focusedIndex === index;
-            
+
             // Cover flow transformations for mobile
             let mobileTransformClass = 'md:scale-100 md:opacity-100 md:[transform:none]';
             if (isFocused) {
-               mobileTransformClass += ' scale-[1.05] opacity-100 z-30 [transform:rotateY(0deg)]';
+              mobileTransformClass += ' scale-[1.05] opacity-100 z-30 [transform:rotateY(0deg)]';
             } else if (index < focusedIndex) {
-               mobileTransformClass += ' scale-[0.85] opacity-50 z-10 [transform:rotateY(15deg)]';
+              mobileTransformClass += ' scale-[0.85] opacity-50 z-10 [transform:rotateY(15deg)]';
             } else {
-               mobileTransformClass += ' scale-[0.85] opacity-50 z-10 [transform:rotateY(-15deg)]';
+              mobileTransformClass += ' scale-[0.85] opacity-50 z-10 [transform:rotateY(-15deg)]';
             }
 
             return (
@@ -185,11 +185,10 @@ export default function VirtualSchool() {
                   </div>
 
                   {/* The Door Frame & Door */}
-                  <div className={`w-full h-full relative rounded-t-md bg-surface-container-high transition-all duration-500 border-x-[8px] border-t-[8px] ${
-                    isLive 
-                      ? 'border-germany-red/40 shadow-[0_0_15px_rgba(220,38,38,0.2)]' 
+                  <div className={`w-full h-full relative rounded-t-md bg-surface-container-high transition-all duration-500 border-x-[8px] border-t-[8px] ${isLive
+                      ? 'border-germany-red/40 shadow-[0_0_15px_rgba(220,38,38,0.2)]'
                       : 'border-surface-container-highest shadow-xl'
-                  }`}>
+                    }`}>
 
                     {/* Inside the classroom (visible when door opens) */}
                     <div className="absolute inset-0 bg-surface flex flex-col items-center justify-center overflow-hidden rounded-t-sm p-3 shadow-inner">
@@ -229,7 +228,7 @@ export default function VirtualSchool() {
                       {/* Detailed Class Info Placard */}
                       {isLive ? (
                         <div className="w-[85%] bg-surface-container-lowest/90 dark:bg-surface-container-highest/90 p-3 rounded-xl shadow-lg border border-white/40 dark:border-white/10 flex flex-col items-center mb-6 mt-auto relative overflow-hidden z-10 backdrop-blur-md">
-                          
+
                           {/* Modern Top Accent Glow */}
                           <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-germany-red/15 to-transparent pointer-events-none"></div>
 
@@ -250,14 +249,14 @@ export default function VirtualSchool() {
                             </div>
                             <p className="text-sm md:text-xs font-bold truncate leading-tight">{room.teacherName || 'Lehrer'}</p>
                           </div>
-                          
+
                           <div className="flex items-center gap-2 w-full text-secondary mb-2 relative z-10">
-                             <div className="bg-surface-variant/50 p-1 rounded-full flex items-center justify-center shrink-0">
-                               <span className="material-symbols-outlined text-[14px] md:text-[12px]">forum</span>
-                             </div>
+                            <div className="bg-surface-variant/50 p-1 rounded-full flex items-center justify-center shrink-0">
+                              <span className="material-symbols-outlined text-[14px] md:text-[12px]">forum</span>
+                            </div>
                             <p className="text-[11px] md:text-[10px] truncate leading-tight">{room.name}</p>
                           </div>
-                          
+
                           <div className="flex items-center gap-1.5 w-full justify-center text-on-surface-variant mt-1 bg-surface-variant/30 rounded-lg py-1.5 md:py-1 border border-surface-dim/50 relative z-10">
                             <span className="material-symbols-outlined text-[12px] md:text-[10px] shrink-0 opacity-70">schedule</span>
                             <p className="text-[10px] md:text-[9px] font-bold text-center truncate">{room.startTime || '10:00'} - {room.endTime || '11:30'} Uhr</p>

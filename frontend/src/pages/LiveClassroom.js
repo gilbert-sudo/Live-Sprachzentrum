@@ -27,6 +27,7 @@ function LiveClassroom() {
   const [useFallbackDomain, setUseFallbackDomain] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const [isJoined, setIsJoined] = useState(false);
   const [isTileView, setIsTileView] = useState(false);
   const [participantCount, setParticipantCount] = useState(1);
   const [isMeetingLoading, setIsMeetingLoading] = useState(true);
@@ -34,6 +35,9 @@ function LiveClassroom() {
   // 8x8 JaaS domain and App ID configuration
   const jaasAppId = process.env.REACT_APP_JITSI_APP_ID || 'vpaas-magic-cookie-9c8d3d139d304e2ab96e890e756b9a0a';
   const activeJwt = jitsiToken || process.env.REACT_APP_JITSI_JWT || null;
+
+  // Formate le nom de la salle (ex: mock-1 -> Mock 1)
+  const formattedRoomName = roomId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   // Determine active domain and room name:
   // If activeJwt is present and fallback isn't forced, use 8x8.vc JaaS.
@@ -95,13 +99,15 @@ function LiveClassroom() {
   const handleEndClass = async () => {
     if (role !== 'teacher' && role !== 'admin') return;
     try {
-      await axios.patch(`/api/classrooms/room/${roomId}/status`, { isLive: false });
+      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
+      await axios.patch(`/api/classrooms/room/${roomId}/status`, { isLive: false }, config);
+    } catch (err) {
+      console.error('Failed to update class status on backend', err);
+    } finally {
       if (jitsiApiRef.current) {
         jitsiApiRef.current.executeCommand('hangup');
       }
-      navigate('/');
-    } catch (err) {
-      console.error('Failed to end class', err);
+      navigate('/campus');
     }
   };
 
@@ -145,26 +151,19 @@ function LiveClassroom() {
 
     externalApi.on('participantJoined', updateParticipants);
     externalApi.on('participantLeft', updateParticipants);
+    externalApi.on('videoConferenceJoined', () => setIsJoined(true));
+    externalApi.on('videoConferenceLeft', () => setIsJoined(false));
+    externalApi.on('readyToClose', () => navigate('/campus'));
     updateParticipants();
   };
 
-  const toggleAudio = () => {
+
+  const toggleWhiteboard = () => {
     if (jitsiApiRef.current) {
-      jitsiApiRef.current.executeCommand('toggleAudio');
+      jitsiApiRef.current.executeCommand('toggleWhiteboard');
     }
   };
 
-  const toggleVideo = () => {
-    if (jitsiApiRef.current) {
-      jitsiApiRef.current.executeCommand('toggleVideo');
-    }
-  };
-
-  const toggleTileView = () => {
-    if (jitsiApiRef.current) {
-      jitsiApiRef.current.executeCommand('toggleTileView');
-    }
-  };
 
   const toggleShareScreen = () => {
     if (jitsiApiRef.current) {
@@ -183,6 +182,8 @@ function LiveClassroom() {
             roomName={activeRoomName}
             jwt={isJaaS ? activeJwt : undefined}
             configOverwrite={{
+              defaultLanguage: 'fr',
+              subject: formattedRoomName,
               startWithAudioMuted: true,
               startWithVideoMuted: false,
               disableModeratorIndicator: false,
@@ -191,18 +192,27 @@ function LiveClassroom() {
               toolbarButtons: [
                 'camera',
                 'chat',
-                'closedcaptions',
                 'desktop',
-                'fullscreen',
+                'embedmeeting',
                 'fudevices',
                 'hangup',
                 'microphone',
                 'participants-pane',
+                'profile',
                 'raisehand',
+                'security',
                 'select-background',
                 'settings',
+                'shareaudio',
+                'sharedvideo',
+                'shortcuts',
+                'stats',
                 'tileview',
-                'toggle-camera'
+                'toggle-camera',
+                'videoquality',
+                'whiteboard',
+                'mute-everyone',
+                'mute-video-everyone'
               ]
             }}
             interfaceConfigOverwrite={{
@@ -225,106 +235,75 @@ function LiveClassroom() {
       </div>
 
       {/* Compact Top-Left Room Badge */}
-      <div className="absolute top-4 left-4 z-10 pointer-events-auto flex items-center gap-2">
-        <div className="bg-gray-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-gray-700/70 shadow-lg flex items-center gap-2.5 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-white font-semibold">Raum: {roomId}</span>
-          <span className="text-gray-400">|</span>
-          <span className="text-gray-300">{username} ({role})</span>
-          <span className="text-gray-400">|</span>
-          <span className="text-emerald-400 font-medium flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">group</span>
-            {participantCount}
-          </span>
-          <span className="text-gray-400">|</span>
-          <span className="text-xs text-gray-400">{isJaaS ? '8x8 JaaS' : 'Jitsi Live'}</span>
+      {isJoined && (
+        <div className="absolute top-4 left-4 z-10 pointer-events-auto flex items-center gap-2">
+          <div className="bg-gray-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-gray-700/70 shadow-lg flex items-center gap-2.5 text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-white font-semibold">Salle: {formattedRoomName}</span>
+            <span className="text-gray-400">|</span>
+            <span className="text-gray-300">{username} ({role === 'teacher' ? 'Professeur' : (role === 'admin' ? 'Admin' : 'Étudiant')})</span>
+            <span className="text-gray-400">|</span>
+            <span className="text-emerald-400 font-medium flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px]">group</span>
+              {participantCount}
+            </span>
+            <span className="text-gray-400">|</span>
+            <span className="text-xs text-gray-400">{isJaaS ? '8x8 JaaS' : 'Jitsi Live'}</span>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Floating Toolbar Menu (Left Center) */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 pointer-events-auto">
-        <div className="bg-gray-900/85 backdrop-blur-xl border border-gray-700/80 p-2 rounded-2xl shadow-2xl flex flex-col items-center gap-2">
-          {/* Audio Mic Toggle */}
+      {/* Floating Toolbar Menu (Bottom Left) */}
+      {/* Floating Toolbar Menu (Bottom Left) */}
+      {isJoined && (
+        <div className="absolute left-2 lg:left-4 bottom-[80px] lg:bottom-28 z-20 flex flex-row lg:flex-col gap-2 lg:gap-3 pointer-events-auto transition-all duration-300">
+          <div className="bg-gray-900/85 backdrop-blur-xl border border-gray-700/80 p-1.5 lg:p-2 rounded-2xl shadow-2xl flex flex-row lg:flex-col items-center gap-1.5 lg:gap-2">
+          {/* Whiteboard Toggle */}
           <button
-            onClick={toggleAudio}
-            className={`group relative p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isAudioMuted
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/40'
-                : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40'
-              }`}
-            aria-label="Mikrofon schalten"
+            onClick={toggleWhiteboard}
+            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+            aria-label="Basculer le tableau blanc"
           >
             <span className="material-symbols-outlined text-xl">
-              {isAudioMuted ? 'mic_off' : 'mic'}
+              draw
             </span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isAudioMuted ? 'Mikrofon einschalten' : 'Mikrofon stummschalten'}
-            </span>
-          </button>
-
-          {/* Video Camera Toggle */}
-          <button
-            onClick={toggleVideo}
-            className={`group relative p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isVideoMuted
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/40'
-                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-              }`}
-            aria-label="Kamera schalten"
-          >
-            <span className="material-symbols-outlined text-xl">
-              {isVideoMuted ? 'videocam_off' : 'videocam'}
-            </span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isVideoMuted ? 'Kamera einschalten' : 'Kamera ausschalten'}
+            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+              Basculer le tableau blanc
             </span>
           </button>
 
           {/* Screen Share Toggle */}
           <button
             onClick={toggleShareScreen}
-            className="group relative p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
-            aria-label="Bildschirm teilen"
+            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+            aria-label="Partager l'écran"
           >
             <span className="material-symbols-outlined text-xl">present_to_all</span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Bildschirm teilen
+            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+              Partager l'écran
             </span>
           </button>
 
-          {/* Grid / Tile View Toggle */}
-          <button
-            onClick={toggleTileView}
-            className={`group relative p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isTileView
-                ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-              }`}
-            aria-label="Rasteransicht"
-          >
-            <span className="material-symbols-outlined text-xl">grid_view</span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isTileView ? 'Galerieansicht beenden' : 'Galerieansicht'}
-            </span>
-          </button>
-
-          <div className="w-6 h-[1px] bg-gray-700/60 my-0.5" />
+          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
 
           {/* eBook / Kursmaterial Toggle Button */}
           <button
             onClick={() => setIsPanelOpen(!isPanelOpen)}
-            className={`group relative p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isPanelOpen
+            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isPanelOpen
                 ? 'bg-primary text-white shadow-lg shadow-primary/30'
                 : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
               }`}
-            aria-label="Kursmaterial"
+            aria-label="Support de cours"
           >
             <span className="material-symbols-outlined text-xl">
               {isPanelOpen ? 'close' : 'menu_book'}
             </span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isPanelOpen ? 'Material schließen' : 'Kursmaterial öffnen'}
+            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+              {isPanelOpen ? 'Fermer le support' : 'Ouvrir le support de cours'}
             </span>
           </button>
 
-          <div className="w-6 h-[1px] bg-gray-700/60 my-0.5" />
+          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
 
           {/* Leave Call Button */}
           <button
@@ -332,14 +311,14 @@ function LiveClassroom() {
               if (jitsiApiRef.current) {
                 jitsiApiRef.current.executeCommand('hangup');
               }
-              navigate('/');
+              navigate('/campus');
             }}
-            className="group relative p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
-            aria-label="Verlassen"
+            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+            aria-label="Quitter"
           >
             <span className="material-symbols-outlined text-xl">logout</span>
-            <span className="absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Raum verlassen
+            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+              Quitter la salle
             </span>
           </button>
 
@@ -347,17 +326,18 @@ function LiveClassroom() {
           {(role === 'teacher' || role === 'admin') && (
             <button
               onClick={handleEndClass}
-              className="group relative p-3 rounded-xl text-red-400 hover:text-white hover:bg-red-600/90 transition-all duration-200 flex items-center justify-center"
-              aria-label="Beenden"
+              className="group relative p-2 lg:p-3 rounded-xl text-red-400 hover:text-white hover:bg-red-600/90 transition-all duration-200 flex items-center justify-center"
+              aria-label="Terminer"
             >
               <span className="material-symbols-outlined text-xl">power_settings_new</span>
-              <span className="absolute left-full ml-3 px-2.5 py-1 bg-red-950/95 text-red-200 text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-red-800">
-                Klasse beenden
+              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-red-950/95 text-red-200 text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-red-800">
+                Terminer le cours
               </span>
             </button>
           )}
         </div>
       </div>
+      )}
 
       {/* Sliding Control Panel for eBook */}
       <div className={`absolute top-0 right-0 bottom-0 w-full lg:w-[800px] lg:max-w-[50vw] bg-surface-container-lowest border-l border-surface-variant flex flex-col z-20 transition-transform duration-300 ease-in-out shadow-2xl ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'
@@ -367,7 +347,7 @@ function LiveClassroom() {
         <div className="flex justify-between items-center px-4 py-3 border-b border-surface-variant bg-surface-container-low shrink-0 mt-14 sm:mt-0">
           <h3 className="font-title-md font-bold text-on-surface flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">menu_book</span>
-            Kursmaterial
+            Support de cours
           </h3>
           <button onClick={() => setIsPanelOpen(false)} className="text-secondary hover:text-primary p-2 bg-surface-container rounded-full hover:bg-surface-container-high transition">
             <span className="material-symbols-outlined text-xl">close</span>
