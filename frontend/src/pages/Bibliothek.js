@@ -25,7 +25,8 @@ export default function Bibliothek({ readOnly = false }) {
   const fetchLibraryItems = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5001/api/library');
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_URL}/api/library`);
       if (!response.ok) {
         throw new Error('Fehler beim Laden der Bibliothek');
       }
@@ -43,7 +44,8 @@ export default function Bibliothek({ readOnly = false }) {
     if (!window.confirm('Möchtest du dieses Material wirklich löschen?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5001/api/library/${id}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_URL}/api/library/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Fehler beim Löschen');

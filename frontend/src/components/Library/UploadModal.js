@@ -179,7 +179,8 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
         data.duration = formData.duration;
       }
 
-      const response = await axios.post('http://localhost:5001/api/library', data);
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const response = await axios.post(`${API_URL}/api/library`, data);
 
       setUploadState('success');
       
