@@ -12,6 +12,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
     duration: ''
   });
   const [mediaFile, setMediaFile] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
   
   // Advanced Upload States
   const [uploadState, setUploadState] = useState('idle'); // idle, uploading, processing, success, error
@@ -60,6 +61,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
       // Reset state on open
       setFormData({ title: '', author: '', description: '', type: 'book', level: 'A1', duration: '' });
       setMediaFile(null);
+      setCoverFile(null);
       setUploadState('idle');
       setUploadProgress(0);
       setError('');
@@ -88,6 +90,22 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
 
   const removeMediaFile = () => {
     setMediaFile(null);
+  };
+
+  const handleCoverChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 16 * 1024 * 1024) {
+        setError('Das Cover darf maximal 16MB groß sein.');
+        return;
+      }
+      setCoverFile(file);
+      setError('');
+    }
+  };
+
+  const removeCoverFile = () => {
+    setCoverFile(null);
   };
 
   const cancelUpload = () => {
@@ -128,12 +146,19 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
 
     try {
       let fileUrl = null;
+      let coverUrl = null;
 
       // 1. Upload file directly to UploadThing from the client
       if (mediaFile) {
-        const uploadRes = await startUpload([mediaFile]);
-        if (uploadRes && uploadRes[0]) {
+        const filesToUpload = [mediaFile];
+        if (coverFile) filesToUpload.push(coverFile);
+        
+        const uploadRes = await startUpload(filesToUpload);
+        if (uploadRes && uploadRes.length > 0) {
           fileUrl = uploadRes[0].url || uploadRes[0].ufsUrl;
+          if (coverFile && uploadRes.length > 1) {
+            coverUrl = uploadRes[1].url || uploadRes[1].ufsUrl;
+          }
         } else {
           throw new Error('Upload fehlgeschlagen');
         }
@@ -146,7 +171,8 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
         description: formData.description,
         type: formData.type,
         level: formData.level,
-        fileUrl: fileUrl
+        fileUrl: fileUrl,
+        coverUrl: coverUrl
       };
       
       if (formData.type === 'audio') {
@@ -459,6 +485,70 @@ export default function UploadModal({ isOpen, onClose, onSuccess }) {
               )}
             </div>
 
+            {formData.type === 'audio' && (
+              <div className="pt-2 animate-fade-in">
+                <label className="block text-xs uppercase tracking-wider font-bold text-secondary mb-3">
+                  Cover-Bild (Optional)
+                </label>
+                
+                {!coverFile ? (
+                  <div className="relative group w-full">
+                    <div className="flex flex-col sm:flex-row items-center justify-center w-full p-6 border-2 border-dashed border-secondary/40 bg-surface hover:bg-primary-container/5 hover:border-germany-red hover:shadow-[0_0_20px_rgba(213,31,38,0.1)] rounded-2xl transition-all cursor-pointer">
+                      <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4 sm:mb-0 sm:mr-6 group-hover:bg-primary-container/20 group-hover:scale-110 transition-all duration-300">
+                        <span className="material-symbols-outlined text-[24px] text-secondary group-hover:text-germany-red transition-colors">image</span>
+                      </div>
+                      <div className="text-center sm:text-left">
+                        <p className="text-sm font-bold text-on-surface mb-1">Bild auswählen oder hierher ziehen</p>
+                        <div className="flex items-center justify-center sm:justify-start gap-2">
+                          <span className="px-2 py-1 bg-surface-variant/50 rounded-md text-[10px] font-bold text-secondary uppercase tracking-wider">
+                            JPG, PNG
+                          </span>
+                          <span className="text-xs font-medium text-secondary">
+                            bis zu 16MB
+                          </span>
+                        </div>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/jpeg, image/png, image/webp"
+                        onChange={handleCoverChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between w-full p-3 border-2 border-emerald-500/80 bg-emerald-50/50 dark:bg-emerald-900/20 rounded-2xl shadow-sm animate-fade-in group hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <div className="w-12 h-12 rounded-xl bg-white dark:bg-surface flex items-center justify-center shrink-0 border border-emerald-200 dark:border-emerald-800 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                        <img src={URL.createObjectURL(coverFile)} alt="Cover preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="min-w-0 pr-4">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{coverFile.name}</p>
+                          <span className="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+                        </div>
+                        <p className="text-xs font-semibold text-emerald-600/80">{formatBytes(coverFile.size)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 shrink-0">
+                      <label className="p-2 bg-white dark:bg-surface hover:bg-gray-100 dark:hover:bg-surface-variant text-gray-600 dark:text-gray-300 rounded-full transition-all shadow-sm border border-gray-200 dark:border-surface-variant cursor-pointer flex items-center" title="Bild ändern">
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleCoverChange} className="hidden" />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={removeCoverFile}
+                        className="p-2 bg-white dark:bg-surface hover:bg-error hover:text-on-error text-error rounded-full transition-all shadow-sm border border-gray-200 dark:border-surface-variant flex items-center"
+                        title="Bild entfernen"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </form>
         </div>
 

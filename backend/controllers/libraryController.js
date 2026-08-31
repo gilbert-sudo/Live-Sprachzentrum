@@ -3,7 +3,7 @@ const storageService = require('../services/storageService');
 
 exports.createLibraryItem = async (req, res) => {
   try {
-    const { title, author, description, type, level, duration, fileUrl: clientFileUrl } = req.body;
+    const { title, author, description, type, level, duration, fileUrl: clientFileUrl, coverUrl: clientCoverUrl } = req.body;
 
     let mediaFileUrl = clientFileUrl;
     let coverFile = null;
@@ -21,9 +21,9 @@ exports.createLibraryItem = async (req, res) => {
 
     // Upload to Cloudinary
     // Upload cover image to Library/Covers if provided, else use default
-    let coverUrl = type === 'audio' 
+    let coverUrl = clientCoverUrl || (type === 'audio' 
       ? 'https://placehold.co/400x400/e8e8e8/333333?text=Audio' 
-      : 'https://placehold.co/400x600/e8e8e8/333333?text=Buch';
+      : 'https://placehold.co/400x600/e8e8e8/333333?text=Buch');
     
     if (coverFile) {
       coverUrl = await storageService.uploadFile(coverFile, 'Library/Covers');
