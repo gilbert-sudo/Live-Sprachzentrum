@@ -77,7 +77,7 @@ export default function Navbar({ children }) {
 
   const navItems = [
     { path: '/', icon: 'home', label: 'Lernen', match: '/' },
-    { path: '/kurse', icon: 'menu_book', label: 'Kurse', match: '/kurse' },
+    { path: '/bibliothek', icon: 'local_library', label: 'Bibliothek', match: '/bibliothek' },
     { path: '/karriere', icon: 'work', label: 'Karriere', match: '/karriere' },
     { path: '/stammtisch', icon: 'groups', label: 'Stammtisch', match: '/stammtisch' },
     { path: '/profil', icon: 'person', label: 'Profil', match: '/profil' },

@@ -5,11 +5,8 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-// Import eBook components and data
-import EBookSidebar from '../components/EBook/EBookSidebar';
-import LessonContent from '../components/EBook/LessonContent';
-import { lektion1Chapters, lektion1 } from '../data/lektion1';
-import { lektion2 } from '../data/lektion2';
+// Import Bibliothek for quick access
+import Bibliothek from './Bibliothek';
 
 function LiveClassroom() {
   const { roomId } = useParams();
@@ -31,6 +28,7 @@ function LiveClassroom() {
   const [isTileView, setIsTileView] = useState(false);
   const [participantCount, setParticipantCount] = useState(1);
   const [isMeetingLoading, setIsMeetingLoading] = useState(true);
+  const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
 
   // 8x8 JaaS domain and App ID configuration
   const jaasAppId = process.env.REACT_APP_JITSI_APP_ID || 'vpaas-magic-cookie-9c8d3d139d304e2ab96e890e756b9a0a';
@@ -49,13 +47,7 @@ function LiveClassroom() {
   // Live Classroom UI state
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // eBook state
-  const [activeLessonId, setActiveLessonId] = useState('l1-1');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
-
-  let currentLessonData = lektion1;
-  if (activeLessonId.startsWith('l1')) currentLessonData = lektion1;
-  else if (activeLessonId.startsWith('l2')) currentLessonData = lektion2;
+  // eBook state removed, using Bibliothek directly
 
   // Fetch JaaS token/session configuration on mount
   useEffect(() => {
@@ -159,8 +151,18 @@ function LiveClassroom() {
 
 
   const toggleWhiteboard = () => {
-    if (jitsiApiRef.current) {
-      jitsiApiRef.current.executeCommand('toggleWhiteboard');
+    if (isWhiteboardActive) {
+      if (window.confirm("Voulez-vous vraiment fermer le tableau blanc ?")) {
+        if (jitsiApiRef.current) {
+          jitsiApiRef.current.executeCommand('toggleWhiteboard');
+        }
+        setIsWhiteboardActive(false);
+      }
+    } else {
+      if (jitsiApiRef.current) {
+        jitsiApiRef.current.executeCommand('toggleWhiteboard');
+      }
+      setIsWhiteboardActive(true);
     }
   };
 
@@ -171,10 +173,19 @@ function LiveClassroom() {
     }
   };
 
+  // Prevent any body scrolling while in the Live Classroom
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[100] bg-black flex flex-col font-sans">
+    <div className="fixed inset-0 z-[100] bg-black flex flex-col font-sans overflow-hidden">
       {/* Video Area (Full Screen Jitsi Meeting) */}
-      <div className="absolute inset-0 z-0">
+      <div className={`absolute top-0 left-0 bottom-0 z-0 transition-all duration-300 ease-in-out ${isPanelOpen ? 'right-0 lg:right-[min(800px,50vw)]' : 'right-0'}`}>
         {!isMeetingLoading && (
           <JitsiMeeting
             key={`${activeDomain}_${activeRoomName}`}
@@ -210,7 +221,6 @@ function LiveClassroom() {
                 'tileview',
                 'toggle-camera',
                 'videoquality',
-                'whiteboard',
                 'mute-everyone',
                 'mute-video-everyone'
               ]
@@ -261,7 +271,11 @@ function LiveClassroom() {
           {/* Whiteboard Toggle */}
           <button
             onClick={toggleWhiteboard}
-            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${
+              isWhiteboardActive
+                ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+            }`}
             aria-label="Basculer le tableau blanc"
           >
             <span className="material-symbols-outlined text-xl">
@@ -286,20 +300,20 @@ function LiveClassroom() {
 
           <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
 
-          {/* eBook / Kursmaterial Toggle Button */}
+          {/* Bibliothek Toggle Button */}
           <button
             onClick={() => setIsPanelOpen(!isPanelOpen)}
             className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isPanelOpen
                 ? 'bg-primary text-white shadow-lg shadow-primary/30'
                 : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
               }`}
-            aria-label="Support de cours"
+            aria-label="Bibliothèque"
           >
             <span className="material-symbols-outlined text-xl">
-              {isPanelOpen ? 'close' : 'menu_book'}
+              {isPanelOpen ? 'close' : 'local_library'}
             </span>
             <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isPanelOpen ? 'Fermer le support' : 'Ouvrir le support de cours'}
+              {isPanelOpen ? 'Fermer la bibliothèque' : 'Ouvrir la bibliothèque'}
             </span>
           </button>
 
@@ -340,63 +354,24 @@ function LiveClassroom() {
       )}
 
       {/* Sliding Control Panel for eBook */}
-      <div className={`absolute top-0 right-0 bottom-0 w-full lg:w-[800px] lg:max-w-[50vw] bg-surface-container-lowest border-l border-surface-variant flex flex-col z-20 transition-transform duration-300 ease-in-out shadow-2xl ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'
+      <div className={`absolute top-0 right-0 bottom-0 w-full lg:w-[800px] lg:max-w-[50vw] bg-surface-container-lowest border-l border-surface-variant flex flex-col z-20 transition-all duration-300 ease-in-out shadow-2xl ${isPanelOpen ? 'translate-x-0 opacity-100' : 'translate-x-[105%] opacity-0 pointer-events-none'
         }`}>
 
-        {/* Top bar inside the slider just to close it easily */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-surface-variant bg-surface-container-low shrink-0 mt-14 sm:mt-0">
-          <h3 className="font-title-md font-bold text-on-surface flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">menu_book</span>
-            Support de cours
-          </h3>
-          <button onClick={() => setIsPanelOpen(false)} className="text-secondary hover:text-primary p-2 bg-surface-container rounded-full hover:bg-surface-container-high transition">
-            <span className="material-symbols-outlined text-xl">close</span>
-          </button>
-        </div>
+        {/* Premium Floating Close Button (All Screens) */}
+        <button 
+          onClick={() => setIsPanelOpen(false)}
+          className="flex absolute top-16 right-4 lg:top-20 lg:right-6 w-11 h-11 lg:w-12 lg:h-12 bg-white/80 dark:bg-gray-900/80 hover:bg-germany-red dark:hover:bg-germany-red backdrop-blur-xl border border-white/50 dark:border-gray-700/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)] items-center justify-center text-gray-800 dark:text-gray-200 hover:text-white transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 group hover:scale-110 active:scale-95"
+          title="Fermer la bibliothèque"
+        >
+          <span className="absolute inset-0 rounded-full border border-white/0 group-hover:border-white/40 transition-colors duration-500"></span>
+          <span className="material-symbols-outlined text-[22px] lg:text-[24px] group-hover:rotate-90 transition-transform duration-500">close</span>
+        </button>
 
-        {/* The Kurse.js Layout embedded inside */}
+        {/* The Bibliothek Layout embedded inside */}
         <div className="flex-1 flex overflow-hidden relative">
-          {/* Mobile Sidebar Overlay */}
-          {isSidebarOpen && (
-            <div
-              className="absolute inset-0 bg-germany-black/50 z-40 md:hidden"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          )}
-
-          {/* Sidebar Area */}
-          <div className={`absolute inset-y-0 left-0 z-50 transform transition-all duration-300 md:relative flex-shrink-0 shadow-2xl md:shadow-none bg-surface-container-lowest ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0 w-64 md:w-0 overflow-hidden'
-            }`}>
-            <div className="w-64 h-full border-r border-surface-variant">
-              <EBookSidebar
-                chapters={lektion1Chapters}
-                activeLessonId={activeLessonId}
-                onClose={() => setIsSidebarOpen(false)}
-                onSelectLesson={(id) => {
-                  setActiveLessonId(id);
-                  if (window.innerWidth < 768) setIsSidebarOpen(false);
-                }}
-              />
-            </div>
-          </div>
-
           <div className="flex-1 flex flex-col min-w-0 relative bg-surface-container-lowest">
-            {/* Header to toggle sidebar */}
-            <div className="flex items-center p-3 border-b border-surface-variant bg-surface-container-lowest/90 backdrop-blur-xl sticky top-0 z-30 min-h-[4rem]">
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className={`group flex items-center justify-center gap-3 px-4 py-2 -ml-1 rounded-full border-2 transition-all duration-300 ${isSidebarOpen
-                    ? 'md:pointer-events-none md:border-transparent md:px-2 md:-ml-3'
-                    : 'border-surface-variant/50 hover:border-germany-red hover:bg-germany-red/5 active:scale-95 shadow-sm hover:shadow-[0_4px_15px_rgba(221,0,0,0.15)] cursor-pointer'
-                  }`}
-              >
-                <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${isSidebarOpen ? 'md:hidden text-secondary' : 'text-germany-red group-hover:scale-110'}`}>menu</span>
-                <span className="font-title-sm font-bold tracking-wide text-on-surface">Lektionen</span>
-              </button>
-            </div>
-
             <div className="flex-1 overflow-y-auto hide-scrollbar">
-              <LessonContent lesson={currentLessonData} />
+              <Bibliothek readOnly={true} />
             </div>
           </div>
         </div>

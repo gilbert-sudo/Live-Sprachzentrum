@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
-import Kurse from './pages/Kurse';
 import Karriere from './pages/Karriere';
 import Prufungssimulator from './pages/Prufungssimulator';
 import Uebung from './pages/Uebung';
 import Profile from './pages/Profile';
 import Stammtisch from './pages/Stammtisch';
+import Bibliothek from './pages/Bibliothek';
 
 // New Virtual School pages
 import LiveClassroom from './pages/LiveClassroom';
@@ -35,7 +35,7 @@ function App() {
             <Navbar>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/kurse" element={<Kurse />} />
+                <Route path="/bibliothek" element={<Bibliothek />} />
                 <Route path="/karriere" element={<Karriere />} />
                 
                 {/* Protected Routes */}
