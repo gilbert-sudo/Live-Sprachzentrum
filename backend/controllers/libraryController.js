@@ -3,26 +3,29 @@ const storageService = require('../services/storageService');
 
 exports.createLibraryItem = async (req, res) => {
   try {
-    const { title, author, description, type, level, duration, fileUrl: clientFileUrl, coverUrl: clientCoverUrl } = req.body;
+    const { title, author, description, type, level, duration, fileUrl: clientFileUrl, coverUrl: clientCoverUrl, linkedBook, audios } = req.body;
 
     let mediaFileUrl = clientFileUrl;
     let coverFile = null;
 
     if (req.files) {
       if (req.files.cover) coverFile = req.files.cover[0];
-      if (req.files.file && !mediaFileUrl) {
+      if (req.files.file && !mediaFileUrl && type !== 'album') {
         mediaFileUrl = await storageService.uploadFile(req.files.file[0], 'Library/Media');
       }
     }
 
-    if (!mediaFileUrl) {
+    if (!mediaFileUrl && type !== 'album') {
       return res.status(400).json({ message: 'Media file is required.' });
     }
+    
+    if (type === 'album' && (!audios || audios.length === 0)) {
+      return res.status(400).json({ message: 'At least one audio file is required for an album.' });
+    }
 
-    // Upload to Cloudinary
-    // Upload cover image to Library/Covers if provided, else use default
-    let coverUrl = clientCoverUrl || (type === 'audio' 
-      ? 'https://placehold.co/400x400/e8e8e8/333333?text=Audio' 
+    // Upload to Cloudinary / UploadThing for cover
+    let coverUrl = clientCoverUrl || (type === 'audio' || type === 'album'
+      ? 'https://placehold.co/400x400/e8e8e8/333333?text=' + (type === 'album' ? 'Album' : 'Audio')
       : 'https://placehold.co/400x600/e8e8e8/333333?text=Buch');
     
     if (coverFile) {
@@ -38,8 +41,10 @@ exports.createLibraryItem = async (req, res) => {
       level,
       duration: type === 'audio' ? duration : undefined,
       coverUrl,
-      fileUrl: mediaFileUrl,
-      uploadedBy: req.user ? req.user._id : undefined // assuming authMiddleware populates req.user
+      fileUrl: type !== 'album' ? mediaFileUrl : undefined,
+      linkedBook: type === 'album' ? linkedBook : undefined,
+      audios: type === 'album' ? audios : undefined,
+      uploadedBy: req.user ? req.user._id : undefined
     });
 
     await newItem.save();
@@ -68,9 +73,18 @@ exports.deleteLibraryItem = async (req, res) => {
       return res.status(404).json({ message: 'Library item not found' });
     }
 
-    // Delete files from Cloudinary
-    await storageService.deleteFile(item.coverUrl);
-    await storageService.deleteFile(item.fileUrl);
+    // Delete files from storage
+    if (item.coverUrl) await storageService.deleteFile(item.coverUrl);
+    if (item.fileUrl) await storageService.deleteFile(item.fileUrl);
+    
+    // Delete album audios
+    if (item.type === 'album' && item.audios && item.audios.length > 0) {
+      for (const audio of item.audios) {
+        if (audio.fileUrl) {
+          await storageService.deleteFile(audio.fileUrl);
+        }
+      }
+    }
 
     // Delete from database
     await item.deleteOne();
@@ -79,5 +93,32 @@ exports.deleteLibraryItem = async (req, res) => {
   } catch (error) {
     console.error('Error deleting library item:', error);
     res.status(500).json({ message: 'Failed to delete library item' });
+  }
+};
+
+exports.updateLibraryItem = async (req, res) => {
+  try {
+    const { title, author, description, level, duration, linkedBook } = req.body;
+    
+    const item = await LibraryItem.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ message: 'Library item not found' });
+    }
+
+    if (title) item.title = title;
+    if (author) item.author = author;
+    if (description !== undefined) item.description = description;
+    if (level) item.level = level;
+    if (duration !== undefined) item.duration = duration;
+    
+    if (linkedBook !== undefined) {
+      item.linkedBook = linkedBook === '' ? null : linkedBook;
+    }
+
+    await item.save();
+    res.status(200).json(item);
+  } catch (error) {
+    console.error('Error updating library item:', error);
+    res.status(500).json({ message: 'Failed to update library item', error: error.message });
   }
 };

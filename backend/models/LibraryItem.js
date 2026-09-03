@@ -17,7 +17,7 @@ const libraryItemSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['book', 'audio'],
+    enum: ['book', 'audio', 'album'],
     required: true
   },
   level: {
@@ -31,12 +31,22 @@ const libraryItemSchema = new mongoose.Schema({
   },
   fileUrl: {
     type: String,
-    required: true // URL to PDF or Audio on Cloudinary
+    required: false // URL to PDF or single Audio on Cloudinary. Optional now because albums have multiple audios
   },
   duration: {
     type: String, // only for audio, e.g. "05:30"
     trim: true
   },
+  linkedBook: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LibraryItem' // Optional reference to a book
+  },
+  audios: [{
+    title: { type: String, required: true },
+    fileUrl: { type: String, required: true },
+    duration: { type: String, trim: true },
+    originalName: { type: String }
+  }],
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

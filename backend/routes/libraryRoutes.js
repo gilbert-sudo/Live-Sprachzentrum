@@ -14,4 +14,7 @@ router.post('/', libraryUploadFields, libraryController.createLibraryItem);
 // Delete a library item
 router.delete('/:id', libraryController.deleteLibraryItem);
 
+// Update a library item
+router.put('/:id', libraryUploadFields, libraryController.updateLibraryItem);
+
 module.exports = router;

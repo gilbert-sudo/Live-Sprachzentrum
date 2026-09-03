@@ -104,7 +104,7 @@ export default function AudioPlayer({ audioUrl, title, onClose }) {
 
   return (
     <div 
-      className={`fixed z-50 bg-germany-black text-white rounded-full p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex items-center gap-4 border border-surface-variant/20 backdrop-blur-md bg-opacity-95 transition-[width,height,padding,opacity] duration-300 ease-in-out cursor-grab active:cursor-grabbing ${isMinimized ? 'w-16 h-16 opacity-70 hover:opacity-100 justify-center' : 'w-[90%] max-w-md px-6'}`}
+      className={`fixed z-[9999] bg-germany-black text-white rounded-full p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex items-center gap-4 border border-surface-variant/20 backdrop-blur-md bg-opacity-95 transition-[width,height,padding,opacity] duration-300 ease-in-out cursor-grab active:cursor-grabbing ${isMinimized ? 'w-16 h-16 opacity-70 hover:opacity-100 justify-center' : 'w-[90%] max-w-md px-6'}`}
       style={{ 
         left: '50%',
         bottom: '24px',
@@ -118,8 +118,11 @@ export default function AudioPlayer({ audioUrl, title, onClose }) {
       <audio 
         ref={audioRef} 
         src={audioUrl} 
+        autoPlay
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
       />
       

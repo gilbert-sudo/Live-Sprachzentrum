@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 
-export default function PdfReaderModal({ book, onClose }) {
+export default function PdfReaderModal({ book, audios = [], activeAudio, onPlayAudio, onClose }) {
   const pdfUrl = book.fileUrl || book.url;
   const [activePanelTab, setActivePanelTab] = useState(null); // 'info', 'audio', 'vocab', or null (closed)
   const isPanelOpen = activePanelTab !== null;
+
+  const relatedAudios = audios.filter(a => a.linkedBook === book._id);
 
   return (
     <div className="fixed inset-0 z-[100] bg-surface-container-lowest flex items-center justify-center animate-fade-in">
@@ -64,20 +66,20 @@ export default function PdfReaderModal({ book, onClose }) {
 
         {/* Interactive Sidebar Panel for Extras */}
         <div className={`absolute right-0 top-0 bottom-0 w-full md:w-[24rem] bg-surface-container-low shadow-2xl border-l border-surface-variant transform transition-transform duration-300 z-40 flex flex-col ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="p-6 pb-0 pt-6">
-            <div className="flex justify-between items-center mb-6">
+          <div className="px-4 pt-5 md:px-5 md:pt-6 pb-0">
+            <div className="flex justify-between items-center mb-4">
               <h2 className="font-headline-sm text-on-surface">Buch Extras</h2>
               <button 
                 onClick={() => setActivePanelTab(null)}
                 className="bg-germany-red text-white p-2 rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
                 title="Panel schließen"
               >
-                <span className="material-symbols-outlined font-bold text-[24px]">close</span>
+                <span className="material-symbols-outlined font-bold text-[20px]">close</span>
               </button>
             </div>
             
             {/* Panel Tabs */}
-            <div className="flex border-b border-surface-variant mb-6 overflow-x-auto gap-1 pb-1 scrollbar-hide">
+            <div className="flex border-b border-surface-variant mb-3 overflow-x-auto gap-1 pb-0 scrollbar-hide">
               <button 
                 className={`flex-1 min-w-max pb-2 px-2 text-center font-title-sm transition-colors border-b-2 ${activePanelTab === 'audio' ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-on-surface'}`}
                 onClick={() => setActivePanelTab('audio')}
@@ -99,7 +101,7 @@ export default function PdfReaderModal({ book, onClose }) {
             </div>
           </div>
           
-          <div className="p-6 pt-0 overflow-y-auto">
+          <div className="px-3 md:px-4 pb-4 pt-1 overflow-y-auto custom-scrollbar">
             {activePanelTab === 'info' && (
               <>
                 <div className="text-center mb-6">
@@ -117,10 +119,70 @@ export default function PdfReaderModal({ book, onClose }) {
             )}
 
             {activePanelTab === 'audio' && (
-              <div className="text-center py-8">
-                <span className="material-symbols-outlined text-[48px] text-surface-variant mb-4 block">headphones</span>
-                <h3 className="font-title-md text-on-surface mb-2">Zugehörige Audios</h3>
-                <p className="text-secondary font-body-sm">Audios für "{book.title}" werden hier aufgelistet.</p>
+              <div className="py-2">
+                {relatedAudios.length === 0 ? (
+                  <div className="text-center py-8">
+                    <span className="material-symbols-outlined text-[48px] text-surface-variant mb-4 block">headphones</span>
+                    <h3 className="font-title-md text-on-surface mb-2">Zugehörige Audios</h3>
+                    <p className="text-secondary font-body-sm">Keine Audios für "{book.title}" gefunden.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {relatedAudios.map(audioItem => (
+                      <div key={audioItem._id} className="bg-surface rounded-xl shadow-sm border border-surface-variant overflow-hidden">
+                        <div className="p-3 border-b border-surface-variant bg-surface-container-lowest flex items-center gap-3">
+                          <img src={audioItem.coverUrl} alt={audioItem.title} className="w-10 h-10 rounded object-cover shadow-sm" />
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-title-sm text-on-surface truncate" title={audioItem.title}>{audioItem.title}</h4>
+                            <p className="text-[10px] text-secondary uppercase font-bold tracking-wider">{audioItem.type === 'album' ? 'ALBUM' : 'AUDIO'}</p>
+                          </div>
+                        </div>
+                        <div className="p-2 space-y-1 bg-surface-container-lowest/30">
+                          {audioItem.type === 'album' && audioItem.audios ? (
+                            audioItem.audios.map((track, index) => {
+                              const isPlaying = activeAudio?.fileUrl === track.fileUrl;
+                              const playableTrack = {
+                                _id: `${audioItem._id}-${index}`,
+                                title: track.title,
+                                fileUrl: track.fileUrl,
+                                coverUrl: audioItem.coverUrl,
+                                author: audioItem.author
+                              };
+                              return (
+                                <div 
+                                  key={index}
+                                  onClick={() => onPlayAudio(playableTrack)}
+                                  className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${isPlaying ? 'bg-primary-container/20 border border-primary/20' : 'hover:bg-surface-variant/50 border border-transparent'}`}
+                                >
+                                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                                    <span className={`text-[11px] font-bold w-4 text-center ${isPlaying ? 'text-primary' : 'text-secondary/70'}`}>{index + 1}.</span>
+                                    <p className={`font-label-sm truncate ${isPlaying ? 'text-primary font-bold' : 'text-on-surface'}`} title={track.title}>{track.title}</p>
+                                  </div>
+                                  <button className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${isPlaying ? 'text-primary' : 'text-secondary hover:bg-surface-variant hover:text-germany-red'}`}>
+                                    <span className="material-symbols-outlined text-[18px]">{isPlaying ? 'volume_up' : 'play_arrow'}</span>
+                                  </button>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div 
+                              onClick={() => onPlayAudio(audioItem)}
+                              className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${activeAudio?._id === audioItem._id ? 'bg-primary-container/20 border border-primary/20' : 'hover:bg-surface-variant/50 border border-transparent'}`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <span className={`material-symbols-outlined text-[16px] ${activeAudio?._id === audioItem._id ? 'text-primary' : 'text-secondary/70'}`}>audio_file</span>
+                                <p className={`font-label-sm truncate ${activeAudio?._id === audioItem._id ? 'text-primary font-bold' : 'text-on-surface'}`} title={audioItem.title}>{audioItem.title}</p>
+                              </div>
+                              <button className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${activeAudio?._id === audioItem._id ? 'text-primary' : 'text-secondary hover:bg-surface-variant hover:text-germany-red'}`}>
+                                <span className="material-symbols-outlined text-[18px]">{activeAudio?._id === audioItem._id ? 'volume_up' : 'play_arrow'}</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
