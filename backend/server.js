@@ -11,7 +11,17 @@ const app = express();
 const server = http.createServer(app);
 
 const path = require('path');
+const { createRouteHandler } = require('uploadthing/express');
+const { uploadRouter } = require('./uploadthingRouter');
+
 app.use(cors());
+
+// UploadThing route MUST be before express.json() - the raw body is needed
+// for HMAC signature verification on dev-stream callbacks
+app.use('/api/uploadthing', createRouteHandler({
+  router: uploadRouter
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -35,19 +45,12 @@ const classroomRoutes = require('./routes/classroomRoutes');
 const userRoutes = require('./routes/userRoutes');
 const jitsiRoutes = require('./routes/jitsiRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
-const { createRouteHandler } = require('uploadthing/express');
-const { uploadRouter } = require('./uploadthingRouter');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/jitsi', jitsiRoutes);
 app.use('/api/library', libraryRoutes);
-
-// Ensure raw body is parsed for UploadThing webhook
-app.use('/api/uploadthing', createRouteHandler({
-  router: uploadRouter
-}));
 
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
