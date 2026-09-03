@@ -33,16 +33,40 @@ const createClassroom = async (req, res) => {
   }
 };
 
-// @desc    Update classroom live status by roomId
+// @desc    Update classroom live status by roomId (or create if it doesn't exist)
 // @route   PATCH /api/classrooms/room/:roomId/status
 // @access  Private/Teacher
 const updateClassroomStatus = async (req, res) => {
   try {
-    const classroom = await Classroom.findOne({ roomId: req.params.roomId });
-    if (!classroom) return res.status(404).json({ message: 'Classroom not found' });
+    let classroom = await Classroom.findOne({ roomId: req.params.roomId });
     
-    if (req.body.isLive !== undefined) {
-      classroom.isLive = req.body.isLive;
+    if (!classroom) {
+      // Auto-generate name based on level if not provided
+      const defaultNames = {
+        'A1': 'Deutsch für Anfänger',
+        'A2': 'Grundlagen',
+        'B1': 'Mittelstufe',
+        'B2': 'Gute Mittelstufe'
+      };
+      
+      const level = req.body.level || (req.params.roomId.split('-')[1] || 'A1');
+      const generatedName = defaultNames[level] || 'Live Class';
+
+      classroom = new Classroom({
+        roomId: req.params.roomId,
+        name: req.body.name || generatedName,
+        subject: req.body.subject || level,
+        level: level,
+        teacherName: req.user ? req.user.name : (req.body.teacherName || 'Lehrer'),
+        isLive: req.body.isLive !== undefined ? req.body.isLive : true
+      });
+    } else {
+      if (req.body.isLive !== undefined) {
+        classroom.isLive = req.body.isLive;
+      }
+      if (req.body.isLive && req.user) {
+        classroom.teacherName = req.user.name;
+      }
     }
     
     const updatedClassroom = await classroom.save();

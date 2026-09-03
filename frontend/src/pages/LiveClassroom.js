@@ -20,6 +20,7 @@ function LiveClassroom() {
 
   // JaaS / Jitsi Real Integration State
   const jitsiApiRef = useRef(null);
+  const isSneakLeaveRef = useRef(false);
   const [jitsiToken, setJitsiToken] = useState(null);
   const [useFallbackDomain, setUseFallbackDomain] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(true);
@@ -143,8 +144,32 @@ function LiveClassroom() {
 
     externalApi.on('participantJoined', updateParticipants);
     externalApi.on('participantLeft', updateParticipants);
-    externalApi.on('videoConferenceJoined', () => setIsJoined(true));
-    externalApi.on('videoConferenceLeft', () => setIsJoined(false));
+    
+    externalApi.on('videoConferenceJoined', async () => {
+      setIsJoined(true);
+      if (role === 'teacher' || role === 'admin') {
+        try {
+          const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
+          await axios.patch(`/api/classrooms/room/${roomId}/status`, { isLive: true }, config);
+        } catch (err) {
+          console.error('Failed to set class as live on join', err);
+        }
+      }
+    });
+
+    externalApi.on('videoConferenceLeft', async () => {
+      setIsJoined(false);
+      // Only close the class if this wasn't a sneak leave
+      if ((role === 'teacher' || role === 'admin') && !isSneakLeaveRef.current) {
+        try {
+          const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
+          await axios.patch(`/api/classrooms/room/${roomId}/status`, { isLive: false }, config);
+        } catch (err) {
+          console.error('Failed to set class as closed on leave', err);
+        }
+      }
+    });
+
     externalApi.on('readyToClose', () => navigate('/campus'));
     updateParticipants();
   };
@@ -200,7 +225,7 @@ function LiveClassroom() {
               disableModeratorIndicator: false,
               enableEmailInStats: false,
               prejoinPageEnabled: false,
-              toolbarButtons: [
+              toolbarButtons: (role === 'teacher' || role === 'admin') ? [
                 'camera',
                 'chat',
                 'desktop',
@@ -223,6 +248,16 @@ function LiveClassroom() {
                 'videoquality',
                 'mute-everyone',
                 'mute-video-everyone'
+              ] : [
+                'camera',
+                'chat',
+                'hangup',
+                'microphone',
+                'profile',
+                'raisehand',
+                'tileview',
+                'toggle-camera',
+                'videoquality'
               ]
             }}
             interfaceConfigOverwrite={{
@@ -268,37 +303,43 @@ function LiveClassroom() {
       {isJoined && (
         <div className="absolute left-2 lg:left-4 bottom-[80px] lg:bottom-28 z-20 flex flex-row lg:flex-col gap-2 lg:gap-3 pointer-events-auto transition-all duration-300">
           <div className="bg-gray-900/85 backdrop-blur-xl border border-gray-700/80 p-1.5 lg:p-2 rounded-2xl shadow-2xl flex flex-row lg:flex-col items-center gap-1.5 lg:gap-2">
-          {/* Whiteboard Toggle */}
-          <button
-            onClick={toggleWhiteboard}
-            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${
-              isWhiteboardActive
-                ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-            }`}
-            aria-label="Basculer le tableau blanc"
-          >
-            <span className="material-symbols-outlined text-xl">
-              draw
-            </span>
-            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Basculer le tableau blanc
-            </span>
-          </button>
+          {/* Whiteboard Toggle (Teacher/Admin only) */}
+          {(role === 'teacher' || role === 'admin') && (
+            <button
+              onClick={toggleWhiteboard}
+              className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${
+                isWhiteboardActive
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+              }`}
+              aria-label="Basculer le tableau blanc"
+            >
+              <span className="material-symbols-outlined text-xl">
+                draw
+              </span>
+              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+                Basculer le tableau blanc
+              </span>
+            </button>
+          )}
 
-          {/* Screen Share Toggle */}
-          <button
-            onClick={toggleShareScreen}
-            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
-            aria-label="Partager l'écran"
-          >
-            <span className="material-symbols-outlined text-xl">present_to_all</span>
-            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Partager l'écran
-            </span>
-          </button>
+          {/* Screen Share Toggle (Teacher/Admin only) */}
+          {(role === 'teacher' || role === 'admin') && (
+            <button
+              onClick={toggleShareScreen}
+              className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+              aria-label="Partager l'écran"
+            >
+              <span className="material-symbols-outlined text-xl">present_to_all</span>
+              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+                Partager l'écran
+              </span>
+            </button>
+          )}
 
-          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
+          {(role === 'teacher' || role === 'admin') && (
+            <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
+          )}
 
           {/* Bibliothek Toggle Button */}
           <button
@@ -322,6 +363,10 @@ function LiveClassroom() {
           {/* Leave Call Button */}
           <button
             onClick={() => {
+              isSneakLeaveRef.current = true;
+              if (socket) {
+                socket.emit('sneak_leave');
+              }
               if (jitsiApiRef.current) {
                 jitsiApiRef.current.executeCommand('hangup');
               }
@@ -332,7 +377,7 @@ function LiveClassroom() {
           >
             <span className="material-symbols-outlined text-xl">logout</span>
             <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Quitter la salle
+              Quitter la salle (En cachette)
             </span>
           </button>
 

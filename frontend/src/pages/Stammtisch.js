@@ -1,230 +1,69 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Stammtisch() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
-    <div className="h-[calc(100vh-102px)] md:h-[calc(100vh-64px)] w-full max-w-[1120px] mx-auto flex flex-col bg-surface-container-lowest relative -mt-4 md:-mt-8 rounded-none md:rounded-t-2xl md:rounded-b-none overflow-hidden border-x border-t border-surface-variant shadow-sm">
-      {/* Chat Header */}
-      <header className="bg-surface-container-lowest shadow-sm p-3 md:p-4 border-b border-surface-subtle flex items-center justify-between z-10 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
-            B1
+    <div className="h-[calc(100vh-102px)] md:h-[calc(100vh-64px)] w-full max-w-[1120px] mx-auto flex flex-col items-center justify-center relative -mt-4 md:-mt-8 rounded-none md:rounded-t-2xl md:rounded-b-none overflow-hidden bg-surface-container-lowest border-x border-t border-surface-variant shadow-sm z-0">
+      
+      {/* Dynamic Background Blobs */}
+      <div className="absolute top-[15%] left-[10%] w-72 h-72 bg-primary/10 rounded-full blur-[80px] animate-pulse -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none"></div>
+      <div className="absolute bottom-[10%] right-[15%] w-96 h-96 bg-germany-red/10 rounded-full blur-[100px] animate-pulse -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-germany-gold/15 rounded-full blur-[100px] animate-pulse -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ animationDelay: '1s' }}></div>
+
+      {/* Main Content Card (Glassmorphism) */}
+      <div className="relative z-10 flex flex-col items-center p-8 md:p-12 text-center max-w-lg mx-4 rounded-[2rem] bg-surface-container-lowest/60 dark:bg-surface-container-highest/30 backdrop-blur-3xl border border-white/30 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
+        
+        {/* Animated Icon Container */}
+        <div className="relative mb-8 group cursor-default">
+          <div className="absolute inset-0 bg-primary/20 rounded-[2rem] blur-xl group-hover:bg-primary/40 transition-all duration-700"></div>
+          <div className="relative w-28 h-28 bg-gradient-to-br from-primary to-primary-fixed rounded-[2rem] flex items-center justify-center shadow-xl transform rotate-3 group-hover:-rotate-6 group-hover:scale-110 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+            <span className="material-symbols-outlined text-white text-[56px] font-light">construction</span>
           </div>
-          <div>
-            <h2 className="font-title-md text-title-md text-on-surface font-bold leading-tight">B1 Projekt - Janvier</h2>
-            <div className="flex items-center gap-1 text-secondary text-xs">
-              <span className="material-symbols-outlined text-[14px]">group</span>
-              <span>24 Mitglieder</span>
+          
+          {/* Floating mini icons */}
+          <div className="absolute -top-4 -right-4 bg-surface-container-lowest p-2 rounded-full shadow-lg border border-surface-variant animate-bounce delay-100">
+            <span className="material-symbols-outlined text-germany-gold text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+          </div>
+          <div className="absolute -bottom-2 -left-4 bg-surface-container-lowest p-2 rounded-full shadow-lg border border-surface-variant animate-bounce delay-300">
+            <span className="material-symbols-outlined text-germany-red text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>engineering</span>
+          </div>
+        </div>
+
+        {/* Typography */}
+        <h2 className="text-3xl md:text-4xl font-black text-on-surface mb-4 tracking-tight">
+          Stammtisch im <span className="bg-gradient-to-r from-primary to-germany-red bg-clip-text text-transparent">Umbau</span>
+        </h2>
+        
+        <p className="text-base md:text-lg text-secondary mb-8 leading-relaxed max-w-sm mx-auto">
+          Wir arbeiten an einem völlig neuen Erlebnis für dich, <strong className="text-on-surface font-semibold">{user?.name?.split(' ')[0] || 'lieber Schüler'}</strong>. Bald kannst du dich hier noch besser mit deinen Mitschülern austauschen!
+        </p>
+
+        {/* Progress Bar */}
+        <div className="w-full max-w-[280px] mx-auto mb-10 space-y-2">
+          <div className="flex justify-between text-xs font-bold text-secondary uppercase tracking-wider">
+            <span>Fortschritt</span>
+            <span className="text-primary">In Kürze</span>
+          </div>
+          <div className="h-2.5 w-full bg-surface-variant rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full relative overflow-hidden w-[85%]">
+               <div className="absolute inset-0 bg-white/30 w-full animate-pulse"></div>
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors">
-            <span className="material-symbols-outlined">call</span>
-          </button>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors">
-            <span className="material-symbols-outlined">videocam</span>
-          </button>
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low transition-colors md:hidden">
-            <span className="material-symbols-outlined">info</span>
-          </button>
-        </div>
-      </header>
 
-      {/* Scrollable Message History */}
-      <div className="flex-1 overflow-y-auto px-3 sm:px-4 pt-4 pb-28 md:pb-8 flex flex-col gap-4 bg-surface-container-low/30 hide-scrollbar">
-        {/* Post 1: Official Announcement (Highlighted) */}
-        <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle shrink-0">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full overflow-hidden border-[2.5px] border-primary bg-surface">
-                  <img alt="Frau Luisa" className="w-full h-full object-cover" src="/frau-luisa.png" />
-                </div>
-                {/* Admin/Verified Badge */}
-                <div className="absolute -bottom-0.5 -right-0.5 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center border-2 border-surface-container-lowest shadow-sm">
-                  <span className="material-symbols-outlined" style={{ fontSize: '12px', fontVariationSettings: "'FILL' 1" }}>verified</span>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-label-md text-label-md font-bold text-on-surface">Frau Luisa</h3>
-                  <span className="bg-primary-container text-on-primary-container font-label-sm text-[10px] md:text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '14px' }}>campaign</span>
-                    Ankündigung
-                  </span>
-                </div>
-                <span className="font-label-sm text-label-sm text-secondary">Vor 2 Stunden</span>
-              </div>
-            </div>
-            <button className="text-secondary hover:text-primary transition-colors">
-              <span className="material-symbols-outlined">more_vert</span>
-            </button>
-          </div>
-          <div className="mt-3">
-            <p className="text-on-surface">
-              Guten Morgen zusammen! ☀️<br /><br />
-              Bitte denkt daran, die Hausaufgaben für Kapitel 4 bis diesen Freitag hochzuladen. Ich habe außerdem ein neues Übungsblatt zum Konjunktiv II im Bereich "Lernen" hinzugefügt. <br /><br />
-              Viel Erfolg bei der Vorbereitung!
-            </p>
-          </div>
-          <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">favorite</span>
-              <span className="font-label-md text-label-md">12</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">chat_bubble</span>
-              <span className="font-label-md text-label-md">4</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors ml-auto">
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>translate</span>
-              <span className="font-label-sm text-label-sm">Übersetzen</span>
-            </button>
-          </div>
-        </article>
-
-        {/* Post 2: Message with file attachment */}
-        <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-germany-red text-white flex items-center justify-center font-bold text-lg">
-                {user?.name?.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h3 className="font-label-md text-label-md font-bold text-on-surface">{user?.name}</h3>
-                <span className="font-label-sm text-label-sm text-secondary">Heute, 09:15</span>
-              </div>
-            </div>
-            <button className="text-secondary hover:text-primary transition-colors">
-              <span className="material-symbols-outlined">more_vert</span>
-            </button>
-          </div>
-          <div className="mt-3">
-            <p className="text-on-surface mb-3">
-              Hallo zusammen, hier ist die Zusammenfassung der Grammatikregeln von letzter Woche. Hoffe, es hilft euch beim Lernen! 📚
-            </p>
-            {/* File Attachment Template */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3 p-3 rounded-lg border border-surface-variant bg-surface-container-low hover:bg-surface-variant transition-colors cursor-pointer group">
-                <div className="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
-                  <span className="material-symbols-outlined">description</span>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <h4 className="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Grammatik_Zusammenfassung_Woche3.pdf</h4>
-                  <span className="font-label-sm text-label-sm text-secondary">PDF Datei • 2.4 MB</span>
-                </div>
-                <button className="text-secondary hover:text-primary p-2 rounded-full hover:bg-surface-container-highest transition-colors">
-                  <span className="material-symbols-outlined">download</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">favorite</span>
-              <span className="font-label-md text-label-md">5</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">chat_bubble</span>
-              <span className="font-label-md text-label-md">Antworten</span>
-            </button>
-          </div>
-        </article>
-
-        {/* Post 3: Student Post with Media */}
-        <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
-                <img alt="Student Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsY3L4LiRmOB-SIYLtXvKPdN8m6Iy6DbyQAJCUmd_GbJLUOK_6N7xJubIRXoZH_1jo1H5BNywq683cRnzW67FvlhCSMo8AfqpH71G7jSzV2K8J_9hU1_1uI2hc2cDuZZKvm2p22rCuuDxsyUbiHz6O_nCAiJugDRxF8FMsm-ANmLHQzPz-aXsvWM6MNA6386I4uQUctCNPytFQ-PaYA20nYWjmAiIzys7lWwEX0qMheNca1fUpJjwo6gathnT8lBXAdeHSA87u-tJr" />
-              </div>
-              <div>
-                <h3 className="font-label-md text-label-md font-bold text-on-surface">Marie Rasoa</h3>
-                <span className="font-label-sm text-label-sm text-secondary">Gestern, 18:30</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-on-surface mb-3">
-              Mein Arbeitsplatz heute Abend. Ich bin fast fertig mit dem Dossier für die Ausbildungsvorbereitung. Wer ist noch am Lernen? ☕📚
-            </p>
-
-            {/* Multiple Photos Stacked UI */}
-            <div className="mt-3 mb-2 flex flex-col ml-4 w-fit">
-              <div className="relative w-36 h-36 sm:w-44 sm:h-44 cursor-pointer group">
-                {/* Stack Layer 3 (Bottom) */}
-                <div className="absolute inset-0 bg-surface-variant rounded-xl border-2 border-surface shadow-sm rotate-[6deg] translate-x-3 translate-y-2 overflow-hidden transition-transform group-hover:rotate-[8deg] group-hover:translate-x-5">
-                  <img alt="Study photo 3" className="w-full h-full object-cover opacity-80" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80" />
-                </div>
-
-                {/* Stack Layer 2 (Middle) */}
-                <div className="absolute inset-0 bg-surface-container-high rounded-xl border-2 border-surface shadow-sm -rotate-[4deg] -translate-x-1 -translate-y-1 overflow-hidden transition-transform group-hover:-rotate-[6deg] group-hover:-translate-x-3">
-                  <img alt="Study photo 2" className="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80" />
-                </div>
-
-                {/* Stack Layer 1 (Top) */}
-                <div className="absolute inset-0 bg-surface-container-lowest rounded-xl border-[3px] border-surface shadow-md z-10 overflow-hidden transform group-hover:scale-[1.02] transition-transform">
-                  <img alt="Study space" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-i9EI8tOhDfhGBSxG0qQpP1c6t1CsBAfezLslNEW2R1dj255DC7dGB0En6AYah6g7XlAR-oolmB5Nx5cEqPYxZpqpKRA0mkb1iVpgeL3xfGS5CTOX1JneCNeUSRj-aJa7-FmSLypDqbY-M-D_rRwmgbwoYZIIuNUQy0x2NeDtXsrNo26Z121LxAizZHe4-vbL0N3cDhF36Q0n0xo1197YIWCZHOQyOrynchE3_NYawxuAk_xvVybCs3NPxBLcwCgwse3wuLXRpYQ_" />
-
-                  {/* Photo Count Overlay Badge */}
-                  <div className="absolute top-2 right-2 bg-germany-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                    <span className="material-symbols-outlined text-[12px]">photo_library</span>
-                    +3
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">favorite</span>
-              <span className="font-label-md text-label-md">8</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">chat_bubble</span>
-              <span className="font-label-md text-label-md">1</span>
-            </button>
-          </div>
-        </article>
-
-        {/* Post 4: Standard Student Post */}
-        <article className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-surface-subtle">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-germany-red text-white flex items-center justify-center font-bold text-lg">
-                {user?.name?.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h3 className="font-label-md text-label-md font-bold text-on-surface">{user?.name}</h3>
-                <span className="font-label-sm text-label-sm text-secondary">Vor 5 Stunden</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-on-surface">
-              Hallo Leute! Hat jemand gute Notizen zur gestrigen Lektion? Ich war leider krank und möchte den Stoff für das Projekt am Wochenende nachholen. Danke im Voraus! 🙏
-            </p>
-          </div>
-          <div className="mt-4 flex items-center gap-4 border-t border-surface-subtle pt-3">
-            <button className="flex items-center gap-1.5 text-primary group">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-              <span className="font-label-md text-label-md">3</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">chat_bubble</span>
-              <span className="font-label-md text-label-md">2 Antworten</span>
-            </button>
-          </div>
-        </article>
+        {/* Action Button */}
+        <button 
+          onClick={() => navigate('/campus')}
+          className="px-8 py-3.5 bg-on-surface text-surface-container-lowest font-bold rounded-full hover:bg-primary hover:text-white hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 shadow-lg flex items-center gap-2 group"
+        >
+          <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          Zurück zum Campus
+        </button>
       </div>
-
-      {/* Floating Action Button for New Post */}
-      <button className="absolute bottom-[calc(100vh-100dvh+2.5rem)] md:bottom-8 right-3 md:right-8 px-5 py-2.5 md:px-6 md:py-3.5 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all z-20 gap-2 group">
-        <span className="material-symbols-outlined text-[22px] md:text-[24px]">post_add</span>
-        <span className="font-label-sm text-[13px] md:text-base font-bold">Neuer Beitrag</span>
-      </button>
     </div>
   );
 }

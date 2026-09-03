@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function VirtualSchool() {
+  const { user } = useAuth();
   const [activeClasses, setActiveClasses] = useState([]);
   const [openedDoor, setOpenedDoor] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -35,27 +37,21 @@ export default function VirtualSchool() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    // Temporary Mock Data for UI Development
-    const mockData = [
-      { roomId: 'S-n°1', subject: 'A1', name: 'Deutsch für Anfänger', teacherName: 'Herr Müller', isLive: true, startTime: '10:00', endTime: '11:30' },
-      { roomId: 'S-n°3', subject: 'B1', name: 'Konversation & Grammatik', teacherName: 'Frau Schmidt', isLive: true, startTime: '18:00', endTime: '19:30' }
-    ];
-
-    // Fetch live classrooms to show active indicators
+  const fetchClasses = () => {
     axios.get('/api/classrooms')
       .then(res => {
-        let liveRooms = res.data.filter(r => r.isLive);
-        // Fallback to mock data if no live rooms exist for easier UI testing
-        if (liveRooms.length === 0) {
-          liveRooms = mockData;
-        }
-        setActiveClasses(liveRooms);
+        setActiveClasses(res.data); // Store all classes, we'll filter by isLive below
       })
       .catch(err => {
-        console.error('Error fetching classrooms, using mock data', err);
-        setActiveClasses(mockData);
+        console.error('Error fetching classrooms', err);
       });
+  };
+
+  useEffect(() => {
+    fetchClasses();
+    // Poll every 3 seconds to keep classroom status updated for students quickly
+    const interval = setInterval(fetchClasses, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const levels = [
@@ -67,12 +63,16 @@ export default function VirtualSchool() {
 
   const handleDoorClick = (levelId) => {
     if (openedDoor === levelId) {
-      console.log(`Entering level ${levelId}`);
-      const room = activeClasses.find(r => r.subject.includes(levelId) || r.name.includes(levelId));
+      const room = activeClasses.find(r => r.roomId === `room-${levelId}` && r.isLive);
+      
       if (room) {
-        navigate(`/room/${room.roomId}`);
+        // Room is live, join!
+        navigate(`/room/room-${levelId}`);
+      } else if (user?.role === 'teacher' || user?.role === 'admin') {
+        // Teacher can start the class
+        navigate(`/room/room-${levelId}`);
       } else {
-        alert(`Willkommen im Bereich ${levelId}! Zurzeit findet hier keine Live-Klasse statt.`);
+        alert(`Die Klasse für ${levelId} hat noch nicht begonnen. Bitte warten Sie auf den Lehrer.`);
       }
     } else {
       setOpenedDoor(levelId);
@@ -140,8 +140,9 @@ export default function VirtualSchool() {
         >
 
           {levels.map((level, index) => {
-            const room = activeClasses.find(r => r.subject.includes(level.id) || r.name.includes(level.id));
+            const room = activeClasses.find(r => r.roomId === `room-${level.id}` && r.isLive);
             const isLive = !!room;
+            const isTeacher = user?.role === 'teacher' || user?.role === 'admin';
             const isFocused = focusedIndex === index;
 
             // Cover flow transformations for mobile
@@ -193,15 +194,24 @@ export default function VirtualSchool() {
                     {/* Inside the classroom (visible when door opens) */}
                     <div className="absolute inset-0 bg-surface flex flex-col items-center justify-center overflow-hidden rounded-t-sm p-3 shadow-inner">
                       <span className="material-symbols-outlined text-[48px] md:text-[36px] text-germany-red opacity-80 mb-3 drop-shadow-sm">cast_for_education</span>
-                      <p className="text-on-surface font-bold text-base md:text-sm text-center">{isLive ? 'Klasse beitreten' : 'Warteraum'}</p>
+                      <p className="text-on-surface font-bold text-base md:text-sm text-center">
+                        {isLive ? 'Klasse beitreten' : (isTeacher ? 'Klasse starten' : 'Warteraum')}
+                      </p>
+                      
                       {isLive ? (
                         <p className="text-germany-red font-bold text-[13px] md:text-[11px] mt-2 flex items-center gap-1.5 bg-germany-red/10 px-4 py-1.5 rounded-full border border-germany-red/20 shadow-sm">
                           <span className="material-symbols-outlined text-[16px]">login</span> Los geht's!
                         </p>
                       ) : (
-                        <p className="text-secondary font-medium text-[12px] md:text-[10px] mt-2 flex items-center gap-1.5 bg-surface-variant/30 px-4 py-1.5 rounded-full">
-                          <span className="material-symbols-outlined text-[14px]">hourglass_empty</span> Bitte warten
-                        </p>
+                        isTeacher ? (
+                          <p className="text-emerald-600 font-bold text-[13px] md:text-[11px] mt-2 flex items-center gap-1.5 bg-emerald-600/10 px-4 py-1.5 rounded-full border border-emerald-600/20 shadow-sm">
+                            <span className="material-symbols-outlined text-[16px]">play_arrow</span> Starten
+                          </p>
+                        ) : (
+                          <p className="text-secondary font-medium text-[12px] md:text-[10px] mt-2 flex items-center gap-1.5 bg-surface-variant/30 px-4 py-1.5 rounded-full">
+                            <span className="material-symbols-outlined text-[14px]">hourglass_empty</span> Bitte warten
+                          </p>
+                        )
                       )}
                       <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-black/5 to-transparent pointer-events-none"></div>
                     </div>
@@ -256,19 +266,26 @@ export default function VirtualSchool() {
                             </div>
                             <p className="text-[11px] md:text-[10px] truncate leading-tight">{room.name}</p>
                           </div>
-
-                          <div className="flex items-center gap-1.5 w-full justify-center text-on-surface-variant mt-1 bg-surface-variant/30 rounded-lg py-1.5 md:py-1 border border-surface-dim/50 relative z-10">
-                            <span className="material-symbols-outlined text-[12px] md:text-[10px] shrink-0 opacity-70">schedule</span>
-                            <p className="text-[10px] md:text-[9px] font-bold text-center truncate">{room.startTime || '10:00'} - {room.endTime || '11:30'} Uhr</p>
-                          </div>
                         </div>
                       ) : (
-                        <div className="w-[85%] bg-surface-container-lowest/60 dark:bg-surface-container-highest/60 p-4 md:p-3 rounded shadow-sm border border-surface-variant/50 flex flex-col items-center mb-6 mt-auto backdrop-blur-md z-10">
-                          <div className="bg-surface-variant/30 p-2 md:p-1.5 rounded-full mb-3 md:mb-2">
-                            <span className="material-symbols-outlined text-[24px] md:text-[20px] text-secondary">event_busy</span>
+                        isTeacher ? (
+                          <div className="w-[85%] bg-emerald-600/10 p-3 md:p-2 rounded-xl shadow-sm border border-emerald-500/30 flex flex-col items-center mb-6 mt-auto backdrop-blur-md z-10 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none"></div>
+                            <div className="bg-emerald-500/20 p-2 md:p-1.5 rounded-full mb-2 z-10">
+                              <span className="material-symbols-outlined text-[20px] md:text-[16px] text-emerald-600">play_circle</span>
+                            </div>
+                            <span className="text-[11px] md:text-[9px] font-bold text-emerald-700 uppercase tracking-widest text-center z-10">
+                              Klasse starten
+                            </span>
                           </div>
-                          <span className="text-[12px] md:text-[10px] font-bold text-secondary uppercase tracking-widest text-center">Keine Klasse</span>
-                        </div>
+                        ) : (
+                          <div className="w-[85%] bg-surface-container-lowest/60 dark:bg-surface-container-highest/60 p-4 md:p-3 rounded shadow-sm border border-surface-variant/50 flex flex-col items-center mb-6 mt-auto backdrop-blur-md z-10">
+                            <div className="bg-surface-variant/30 p-2 md:p-1.5 rounded-full mb-3 md:mb-2">
+                              <span className="material-symbols-outlined text-[24px] md:text-[20px] text-secondary">event_busy</span>
+                            </div>
+                            <span className="text-[12px] md:text-[10px] font-bold text-secondary uppercase tracking-widest text-center">Keine Klasse</span>
+                          </div>
+                        )
                       )}
 
                       {/* Door handle */}
