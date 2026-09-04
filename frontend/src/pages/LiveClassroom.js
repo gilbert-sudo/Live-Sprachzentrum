@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 // Import Bibliothek for quick access
 import Bibliothek from './Bibliothek';
+import HomeworkPanel from '../components/HomeworkPanel';
 
 function LiveClassroom() {
   const { roomId } = useParams();
@@ -30,6 +31,7 @@ function LiveClassroom() {
   const [participantCount, setParticipantCount] = useState(1);
   const [isMeetingLoading, setIsMeetingLoading] = useState(true);
   const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // 8x8 JaaS domain and App ID configuration
   const jaasAppId = process.env.REACT_APP_JITSI_APP_ID || 'vpaas-magic-cookie-9c8d3d139d304e2ab96e890e756b9a0a';
@@ -46,7 +48,7 @@ function LiveClassroom() {
   const activeRoomName = isJaaS ? `${jaasAppId}/LiveSprachzentrum_${roomId}` : `LiveSprachzentrum_${roomId}`;
 
   // Live Classroom UI state
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [activePanel, setActivePanel] = useState('none');
 
   // eBook state removed, using Bibliothek directly
 
@@ -210,7 +212,7 @@ function LiveClassroom() {
   return (
     <div className="fixed inset-0 z-[100] bg-black flex flex-col font-sans overflow-hidden">
       {/* Video Area (Full Screen Jitsi Meeting) */}
-      <div className={`absolute top-0 left-0 bottom-0 z-0 transition-all duration-300 ease-in-out ${isPanelOpen ? 'right-0 lg:right-[min(800px,50vw)]' : 'right-0'}`}>
+      <div className={`absolute top-0 left-0 bottom-0 z-0 transition-all duration-300 ease-in-out ${activePanel !== 'none' ? 'right-0 lg:right-[min(800px,50vw)]' : 'right-0'}`}>
         {!isMeetingLoading && (
           <JitsiMeeting
             key={`${activeDomain}_${activeRoomName}`}
@@ -303,6 +305,26 @@ function LiveClassroom() {
       {isJoined && (
         <div className="absolute left-2 lg:left-4 bottom-[80px] lg:bottom-28 z-20 flex flex-row lg:flex-col gap-2 lg:gap-3 pointer-events-auto transition-all duration-300">
           <div className="bg-gray-900/85 backdrop-blur-xl border border-gray-700/80 p-1.5 lg:p-2 rounded-2xl shadow-2xl flex flex-row lg:flex-col items-center gap-1.5 lg:gap-2">
+
+          {/* Invite Student Toggle (Teacher/Admin only) */}
+          {(role === 'teacher' || role === 'admin') && (
+            <button
+              onClick={() => {
+                const link = `${window.location.origin}/room/${roomId}`;
+                navigator.clipboard.writeText(link);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 3000);
+              }}
+              className="group relative p-2 lg:p-3 rounded-xl text-emerald-400 hover:text-white hover:bg-emerald-600/80 transition-all duration-200 flex items-center justify-center"
+              aria-label="Inviter un étudiant"
+            >
+              <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'person_add'}</span>
+              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+                {linkCopied ? "Lien copié!" : "Copier le lien d'invitation"}
+              </span>
+            </button>
+          )}
+
           {/* Whiteboard Toggle (Teacher/Admin only) */}
           {(role === 'teacher' || role === 'admin') && (
             <button
@@ -341,20 +363,39 @@ function LiveClassroom() {
             <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
           )}
 
+          {/* Homework Toggle Button */}
+          <button
+            onClick={() => setActivePanel(activePanel === 'homework' ? 'none' : 'homework')}
+            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${activePanel === 'homework'
+                ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+              }`}
+            aria-label="Devoirs"
+          >
+            <span className="material-symbols-outlined text-xl">
+              {activePanel === 'homework' ? 'close' : 'assignment'}
+            </span>
+            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
+              {activePanel === 'homework' ? 'Fermer les devoirs' : 'Ouvrir les devoirs'}
+            </span>
+          </button>
+
+          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
+
           {/* Bibliothek Toggle Button */}
           <button
-            onClick={() => setIsPanelOpen(!isPanelOpen)}
-            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${isPanelOpen
+            onClick={() => setActivePanel(activePanel === 'bibliothek' ? 'none' : 'bibliothek')}
+            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${activePanel === 'bibliothek'
                 ? 'bg-primary text-white shadow-lg shadow-primary/30'
                 : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
               }`}
             aria-label="Bibliothèque"
           >
             <span className="material-symbols-outlined text-xl">
-              {isPanelOpen ? 'close' : 'local_library'}
+              {activePanel === 'bibliothek' ? 'close' : 'local_library'}
             </span>
             <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {isPanelOpen ? 'Fermer la bibliothèque' : 'Ouvrir la bibliothèque'}
+              {activePanel === 'bibliothek' ? 'Fermer la bibliothèque' : 'Ouvrir la bibliothèque'}
             </span>
           </button>
 
@@ -398,25 +439,26 @@ function LiveClassroom() {
       </div>
       )}
 
-      {/* Sliding Control Panel for eBook */}
-      <div className={`absolute top-0 right-0 bottom-0 w-full lg:w-[800px] lg:max-w-[50vw] bg-surface-container-lowest border-l border-surface-variant flex flex-col z-20 transition-all duration-300 ease-in-out shadow-2xl ${isPanelOpen ? 'translate-x-0 opacity-100' : 'translate-x-[105%] opacity-0 pointer-events-none'
+      {/* Sliding Control Panel for eBook / Homework */}
+      <div className={`absolute top-0 right-0 bottom-0 w-full lg:w-[800px] lg:max-w-[50vw] bg-surface-container-lowest border-l border-surface-variant flex flex-col z-20 transition-all duration-300 ease-in-out shadow-2xl ${activePanel !== 'none' ? 'translate-x-0 opacity-100' : 'translate-x-[105%] opacity-0 pointer-events-none'
         }`}>
 
         {/* Premium Floating Close Button (All Screens) */}
         <button 
-          onClick={() => setIsPanelOpen(false)}
+          onClick={() => setActivePanel('none')}
           className="flex absolute top-16 right-4 lg:top-20 lg:right-6 w-11 h-11 lg:w-12 lg:h-12 bg-white/80 dark:bg-gray-900/80 hover:bg-germany-red dark:hover:bg-germany-red backdrop-blur-xl border border-white/50 dark:border-gray-700/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)] items-center justify-center text-gray-800 dark:text-gray-200 hover:text-white transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-50 group hover:scale-110 active:scale-95"
-          title="Fermer la bibliothèque"
+          title="Fermer le panneau"
         >
           <span className="absolute inset-0 rounded-full border border-white/0 group-hover:border-white/40 transition-colors duration-500"></span>
           <span className="material-symbols-outlined text-[22px] lg:text-[24px] group-hover:rotate-90 transition-transform duration-500">close</span>
         </button>
 
-        {/* The Bibliothek Layout embedded inside */}
+        {/* The Panel Content embedded inside */}
         <div className="flex-1 flex overflow-hidden relative">
           <div className="flex-1 flex flex-col min-w-0 relative bg-surface-container-lowest">
             <div className="flex-1 overflow-y-auto hide-scrollbar">
-              <Bibliothek readOnly={true} />
+              {activePanel === 'bibliothek' && <Bibliothek readOnly={true} />}
+              {activePanel === 'homework' && <HomeworkPanel roomId={roomId} socket={socket} />}
             </div>
           </div>
         </div>

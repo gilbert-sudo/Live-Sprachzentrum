@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
   const [courses, setCourses] = useState([]);
+  const [pinnedHomeworks, setPinnedHomeworks] = useState([]);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -14,7 +16,22 @@ export default function Dashboard() {
       { id: 'c3', level: 'Alle', name: 'Aussprachetraining', progress: 15, icon: 'record_voice_over' }
     ];
     setCourses(myCourses);
-  }, []);
+
+    const fetchPinnedHomeworks = async () => {
+      try {
+        const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
+        // Fetch all pinned homeworks (we could filter by user.level here if needed: `&level=${user.level || 'A1'}`)
+        const res = await axios.get('/api/homework?isPinned=true', config);
+        setPinnedHomeworks(res.data);
+      } catch (err) {
+        console.error('Failed to fetch pinned homeworks', err);
+      }
+    };
+    
+    if (user) {
+      fetchPinnedHomeworks();
+    }
+  }, [user]);
 
   return (
     <>
@@ -97,6 +114,75 @@ export default function Dashboard() {
             
           </div>
         </section>
+
+        {/* Pinned Homeworks Section */}
+        {pinnedHomeworks.length > 0 && (
+          <section className="mb-2">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-title-md text-title-md text-on-surface flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-germany-gold/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-germany-gold icon-filled text-[18px]">push_pin</span>
+                </div>
+                Aufgaben des Tages
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {pinnedHomeworks.map(hw => (
+                <div key={hw._id} className="group flex flex-col bg-surface-container-lowest/80 backdrop-blur-xl rounded-3xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 dark:border-white/10 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-1 h-full">
+                  
+                  {/* Icon & Title Row */}
+                  <div className="flex gap-4 items-start mb-4">
+                    <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-germany-gold/20 to-orange-400/20 text-germany-gold flex items-center justify-center shadow-inner border border-white/50 dark:border-white/5">
+                      <span className="material-symbols-outlined text-[24px]">menu_book</span>
+                    </div>
+                    <div className="flex-1 pt-1">
+                      <h4 className="font-title-md text-title-md text-on-surface font-bold leading-tight line-clamp-2 mb-1.5">{hw.title}</h4>
+                      {hw.dueDate ? (
+                        <span className="inline-flex items-center gap-1 text-error text-[12px] font-bold">
+                          <span className="material-symbols-outlined text-[14px]">event</span>
+                          Fällig
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-success-green text-[12px] font-bold">
+                          <span className="material-symbols-outlined text-[14px]">all_inclusive</span>
+                          Offen
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="bg-surface-variant/30 rounded-2xl p-4 mb-5 flex-1">
+                    <p className="text-on-surface-variant text-sm whitespace-pre-wrap leading-relaxed">
+                      {hw.description}
+                    </p>
+                  </div>
+                  
+                  {/* Footer Tags */}
+                  <div className="mt-auto flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-secondary">
+                        <div className="w-6 h-6 rounded-full bg-surface-variant/80 flex items-center justify-center border border-surface-subtle">
+                          <span className="material-symbols-outlined text-[12px]">person</span>
+                        </div>
+                        <span className="truncate max-w-[120px]">{hw.teacherName.replace(/Admin /g, 'Frau ')}</span>
+                      </div>
+                    </div>
+                    
+                    {hw.level && (
+                      <div className="flex items-center gap-1 text-xs font-bold text-on-surface bg-surface-container-high px-2.5 py-1.5 rounded-lg shadow-sm border border-surface-variant/50">
+                        <span className="material-symbols-outlined text-[14px] text-germany-red">school</span>
+                        {hw.level}
+                      </div>
+                    )}
+                  </div>
+                  
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Main Course Card & Weekly Goal */}
         <section className="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">

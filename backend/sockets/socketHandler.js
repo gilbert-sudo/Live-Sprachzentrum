@@ -37,6 +37,10 @@ const socketHandler = (io) => {
       socket.to(roomId).emit('audio_sync', { currentTime });
     });
 
+    socket.on('homework_updated', ({ roomId }) => {
+      socket.to(roomId).emit('homework_updated');
+    });
+
     socket.on('disconnect', async () => {
       console.log('User disconnected:', socket.id);
       
