@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useUploadThing } from '../../utils/uploadthing';
 
 export default function EditModal({ isOpen, onClose, onSuccess, item, books = [] }) {
   const [formData, setFormData] = useState({
@@ -13,6 +14,18 @@ export default function EditModal({ isOpen, onClose, onSuccess, item, books = []
   
   const [uploadState, setUploadState] = useState('idle'); // idle, uploading, success, error
   const [error, setError] = useState('');
+  const [coverFile, setCoverFile] = useState(null);
+
+  const { startUpload } = useUploadThing("libraryUploader");
+
+  const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
 
   useEffect(() => {
     if (isOpen && item) {
@@ -27,9 +40,26 @@ export default function EditModal({ isOpen, onClose, onSuccess, item, books = []
       setUploadState('idle');
       setError('');
     }
+    setCoverFile(null);
   }, [isOpen, item]);
 
   if (!isOpen || !item) return null;
+
+  const handleCoverChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 16 * 1024 * 1024) {
+        setError('Das Cover darf maximal 16MB groß sein.');
+        return;
+      }
+      setCoverFile(file);
+      setError('');
+    }
+  };
+
+  const removeCoverFile = () => {
+    setCoverFile(null);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +81,17 @@ export default function EditModal({ isOpen, onClose, onSuccess, item, books = []
       
       if (item.type === 'audio' || item.type === 'album') {
         data.linkedBook = formData.linkedBook;
+      }
+
+      let uploadedCoverUrl = null;
+      if (coverFile) {
+        const uploadRes = await startUpload([coverFile]);
+        if (uploadRes && uploadRes.length > 0) {
+          uploadedCoverUrl = uploadRes[0].url || uploadRes[0].ufsUrl;
+          data.coverUrl = uploadedCoverUrl;
+        } else {
+          throw new Error('Upload des Covers fehlgeschlagen');
+        }
       }
 
       const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -228,6 +269,69 @@ export default function EditModal({ isOpen, onClose, onSuccess, item, books = []
                 rows={1}
                 className="w-full bg-surface-container-lowest border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-germany-red focus:ring-2 focus:ring-germany-red/10 transition-all resize-none font-medium"
               ></textarea>
+            </div>
+
+            <div className="pt-1 animate-fade-in">
+              <label className="block text-[10px] uppercase tracking-wider font-bold text-secondary mb-1.5">
+                Neues Cover-Bild hochladen (Optional)
+              </label>
+              
+              {!coverFile ? (
+                <div className="relative group w-full">
+                  <div className="flex flex-col sm:flex-row items-center justify-center w-full p-4 border-2 border-dashed border-secondary/40 bg-surface hover:bg-primary-container/5 hover:border-germany-red hover:shadow-[0_0_20px_rgba(213,31,38,0.1)] rounded-xl transition-all cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center mb-2 sm:mb-0 sm:mr-4 group-hover:bg-primary-container/20 group-hover:scale-110 transition-all duration-300">
+                      <span className="material-symbols-outlined text-[20px] text-secondary group-hover:text-germany-red transition-colors">image</span>
+                    </div>
+                    <div className="text-center sm:text-left">
+                      <p className="text-xs font-bold text-on-surface mb-0.5">Bild auswählen oder hierher ziehen</p>
+                      <div className="flex items-center justify-center sm:justify-start gap-2">
+                        <span className="px-1.5 py-0.5 bg-surface-variant/50 rounded text-[9px] font-bold text-secondary uppercase tracking-wider">
+                          JPG, PNG
+                        </span>
+                        <span className="text-[10px] font-medium text-secondary">
+                          bis zu 16MB
+                        </span>
+                      </div>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/jpeg, image/png, image/webp"
+                      onChange={handleCoverChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between w-full p-2.5 border border-emerald-500/80 bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl shadow-sm animate-fade-in group hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-lg bg-white dark:bg-surface flex items-center justify-center shrink-0 border border-emerald-200 dark:border-emerald-800 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                      <img src={URL.createObjectURL(coverFile)} alt="Cover preview" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0 pr-2">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <p className="text-xs font-bold text-gray-900 dark:text-white truncate">{coverFile.name}</p>
+                        <span className="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+                      </div>
+                      <p className="text-[10px] font-semibold text-emerald-600/80">{formatBytes(coverFile.size)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 shrink-0">
+                    <label className="p-1.5 bg-white dark:bg-surface hover:bg-gray-100 dark:hover:bg-surface-variant text-gray-600 dark:text-gray-300 rounded-lg transition-all shadow-sm border border-gray-200 dark:border-surface-variant cursor-pointer flex items-center" title="Bild ändern">
+                      <span className="material-symbols-outlined text-[16px]">edit</span>
+                      <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleCoverChange} className="hidden" />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={removeCoverFile}
+                      className="p-1.5 bg-white dark:bg-surface hover:bg-error hover:text-on-error text-error rounded-lg transition-all shadow-sm border border-gray-200 dark:border-surface-variant flex items-center"
+                      title="Bild entfernen"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">delete</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             
           </form>

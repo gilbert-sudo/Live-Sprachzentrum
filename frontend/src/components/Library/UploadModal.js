@@ -609,7 +609,6 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
               )}
             </div>
 
-            {(formData.type === 'audio' || formData.type === 'album') && (
               <div className="pt-1 animate-fade-in">
                 <label className="block text-[10px] uppercase tracking-wider font-bold text-secondary mb-1.5">
                   Cover-Bild (Optional)
@@ -672,7 +671,6 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
                   </div>
                 )}
               </div>
-            )}
           </form>
         </div>
 

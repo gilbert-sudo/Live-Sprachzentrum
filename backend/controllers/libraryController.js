@@ -98,7 +98,7 @@ exports.deleteLibraryItem = async (req, res) => {
 
 exports.updateLibraryItem = async (req, res) => {
   try {
-    const { title, author, description, level, duration, linkedBook } = req.body;
+    const { title, author, description, level, duration, linkedBook, coverUrl } = req.body;
     
     const item = await LibraryItem.findById(req.params.id);
     if (!item) {
@@ -113,6 +113,10 @@ exports.updateLibraryItem = async (req, res) => {
     
     if (linkedBook !== undefined) {
       item.linkedBook = linkedBook === '' ? null : linkedBook;
+    }
+    
+    if (coverUrl) {
+      item.coverUrl = coverUrl;
     }
 
     await item.save();

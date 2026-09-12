@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PdfReaderModal from '../components/EBook/PdfReaderModal';
 import UploadModal from '../components/Library/UploadModal';
 import EditModal from '../components/Library/EditModal';
-import PdfCover from '../components/Library/PdfCover';
+
 import AudioPlayer from '../components/EBook/AudioPlayer';
 import AlbumViewModal from '../components/Library/AlbumViewModal';
 
@@ -187,8 +187,13 @@ export default function Bibliothek({ readOnly = false }) {
           ) : (
             books.map((book) => (
               <div key={book._id} className="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-subtle overflow-hidden hover:-translate-y-1 transition-transform duration-200 group relative">
-                <div className="relative aspect-[3/4] bg-surface-container-low overflow-hidden">
-                  <PdfCover pdfUrl={book.fileUrl || book.url} />
+                <div className="relative aspect-[3/4] bg-surface-container-low overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={book.coverUrl || 'https://placehold.co/400x600/e8e8e8/333333?text=Buch'} 
+                    alt={book.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x600/e8e8e8/333333?text=Buch'; }}
+                  />
                   <div className="absolute inset-0 bg-germany-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
                     <button 
                       onClick={() => handleReadBook(book)}
