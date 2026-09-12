@@ -136,6 +136,7 @@ Desktop.ini
 # Build output
 frontend/build/
 build/
+!frontend/public/pdfjs/build/
 dist/
 
 # Logs
