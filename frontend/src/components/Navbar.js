@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useTheme } from '../hooks/useTheme';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, openAuthModal } from '../store/authSlice';
+import ThemeToggle from './ThemeToggle';
 
 
 const UserMenu = () => {
@@ -55,7 +55,6 @@ const UserMenu = () => {
   );
 };
 
-import ThemeToggle from './ThemeToggle';
 export default function Navbar({ children }) {
   const location = useLocation();
   const path = location.pathname;
