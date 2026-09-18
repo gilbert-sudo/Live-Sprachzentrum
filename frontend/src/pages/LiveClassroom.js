@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 // Import Bibliothek for quick access
 import Bibliothek from './Bibliothek';
 import HomeworkPanel from '../components/HomeworkPanel';
+import ThemeToggle from '../components/ThemeToggle';
 
 function LiveClassroom() {
   const { roomId } = useParams();
@@ -296,6 +297,11 @@ function LiveClassroom() {
             </span>
             <span className="text-gray-400">|</span>
             <span className="text-xs text-gray-400">{isJaaS ? '8x8 JaaS' : 'Jitsi Live'}</span>
+          </div>
+          
+          {/* Theme Toggle Button */}
+          <div className="bg-gray-900/80 backdrop-blur-md rounded-full shadow-lg border border-gray-700/70 p-0.5">
+            <ThemeToggle />
           </div>
         </div>
       )}

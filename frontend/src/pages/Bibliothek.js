@@ -80,7 +80,7 @@ export default function Bibliothek({ readOnly = false }) {
   return (
     <div className="max-w-container-max-width mx-auto animate-fade-in pb-24">
       {/* Sticky Header Container */}
-      <div className="sticky top-0 z-40 bg-surface-container-lowest/95 backdrop-blur-md px-4 md:px-8 pt-6 md:pt-8 pb-4 border-b border-surface-variant shadow-sm mb-6">
+      <div className={`sticky ${readOnly ? 'top-0' : 'top-14 md:top-[72px]'} z-40 bg-surface-container-lowest/95 backdrop-blur-md px-4 md:px-8 pt-6 md:pt-8 pb-4 border-b border-surface-variant shadow-sm mb-6`}>
         {/* Header */}
         <div className="mb-6 flex justify-between items-start">
           <div>
