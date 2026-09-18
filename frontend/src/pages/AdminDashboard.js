@@ -20,6 +20,38 @@ export default function AdminDashboard() {
         </div>
       </section>
 
+      {/* Campus Entry Banner */}
+      <section className="mb-4 md:mb-8">
+        <Link to="/campus" className="group block w-full rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
+            style={{ backgroundImage: "url('/images/malagasy_student_banner.png')" }}
+          ></div>
+          {/* Gradient Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-germany-black/90 via-germany-black/60 to-transparent"></div>
+          
+          <div className="relative z-10 p-6 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between h-full gap-6 min-h-[220px]">
+            
+            <div className="text-center md:text-left flex-1 max-w-xl">
+              <h3 className="font-title-lg text-title-lg md:text-4xl text-white mb-3 font-bold tracking-tight drop-shadow-md">
+                Willkommen auf dem <span className="text-germany-gold">Campus</span>
+              </h3>
+              <p className="text-white/90 font-body-lg text-lg drop-shadow-md">
+                Betrete die virtuelle Schule. Wähle dein Niveau, finde Live-Klassen und lerne gemeinsam mit anderen.
+              </p>
+            </div>
+            
+            <div className="shrink-0 w-full md:w-auto">
+              <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-lg group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer backdrop-blur-sm border border-white/20">
+                <span className="material-symbols-outlined">meeting_room</span>
+                Campus betreten
+              </div>
+            </div>
+          </div>
+        </Link>
+      </section>
+
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Students Card */}
         <Link to="/admin/students" className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300">
