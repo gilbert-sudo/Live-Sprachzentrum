@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchHomeworks } from '../store/homeworkSlice';
+import AdminDashboard from './AdminDashboard';
 
 export default function Dashboard() {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { homeworks: pinnedHomeworks } = useSelector((state) => state.homework);
   const [courses, setCourses] = useState([]);
-  const [pinnedHomeworks, setPinnedHomeworks] = useState([]);
-  const { user } = useAuth();
 
   useEffect(() => {
     // Replaced Live Classes with Mock "My Courses" for the new UI
@@ -17,21 +19,14 @@ export default function Dashboard() {
     ];
     setCourses(myCourses);
 
-    const fetchPinnedHomeworks = async () => {
-      try {
-        const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
-        // Fetch all pinned homeworks (we could filter by user.level here if needed: `&level=${user.level || 'A1'}`)
-        const res = await axios.get('/api/homework?isPinned=true', config);
-        setPinnedHomeworks(res.data);
-      } catch (err) {
-        console.error('Failed to fetch pinned homeworks', err);
-      }
-    };
-    
-    if (user) {
-      fetchPinnedHomeworks();
+    if (user && user.role !== 'admin') {
+      dispatch(fetchHomeworks({ isPinned: true }));
     }
-  }, [user]);
+  }, [user, dispatch]);
+
+  if (user?.role === 'admin') {
+    return <AdminDashboard />;
+  }
 
   return (
     <>

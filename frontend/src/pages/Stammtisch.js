@@ -1,9 +1,10 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 export default function Stammtisch() {
-  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('events');
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   return (

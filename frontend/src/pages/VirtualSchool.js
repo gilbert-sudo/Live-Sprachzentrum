@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchClassrooms } from '../store/classroomsSlice';
 
 export default function VirtualSchool() {
-  const { user } = useAuth();
-  const [activeClasses, setActiveClasses] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+  const { classrooms: activeClasses } = useSelector((state) => state.classrooms);
+  const dispatch = useDispatch();
+  
   const [openedDoor, setOpenedDoor] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -37,22 +39,15 @@ export default function VirtualSchool() {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchClasses = () => {
-    axios.get('/api/classrooms')
-      .then(res => {
-        setActiveClasses(res.data); // Store all classes, we'll filter by isLive below
-      })
-      .catch(err => {
-        console.error('Error fetching classrooms', err);
-      });
+  const loadClasses = () => {
+    dispatch(fetchClassrooms());
   };
 
   useEffect(() => {
-    fetchClasses();
-    // Poll every 3 seconds to keep classroom status updated for students quickly
-    const interval = setInterval(fetchClasses, 3000);
+    loadClasses();
+    const interval = setInterval(loadClasses, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [dispatch]);
 
   const levels = [
     { id: 'A1', title: 'Anfänger', color: 'from-blue-500 to-blue-700' },

@@ -46,6 +46,7 @@ const userRoutes = require('./routes/userRoutes');
 const jitsiRoutes = require('./routes/jitsiRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const homeworkRoutes = require('./routes/homeworkRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/classrooms', classroomRoutes);
@@ -53,6 +54,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/jitsi', jitsiRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/homework', homeworkRoutes);
+app.use('/api/upload', uploadRoutes);
 
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {

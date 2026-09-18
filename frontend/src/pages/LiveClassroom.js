@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { JitsiMeeting } from '@jitsi/react-sdk';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
 
 // Import Bibliothek for quick access
 import Bibliothek from './Bibliothek';
@@ -14,7 +14,7 @@ function LiveClassroom() {
   const location = useLocation();
   const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
 
   const username = user?.name || location.state?.username || 'Guest';
   const role = user?.role || location.state?.role || 'student';

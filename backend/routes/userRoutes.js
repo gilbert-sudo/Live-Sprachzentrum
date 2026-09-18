@@ -5,15 +5,17 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  createUser,
 } = require('../controllers/userController');
-const { protect, teacher } = require('../middleware/authMiddleware');
+const { protect, teacher, admin } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(protect, teacher, getUsers);
+  .get(protect, teacher, getUsers)
+  .post(protect, admin, createUser);
 
 router.route('/:id')
   .get(protect, teacher, getUserById)
-  .put(protect, teacher, updateUser)
-  .delete(protect, teacher, deleteUser);
+  .put(protect, admin, updateUser)
+  .delete(protect, admin, deleteUser);
 
 module.exports = router;

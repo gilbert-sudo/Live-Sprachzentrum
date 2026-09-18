@@ -5,7 +5,8 @@ import EditModal from '../components/Library/EditModal';
 
 import AudioPlayer from '../components/EBook/AudioPlayer';
 import AlbumViewModal from '../components/Library/AlbumViewModal';
-import { useLibrary } from '../context/LibraryContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLibraryItems, deleteLibraryItem } from '../store/librarySlice';
 
 export default function Bibliothek({ readOnly = false }) {
   const [activeTab, setActiveTab] = useState('books');
@@ -17,7 +18,15 @@ export default function Bibliothek({ readOnly = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Real data state
-  const { libraryItems, setLibraryItems, isLoading, error } = useLibrary();
+  const dispatch = useDispatch();
+  const { libraryItems, status, error } = useSelector((state) => state.library);
+  const isLoading = status === 'loading';
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchLibraryItems());
+    }
+  }, [status, dispatch]);
 
   // Simulating user role (in a real app, this comes from auth context)
   const isTeacher = true && !readOnly; // Hidden if readOnly is true
@@ -26,13 +35,7 @@ export default function Bibliothek({ readOnly = false }) {
     if (!window.confirm('Möchtest du dieses Material wirklich löschen?')) return;
     
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-      const response = await fetch(`${API_URL}/api/library/${id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Fehler beim Löschen');
-      
-      setLibraryItems(prev => prev.filter(item => item._id !== id));
+      await dispatch(deleteLibraryItem(id)).unwrap();
       if (activeAudio && activeAudio._id === id) setActiveAudio(null);
     } catch (err) {
       console.error(err);
@@ -49,7 +52,8 @@ export default function Bibliothek({ readOnly = false }) {
   };
 
   const handleUploadSuccess = (newItem) => {
-    setLibraryItems(prev => [newItem, ...prev]);
+    // Relying on Redux state, can optionally dispatch fetch if not handled in modal
+    dispatch(fetchLibraryItems());
   };
 
   const handleEdit = (item) => {
@@ -57,7 +61,7 @@ export default function Bibliothek({ readOnly = false }) {
   };
 
   const handleEditSuccess = (updatedItem) => {
-    setLibraryItems(prev => prev.map(item => item._id === updatedItem._id ? updatedItem : item));
+    dispatch(fetchLibraryItems());
   };
 
   const filteredLibraryItems = libraryItems.filter(item => {

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchHomeworks, addHomework, deleteHomework } from '../store/homeworkSlice';
 
 export default function HomeworkPanel({ roomId, socket }) {
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
+  const { homeworks, status } = useSelector((state) => state.homework);
+  const dispatch = useDispatch();
   const role = user?.role || 'student';
-  const [homeworks, setHomeworks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = status === 'loading';
 
   // Form states for teachers
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -16,13 +18,13 @@ export default function HomeworkPanel({ roomId, socket }) {
   const [level, setLevel] = useState(roomId.split('-')[1] || 'A1');
 
   useEffect(() => {
-    fetchHomeworks();
+    loadHomeworks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   useEffect(() => {
     if (socket) {
-      const onHomeworkUpdated = () => fetchHomeworks();
+      const onHomeworkUpdated = () => loadHomeworks();
       socket.on('homework_updated', onHomeworkUpdated);
       return () => {
         socket.off('homework_updated', onHomeworkUpdated);
@@ -36,17 +38,8 @@ export default function HomeworkPanel({ roomId, socket }) {
     }
   };
 
-  const fetchHomeworks = async () => {
-    setIsLoading(true);
-    try {
-      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
-      const res = await axios.get(`/api/homework?roomId=${roomId}&level=${level}`, config);
-      setHomeworks(res.data);
-    } catch (err) {
-      console.error('Failed to fetch homeworks', err);
-    } finally {
-      setIsLoading(false);
-    }
+  const loadHomeworks = () => {
+    dispatch(fetchHomeworks({ roomId, level }));
   };
 
   const handleSubmit = async (e) => {
@@ -54,7 +47,6 @@ export default function HomeworkPanel({ roomId, socket }) {
     if (!title || !description) return;
 
     try {
-      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
       const payload = {
         title,
         description,
@@ -63,11 +55,11 @@ export default function HomeworkPanel({ roomId, socket }) {
         level: scope === 'level' ? level : null
       };
 
-      await axios.post('/api/homework', payload, config);
+      await dispatch(addHomework(payload)).unwrap();
       setTitle(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
       setDescription('');
       setIsFormOpen(false);
-      fetchHomeworks();
+      loadHomeworks();
       notifyUpdate();
     } catch (err) {
       console.error('Failed to add homework', err);
@@ -77,9 +69,8 @@ export default function HomeworkPanel({ roomId, socket }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer ce devoir ?")) return;
     try {
-      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
-      await axios.delete(`/api/homework/${id}`, config);
-      fetchHomeworks();
+      await dispatch(deleteHomework(id)).unwrap();
+      loadHomeworks();
       notifyUpdate();
     } catch (err) {
       console.error('Failed to delete homework', err);
@@ -90,7 +81,7 @@ export default function HomeworkPanel({ roomId, socket }) {
     try {
       const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
       await axios.patch(`/api/homework/${id}/pin`, {}, config);
-      fetchHomeworks();
+      loadHomeworks();
       notifyUpdate();
     } catch (err) {
       console.error('Failed to pin/unpin homework', err);

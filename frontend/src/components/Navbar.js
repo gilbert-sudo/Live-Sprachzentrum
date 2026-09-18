@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, openAuthModal } from '../store/authSlice';
 
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
-  const { user, logout } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -43,7 +45,7 @@ const UserMenu = () => {
             <span className="material-symbols-outlined text-[20px]">person</span>
             Mein Profil
           </Link>
-          <button onClick={() => { setIsOpen(false); logout(); }} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
+          <button onClick={() => { setIsOpen(false); dispatch(logout()); }} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
             <span className="material-symbols-outlined text-[20px]">logout</span>
             Abmelden
           </button>
@@ -73,7 +75,8 @@ const ThemeToggle = () => {
 export default function Navbar({ children }) {
   const location = useLocation();
   const path = location.pathname;
-  const { user, openAuthModal } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   const navItems = [
     { path: '/', icon: 'home', label: 'Lernen', match: '/' },
@@ -103,7 +106,7 @@ export default function Navbar({ children }) {
             <UserMenu />
           ) : (
             <button 
-              onClick={openAuthModal}
+              onClick={() => dispatch(openAuthModal())}
               className="bg-germany-red hover:bg-red-700 text-white px-5 py-2 rounded-full font-bold text-sm shadow-md transition-transform active:scale-95"
             >
               Anmelden

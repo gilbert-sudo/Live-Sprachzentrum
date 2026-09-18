@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { openAuthModal } from '../store/authSlice';
 
 export default function ProtectedRoute({ children }) {
-  const { user, openAuthModal } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!user) {
-      openAuthModal();
+      dispatch(openAuthModal());
     }
-  }, [user, openAuthModal]);
+  }, [user, dispatch]);
 
   if (!user) {
     return (
@@ -21,7 +23,7 @@ export default function ProtectedRoute({ children }) {
           Sie müssen angemeldet sein, um auf diesen Bereich zugreifen zu können. Bitte melden Sie sich an oder registrieren Sie sich kostenlos.
         </p>
         <button 
-          onClick={openAuthModal} 
+          onClick={() => dispatch(openAuthModal())} 
           className="bg-germany-red hover:bg-red-700 text-white px-8 py-3.5 rounded-full font-bold text-lg shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           Jetzt Anmelden

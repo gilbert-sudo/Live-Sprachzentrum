@@ -39,6 +39,11 @@ const updateUser = async (req, res) => {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       user.role = req.body.role || user.role;
+      user.level = req.body.level || user.level;
+      user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
+      user.gender = req.body.gender || user.gender;
+      user.birthday = req.body.birthday || user.birthday;
+      user.photo = req.body.photo !== undefined ? req.body.photo : user.photo;
 
       if (req.body.password) {
         user.password = req.body.password;
@@ -50,6 +55,11 @@ const updateUser = async (req, res) => {
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
+        level: updatedUser.level,
+        phone: updatedUser.phone,
+        gender: updatedUser.gender,
+        birthday: updatedUser.birthday,
+        photo: updatedUser.photo,
       });
     } else {
       res.status(404).json({ message: 'User not found' });
@@ -76,9 +86,50 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// @desc    Create user (Admin only)
+// @route   POST /api/users
+// @access  Private/Admin
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role, level, phone, gender, birthday, photo } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: role || 'student',
+      level: level || 'A1',
+      phone,
+      gender,
+      birthday,
+      photo,
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        level: user.level,
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid user data' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
+  createUser,
 };

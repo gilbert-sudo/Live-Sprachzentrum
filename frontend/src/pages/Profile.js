@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../store/authSlice';
 
 export default function Profile() {
   const { isDarkMode, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   return (
     <>
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
@@ -126,7 +128,10 @@ export default function Profile() {
             <span className="material-symbols-outlined">help</span>
             Hilfe & Support
           </button>
-          <button className="flex-1 bg-error-container text-on-error-container font-label-md text-label-md py-4 px-6 rounded-full hover:bg-error/20 transition-colors flex items-center justify-center gap-2 border border-error/20 shadow-sm interactive-card">
+          <button 
+            onClick={() => dispatch(logout())}
+            className="flex-1 bg-error-container text-on-error-container font-label-md text-label-md py-4 px-6 rounded-full hover:bg-error/20 transition-colors flex items-center justify-center gap-2 border border-error/20 shadow-sm interactive-card"
+          >
             <span className="material-symbols-outlined">logout</span>
             Abmelden
           </button>
