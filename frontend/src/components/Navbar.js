@@ -131,7 +131,7 @@ export default function Navbar({ children }) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32">
+      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32 flex flex-col">
         {children}
       </main>
 

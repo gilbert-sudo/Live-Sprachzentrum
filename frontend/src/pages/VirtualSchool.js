@@ -75,7 +75,7 @@ export default function VirtualSchool() {
   };
 
   return (
-    <main className="flex-1 w-full bg-surface-container-lowest min-h-screen flex flex-col relative overflow-hidden hallway-scene">
+    <main className="flex-1 w-full bg-surface-container-lowest h-full flex flex-col relative overflow-hidden hallway-scene">
 
       {/* 3D Hallway Environment */}
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-surface-container-highest to-surface-container-lowest opacity-60 z-0"></div>
