@@ -211,7 +211,7 @@ export default function PdfReaderModal({ book, audios = [], activeAudio, onPlayA
         <div className={`flex-1 w-full h-full relative z-0 bg-surface-container transition-all duration-300 ${isPanelOpen ? 'md:pr-[24rem]' : ''}`}>
           <iframe 
             src={`/pdfjs/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`}
-            className="w-full h-full border-none" 
+            className="absolute inset-0 w-full h-full border-none" 
             title="PDF Reader"
           />
         </div>
