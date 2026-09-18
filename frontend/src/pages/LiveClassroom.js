@@ -284,8 +284,8 @@ function LiveClassroom() {
 
       {/* Compact Top-Left Room Badge */}
       {isJoined && (
-        <div className="absolute top-4 left-4 z-10 pointer-events-auto flex items-center gap-2">
-          <div className="bg-gray-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-gray-700/70 shadow-lg flex items-center gap-2.5 text-xs">
+        <div className="absolute top-4 left-4 z-10 pointer-events-auto flex flex-col items-start md:flex-row md:items-center gap-2">
+          <div className="bg-gray-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-gray-700/70 shadow-lg flex items-center gap-2.5 text-xs max-w-[calc(100vw-32px)] overflow-hidden flex-wrap">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-white font-semibold">Salle: {formattedRoomName}</span>
             <span className="text-gray-400">|</span>
