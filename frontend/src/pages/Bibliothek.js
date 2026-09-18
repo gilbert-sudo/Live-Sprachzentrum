@@ -5,6 +5,7 @@ import EditModal from '../components/Library/EditModal';
 
 import AudioPlayer from '../components/EBook/AudioPlayer';
 import AlbumViewModal from '../components/Library/AlbumViewModal';
+import { useLibrary } from '../context/LibraryContext';
 
 export default function Bibliothek({ readOnly = false }) {
   const [activeTab, setActiveTab] = useState('books');
@@ -16,34 +17,10 @@ export default function Bibliothek({ readOnly = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Real data state
-  const [libraryItems, setLibraryItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { libraryItems, setLibraryItems, isLoading, error } = useLibrary();
 
   // Simulating user role (in a real app, this comes from auth context)
   const isTeacher = true && !readOnly; // Hidden if readOnly is true
-
-  useEffect(() => {
-    fetchLibraryItems();
-  }, []);
-
-  const fetchLibraryItems = async () => {
-    try {
-      setIsLoading(true);
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-      const response = await fetch(`${API_URL}/api/library`);
-      if (!response.ok) {
-        throw new Error('Fehler beim Laden der Bibliothek');
-      }
-      const data = await response.json();
-      setLibraryItems(data);
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Möchtest du dieses Material wirklich löschen?')) return;

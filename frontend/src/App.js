@@ -16,13 +16,15 @@ import VirtualSchool from './pages/VirtualSchool';
 
 // Auth Components
 import { AuthProvider } from './context/AuthContext';
+import { LibraryProvider } from './context/LibraryContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
+      <LibraryProvider>
+        <Router>
+          <Routes>
           {/* Full screen routes without Navbar */}
           <Route path="/room/:roomId" element={
             <ProtectedRoute>
@@ -50,7 +52,8 @@ function App() {
             </Navbar>
           } />
         </Routes>
-      </Router>
+        </Router>
+      </LibraryProvider>
     </AuthProvider>
   );
 }
