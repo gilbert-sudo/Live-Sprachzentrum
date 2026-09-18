@@ -78,75 +78,80 @@ export default function Bibliothek({ readOnly = false }) {
   const audios = filteredLibraryItems.filter(item => item.type === 'audio' || item.type === 'album');
 
   return (
-    <div className="max-w-container-max-width mx-auto px-4 md:px-8 py-6 md:py-8 animate-fade-in pb-24">
-      {/* Header */}
-      <div className="mb-8 flex justify-between items-start">
-        <div>
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface flex items-center gap-3">
-            <span className="material-symbols-outlined text-[36px] text-germany-red">local_library</span>
-            Bibliothek
-          </h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-            Dein virtueller Lesesaal und Hörbuch-Bereich.
-          </p>
-        </div>
-        {isTeacher && (
-          <button 
-            onClick={() => setIsUploadModalOpen(true)}
-            className="bg-germany-red text-white px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:bg-surface-tint shadow-md transition-all"
-          >
-            <span className="material-symbols-outlined text-[20px]">upload</span>
-            <span className="hidden sm:inline">Neues Material</span>
-          </button>
-        )}
-      </div>
-
-      {/* Tabs and Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-surface-variant mb-6 pb-2">
-        <div className="flex gap-4">
-          <button
-            onClick={() => setActiveTab('books')}
-            className={`px-2 font-label-md text-label-md transition-colors relative ${
-              activeTab === 'books' ? 'text-germany-red' : 'text-secondary hover:text-on-surface'
-            }`}
-          >
-            Bücher ({books.length})
-            {activeTab === 'books' && (
-              <span className="absolute -bottom-[9px] left-0 w-full h-[2px] bg-germany-red rounded-t-full"></span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab('audio')}
-            className={`px-2 font-label-md text-label-md transition-colors relative ${
-              activeTab === 'audio' ? 'text-germany-red' : 'text-secondary hover:text-on-surface'
-            }`}
-          >
-            Hörverstehen ({audios.length})
-            {activeTab === 'audio' && (
-              <span className="absolute -bottom-[9px] left-0 w-full h-[2px] bg-germany-red rounded-t-full"></span>
-            )}
-          </button>
-        </div>
-        
-        <div className="relative w-full md:w-64 shrink-0">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary/70 text-[20px]">search</span>
-          <input
-            type="text"
-            placeholder="Suchen (Titel, Autor...)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-surface-container-lowest border border-surface-variant rounded-full pl-10 pr-4 py-2 text-sm text-on-surface focus:outline-none focus:border-germany-red focus:ring-2 focus:ring-germany-red/10 transition-all font-medium shadow-sm"
-          />
-          {searchQuery && (
+    <div className="max-w-container-max-width mx-auto animate-fade-in pb-24">
+      {/* Sticky Header Container */}
+      <div className="sticky top-0 z-40 bg-surface-container-lowest/95 backdrop-blur-md px-4 md:px-8 pt-6 md:pt-8 pb-4 border-b border-surface-variant shadow-sm mb-6">
+        {/* Header */}
+        <div className="mb-6 flex justify-between items-start">
+          <div>
+            <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface flex items-center gap-3">
+              <span className="material-symbols-outlined text-[36px] text-germany-red">local_library</span>
+              Bibliothek
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+              Dein virtueller Lesesaal und Hörbuch-Bereich.
+            </p>
+          </div>
+          {isTeacher && (
             <button 
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface flex items-center justify-center bg-surface-variant/50 hover:bg-surface-variant rounded-full p-0.5 transition-colors"
+              onClick={() => setIsUploadModalOpen(true)}
+              className="bg-germany-red text-white px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:bg-surface-tint shadow-md transition-all"
             >
-              <span className="material-symbols-outlined text-[14px]">close</span>
+              <span className="material-symbols-outlined text-[20px]">upload</span>
+              <span className="hidden sm:inline">Neues Material</span>
             </button>
           )}
         </div>
+
+        {/* Tabs and Search */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setActiveTab('books')}
+              className={`px-2 font-label-md text-label-md transition-colors relative pb-1 ${
+                activeTab === 'books' ? 'text-germany-red' : 'text-secondary hover:text-on-surface'
+              }`}
+            >
+              Bücher ({books.length})
+              {activeTab === 'books' && (
+                <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-germany-red rounded-t-full"></span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('audio')}
+              className={`px-2 font-label-md text-label-md transition-colors relative pb-1 ${
+                activeTab === 'audio' ? 'text-germany-red' : 'text-secondary hover:text-on-surface'
+              }`}
+            >
+              Hörverstehen ({audios.length})
+              {activeTab === 'audio' && (
+                <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-germany-red rounded-t-full"></span>
+              )}
+            </button>
+          </div>
+          
+          <div className="relative w-full md:w-64 shrink-0">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary/70 text-[20px]">search</span>
+            <input
+              type="text"
+              placeholder="Suchen (Titel, Autor...)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-surface-container-highest border border-surface-variant rounded-full pl-10 pr-4 py-2 text-sm text-on-surface focus:outline-none focus:border-germany-red focus:ring-2 focus:ring-germany-red/10 transition-all font-medium shadow-sm"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface flex items-center justify-center bg-surface-variant/50 hover:bg-surface-variant rounded-full p-0.5 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[14px]">close</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+
+      <div className="px-4 md:px-8">
 
       {isLoading && (
         <div className="flex justify-center py-12">
@@ -342,6 +347,7 @@ export default function Bibliothek({ readOnly = false }) {
         onPlayTrack={handlePlayAudio}
         activeAudio={activeAudio}
       />
+      </div>
     </div>
   );
 }
