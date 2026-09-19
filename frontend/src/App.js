@@ -25,7 +25,7 @@ import StudentManagement from './pages/StudentManagement';
 import TeacherManagement from './pages/TeacherManagement';
 import AdminManagement from './pages/AdminManagement';
 
-import ProtectedRoute from './components/ProtectedRoute';
+
 
 import Lenis from 'lenis';
 
@@ -69,39 +69,39 @@ function App() {
     <>
       <Router>
           <Routes>
-          {/* Full screen routes without Navbar */}
+          {/* Landing Page */}
           <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} />
-          <Route path="/room/:roomId" element={
-            <ProtectedRoute>
-              <LiveClassroom />
-            </ProtectedRoute>
-          } />
           
-          {/* Routes with Navbar */}
-          <Route path="*" element={
-            <Navbar>
-              <Routes>
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/bibliothek" element={<Bibliothek />} />
-                <Route path="/karriere" element={<Karriere />} />
-                
-                {/* Protected Routes */}
-                <Route path="/campus" element={<ProtectedRoute><VirtualSchool /></ProtectedRoute>} />
-                <Route path="/simulator" element={<ProtectedRoute><Prufungssimulator /></ProtectedRoute>} />
-                <Route path="/uebung" element={<ProtectedRoute><Uebung /></ProtectedRoute>} />
-                <Route path="/stammtisch" element={<ProtectedRoute><Stammtisch /></ProtectedRoute>} />
-                <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          {/* Authenticated Routes */}
+          {isAuthenticated ? (
+            <>
+              <Route path="/room/:roomId" element={<LiveClassroom />} />
+              <Route path="*" element={
+                <Navbar>
+                  <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/bibliothek" element={<Bibliothek />} />
+                    <Route path="/karriere" element={<Karriere />} />
+                    <Route path="/campus" element={<VirtualSchool />} />
+                    <Route path="/simulator" element={<Prufungssimulator />} />
+                    <Route path="/uebung" element={<Uebung />} />
+                    <Route path="/stammtisch" element={<Stammtisch />} />
+                    <Route path="/profil" element={<Profile />} />
 
-                {/* Admin Routes */}
-                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/admin/students" element={<ProtectedRoute><StudentManagement /></ProtectedRoute>} />
-                <Route path="/admin/teachers" element={<ProtectedRoute><TeacherManagement /></ProtectedRoute>} />
-                <Route path="/admin/admins" element={<ProtectedRoute><AdminManagement /></ProtectedRoute>} />
-                
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Navbar>
-          } />
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/students" element={<StudentManagement />} />
+                    <Route path="/admin/teachers" element={<TeacherManagement />} />
+                    <Route path="/admin/admins" element={<AdminManagement />} />
+                    
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </Navbar>
+              } />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/" replace />} />
+          )}
         </Routes>
       </Router>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => dispatch(closeAuthModal())} />

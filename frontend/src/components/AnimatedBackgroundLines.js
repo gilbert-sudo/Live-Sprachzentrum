@@ -6,6 +6,18 @@ const AnimatedBackgroundLines = () => {
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-80 dark:opacity-60 flex justify-center">
+      <style>{`
+        @keyframes flyPlane {
+          0% { offset-distance: 0%; opacity: 0; }
+          10% { opacity: 0.8; }
+          90% { opacity: 0.8; }
+          100% { offset-distance: 100%; opacity: 0; }
+        }
+        .flying-plane {
+          offset-rotate: auto 90deg;
+          animation: flyPlane linear infinite;
+        }
+      `}</style>
       <svg
         className="w-full h-full absolute top-0 left-0"
         viewBox="-300 0 1600 3000"
@@ -61,22 +73,40 @@ const AnimatedBackgroundLines = () => {
                            C${420 + n * 4},${3000} ${520 + n * 4},${3100} ${620 + n * 3},${3200}`;
 
             return (
-              <motion.path
-                key={i}
-                d={path1}
-                fill="none"
-                className="stroke-[url(#ribbonGradient)] dark:stroke-[url(#ribbonGradientDark)]"
-                strokeWidth={1}
-                animate={{
-                  d: [path1, path2, path1]
-                }}
-                transition={{
-                  duration: 8 + Math.abs(n) * 0.2, // Outer lines move slightly slower
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.05 // Staggered animation
-                }}
-              />
+              <React.Fragment key={i}>
+                <motion.path
+                  d={path1}
+                  fill="none"
+                  className="stroke-[url(#ribbonGradient)] dark:stroke-[url(#ribbonGradientDark)]"
+                  strokeWidth={1}
+                  animate={{
+                    d: [path1, path2, path1]
+                  }}
+                  transition={{
+                    duration: 8 + Math.abs(n) * 0.2, // Outer lines move slightly slower
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.05 // Staggered animation
+                  }}
+                />
+                
+                {/* Add a few planes flying along specific paths */}
+                {(i === 10 || i === 25 || i === 40) && (
+                  <g 
+                    className="flying-plane" 
+                    style={{ 
+                      offsetPath: `path('${path1}')`,
+                      animationDuration: `${25 + (i % 3) * 5}s`,
+                      animationDelay: `${i * 0.5}s`
+                    }}
+                  >
+                    {/* Plane SVG */}
+                    <svg x="-20" y="-20" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="url(#ribbonGradient)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="dark:stroke-[url(#ribbonGradientDark)]">
+                      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21.5 4c0 0-2-.5-3.5 1.5L14.5 9 6.3 7.2C5.9 7.1 5.5 7.2 5.2 7.5L3 9.7c-.4.4-.3 1.1.2 1.4l6.1 3.5 2.2 6.1c.3.5 1 .6 1.4.2l2.2-2.2c.3-.3.4-.7.3-1.1z" />
+                    </svg>
+                  </g>
+                )}
+              </React.Fragment>
             );
           })}
         </motion.g>
