@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, Globe, ArrowRight, PlayCircle, Sparkles, Mail, MapPin, Phone, Plane } from 'lucide-react';
+import { BookOpen, Users, Globe, ArrowRight, PlayCircle, Sparkles, Mail, MapPin, Phone, Plane, ArrowUp } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { openAuthModal } from '../store/authSlice';
 import ThemeToggle from '../components/ThemeToggle';
@@ -19,6 +19,23 @@ const LandingPage = () => {
 
   const [contactStep, setContactStep] = useState(1);
   const [contactData, setContactData] = useState({ name: '', email: '', message: '' });
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleNextStep = () => setContactStep(s => Math.min(4, s + 1));
   const handlePrevStep = () => setContactStep(s => Math.max(1, s - 1));
@@ -492,6 +509,17 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      <div className={`fixed bottom-6 right-6 z-50 transition-all duration-500 transform ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'}`}>
+        <button 
+          onClick={scrollToTop}
+          className="w-14 h-14 rounded-full bg-germany-red text-white shadow-2xl flex items-center justify-center hover:bg-red-700 hover:scale-110 active:scale-95 transition-all group border border-white/20"
+          aria-label="Nach oben scrollen"
+        >
+          <ArrowUp className="w-7 h-7 transition-transform group-hover:-translate-y-1" />
+        </button>
+      </div>
     </div>
   );
 };
