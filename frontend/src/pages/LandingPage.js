@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { openAuthModal } from '../store/authSlice';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageSelector from '../components/LanguageSelector';
+import AnimatedBackgroundLines from '../components/AnimatedBackgroundLines';
 
 // A liquid glass component using Tailwind utilities
 const GlassCard = ({ children, className }) => (
@@ -71,6 +72,8 @@ const LandingPage = () => {
         {/* Subtle Motive Grid Pattern */}
         <div className="absolute inset-0 opacity-20 dark:hidden" style={{ backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="absolute inset-0 opacity-40 hidden dark:block" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+        <AnimatedBackgroundLines />
 
         {/* Animated Gradient Orbs for Depth */}
         <motion.div
@@ -163,7 +166,7 @@ const LandingPage = () => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex justify-between items-center mb-16 md:mb-24 p-3 md:p-4 rounded-full bg-white/70 dark:bg-white/5 backdrop-blur-lg border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-2xl"
+          className="flex justify-between items-center mb-16 md:mb-24 p-3 md:p-4 rounded-full bg-white/70 dark:bg-white/5 backdrop-blur-lg border border-white/60 dark:border-white/10 shadow-[0_5px_20px_rgba(0,0,0,0.12)] dark:shadow-2xl"
         >
           <div className="flex items-center space-x-3 px-2 md:px-4">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center shadow-lg p-1 overflow-hidden">
