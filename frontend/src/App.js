@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeAuthModal } from './store/authSlice';
+import { useEffect } from 'react';
+import { closeAuthModal, fetchUserProfile } from './store/authSlice';
 import AuthModal from './components/AuthModal';
 
 import Navbar from './components/Navbar';
@@ -27,7 +28,14 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const dispatch = useDispatch();
-  const { isAuthModalOpen } = useSelector((state) => state.auth);
+  const { isAuthModalOpen, isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchUserProfile());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

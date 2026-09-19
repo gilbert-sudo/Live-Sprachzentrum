@@ -40,6 +40,24 @@ export const signup = createAsyncThunk('auth/signup', async ({ name, email, pass
   }
 });
 
+export const fetchUserProfile = createAsyncThunk('auth/fetchUserProfile', async (_, { getState, rejectWithValue }) => {
+  try {
+    const { auth } = getState();
+    const token = auth.user?.token;
+    
+    if (!token) {
+      return rejectWithValue('No token found');
+    }
+
+    const { data } = await axios.get(`/api/auth/profile`);
+    const updatedUser = { ...data, token };
+    localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+    return updatedUser;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || err.message || 'Failed to fetch user profile');
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -88,6 +106,16 @@ const authSlice = createSlice({
       .addCase(signup.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        localStorage.removeItem('userInfo');
+        delete axios.defaults.headers.common['Authorization'];
+        state.user = null;
+        state.isAuthenticated = false;
+        state.status = 'idle';
       });
   },
 });
