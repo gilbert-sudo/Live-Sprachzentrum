@@ -20,6 +20,7 @@ export default function Bibliothek({ readOnly = false }) {
   // Real data state
   const dispatch = useDispatch();
   const { libraryItems, status, error } = useSelector((state) => state.library);
+  const { user } = useSelector((state) => state.auth);
   const isLoading = status === 'loading';
 
   useEffect(() => {
@@ -28,8 +29,8 @@ export default function Bibliothek({ readOnly = false }) {
     }
   }, [status, dispatch]);
 
-  // Simulating user role (in a real app, this comes from auth context)
-  const isTeacher = true && !readOnly; // Hidden if readOnly is true
+  // Only admins can edit, add, or delete materials
+  const isAdmin = user?.role === 'admin' && !readOnly; // Hidden if readOnly is true
 
   const handleDelete = async (id) => {
     if (!window.confirm('Möchtest du dieses Material wirklich löschen?')) return;
@@ -92,7 +93,7 @@ export default function Bibliothek({ readOnly = false }) {
               Dein virtueller Lesesaal und Hörbuch-Bereich.
             </p>
           </div>
-          {isTeacher && (
+          {isAdmin && (
             <button 
               onClick={() => setIsUploadModalOpen(true)}
               className="bg-germany-red text-white px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:bg-surface-tint shadow-md transition-all"
@@ -196,7 +197,7 @@ export default function Bibliothek({ readOnly = false }) {
                   <h3 className="font-title-lg text-title-lg text-on-surface truncate" title={book.title}>{book.title}</h3>
                   <p className="font-label-sm text-label-sm text-secondary truncate">{book.author}</p>
                 </div>
-                {isTeacher && (
+                {isAdmin && (
                   <div className="absolute top-2 right-2 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity z-30">
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleEdit(book); }}
@@ -259,7 +260,7 @@ export default function Bibliothek({ readOnly = false }) {
                 </div>
                 
                 <div className="flex items-center gap-2 shrink-0">
-                  {isTeacher && (
+                  {isAdmin && (
                     <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container-lowest/90 backdrop-blur-sm p-1 rounded-full border border-surface-variant shadow-sm">
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleEdit(audio); }}
