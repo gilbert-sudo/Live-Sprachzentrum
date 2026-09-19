@@ -12,6 +12,15 @@ La vision centrale est de créer une synergie parfaite entre les cours en prése
 numérique, en digitalisant l'intégralité du matériel pédagogique exclusif (les manuels de l'école) et en
 fédérant la communauté des apprenants et des professeurs.
 
+1.1 Informations Générales sur l'École (Live-Sprachzentrum LIS)
+- **Nom Complet:** Live-Sprachzentrum LIS
+- **Emplacement:** Antanetibe Ivato, Antananarivo 105, Madagascar
+- **Contacts:** 034 93 986 89 / 034 83 036 70 | livesprachzentrum2@gmail.com
+- **Slogan:** "Deutsch erleben! Vivez la langue allemande!"
+- **Programmes:** Cours d'allemand structurés de A1 à B2, cours du soir pour adultes/professionnels, ateliers de vacances pour les jeunes (jusqu'à 15 ans).
+- **Professeurs:** Enseignants expérimentés de l'Université de Madagascar et professeurs natifs d'Allemagne.
+- **Objectifs:** Préparation pour les programmes Au Pair, FSJ (Freiwilliges Soziales Jahr), Ausbildung, et assistance pour les demandes de visa pour l'Allemagne.
+
 2. Architecture Pédagogique (L'Approche "Miroir")
 L'application se distinguera par une intégration complète du matériel pédagogique existant. Elle ne
 proposera pas un contenu générique, mais sera le reflet interactif des manuels physiques de l'école.
