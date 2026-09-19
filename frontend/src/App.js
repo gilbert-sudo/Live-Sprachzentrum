@@ -17,6 +17,7 @@ import Bibliothek from './pages/Bibliothek';
 // New Virtual School pages
 import LiveClassroom from './pages/LiveClassroom';
 import VirtualSchool from './pages/VirtualSchool';
+import LandingPage from './pages/LandingPage';
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard';
@@ -42,6 +43,7 @@ function App() {
       <Router>
           <Routes>
           {/* Full screen routes without Navbar */}
+          <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} />
           <Route path="/room/:roomId" element={
             <ProtectedRoute>
               <LiveClassroom />
@@ -52,7 +54,7 @@ function App() {
           <Route path="*" element={
             <Navbar>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/bibliothek" element={<Bibliothek />} />
                 <Route path="/karriere" element={<Karriere />} />
                 

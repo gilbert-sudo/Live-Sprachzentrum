@@ -62,7 +62,7 @@ export default function Navbar({ children }) {
   const { user } = useSelector((state) => state.auth);
 
   const navItems = [
-    { path: '/', icon: 'home', label: 'Lernen', match: '/' },
+    { path: '/dashboard', icon: 'home', label: 'Lernen', match: '/dashboard' },
     { path: '/bibliothek', icon: 'local_library', label: 'Bibliothek', match: '/bibliothek' },
     { path: '/karriere', icon: 'work', label: 'Karriere', match: '/karriere' },
     { path: '/stammtisch', icon: 'groups', label: 'Stammtisch', match: '/stammtisch' },
