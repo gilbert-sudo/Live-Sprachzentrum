@@ -32,10 +32,14 @@
     <title>Live-Sprachzentrum</title>
     <script>
       // Default to light mode unless explicitly set to dark in localStorage
-      if (localStorage.getItem('theme') === 'dark') {
+      var theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
         document.documentElement.classList.add('dark');
         document.documentElement.classList.remove('light');
       } else {
+        if (!theme) {
+          localStorage.setItem('theme', 'light');
+        }
         document.documentElement.classList.remove('dark');
         document.documentElement.classList.add('light');
       }
