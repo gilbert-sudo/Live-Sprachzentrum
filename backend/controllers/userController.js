@@ -117,6 +117,10 @@ const createUser = async (req, res) => {
         email: user.email,
         role: user.role,
         level: user.level,
+        phone: user.phone,
+        gender: user.gender,
+        birthday: user.birthday,
+        photo: user.photo,
       });
     } else {
       res.status(400).json({ message: 'Invalid user data' });

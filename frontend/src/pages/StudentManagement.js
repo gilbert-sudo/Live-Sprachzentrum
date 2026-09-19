@@ -19,6 +19,7 @@ export default function StudentManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -27,7 +28,7 @@ export default function StudentManagement() {
     role: 'student', // hardcoded
     level: 'A1',
     phone: '',
-    gender: 'other',
+    gender: 'female',
     birthday: '',
     photo: '',
   });
@@ -46,14 +47,14 @@ export default function StudentManagement() {
         role: 'student',
         level: u.level || 'A1',
         phone: u.phone || '',
-        gender: u.gender || 'other',
+        gender: u.gender || 'female',
         birthday: u.birthday ? new Date(u.birthday).toISOString().split('T')[0] : '',
         photo: u.photo || '',
       });
     } else {
       setEditingUser(null);
       setFormData({
-        name: '', email: '', password: '', role: 'student', level: 'A1', phone: '', gender: 'other', birthday: '', photo: '',
+        name: '', email: '', password: '', role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
       });
     }
     setIsModalOpen(true);
@@ -62,6 +63,7 @@ export default function StudentManagement() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingUser(null);
+    setShowPassword(false);
   };
 
   const handleImageUpload = async (e) => {
@@ -230,7 +232,18 @@ export default function StudentManagement() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Passwort {!editingUser && '*'}</label>
-                <input required={!editingUser} type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" placeholder={editingUser ? "(leer lassen, um zu behalten)" : ""} />
+                <div className="relative">
+                  <input required={!editingUser} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-4 pr-12 py-2 rounded-xl bg-surface-container border border-surface-variant" placeholder={editingUser ? "(leer lassen, um zu behalten)" : ""} />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface p-1 rounded-full transition-colors flex items-center justify-center"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Niveau</label>
@@ -250,8 +263,6 @@ export default function StudentManagement() {
                 <select value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
                   <option value="male">Männlich</option>
                   <option value="female">Weiblich</option>
-                  <option value="other">Divers/Andere</option>
-                  <option value="prefer_not_to_say">Keine Angabe</option>
                 </select>
               </div>
               <div>
@@ -345,7 +356,7 @@ export default function StudentManagement() {
                   <span className="material-symbols-outlined text-secondary text-[20px]">wc</span>
                   <div>
                     <p className="text-xs text-secondary font-semibold uppercase">Geschlecht</p>
-                    <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : viewingUser.gender === 'female' ? 'Weiblich' : viewingUser.gender === 'other' ? 'Divers/Andere' : 'Keine Angabe'}</p>
+                    <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : 'Weiblich'}</p>
                   </div>
                 </div>
               </div>

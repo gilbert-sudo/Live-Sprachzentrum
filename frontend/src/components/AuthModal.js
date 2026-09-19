@@ -5,6 +5,7 @@ import { login } from '../store/authSlice';
 export default function AuthModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const dispatch = useDispatch();
 
@@ -63,14 +64,25 @@ export default function AuthModal({ isOpen, onClose }) {
 
             <div>
               <label className="block text-sm font-medium text-on-surface mb-1.5">Passwort</label>
-              <input 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-surface-container-lowest border border-surface-variant focus:border-germany-red focus:ring-2 focus:ring-germany-red/20 outline-none transition-all text-on-surface"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"}
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-4 pr-12 py-3 rounded-xl bg-surface-container-lowest border border-surface-variant focus:border-germany-red focus:ring-2 focus:ring-germany-red/20 outline-none transition-all text-on-surface"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface p-1 rounded-full transition-colors flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <button 
