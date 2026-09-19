@@ -8,6 +8,7 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { homeworks: pinnedHomeworks } = useSelector((state) => state.homework);
+  const isTeacher = user?.role === 'teacher';
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
@@ -36,7 +37,9 @@ export default function Dashboard() {
         <section className="mb-2 md:mb-4 flex justify-between items-end">
           <div>
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, {user ? user.name : 'Gast'}!</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-2">Bereit für deine nächste Lektion?</p>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+              {isTeacher ? "Bereit für deinen nächsten Unterricht?" : "Bereit für deine nächste Lektion?"}
+            </p>
           </div>
         </section>
 
@@ -55,10 +58,18 @@ export default function Dashboard() {
               
               <div className="text-center md:text-left flex-1 max-w-xl">
                 <h3 className="font-title-lg text-title-lg md:text-4xl text-white mb-3 font-bold tracking-tight drop-shadow-md">
-                  Willkommen auf dem <span className="text-germany-gold">Campus</span>
+                  {isTeacher ? (
+                    <>Unterrichten auf dem <span className="text-germany-gold">Campus</span></>
+                  ) : (
+                    <>Willkommen auf dem <span className="text-germany-gold">Campus</span></>
+                  )}
                 </h3>
                 <p className="text-white/90 font-body-lg text-lg drop-shadow-md">
-                  Betrete die virtuelle Schule. Wähle dein Niveau, finde Live-Klassen und lerne gemeinsam mit anderen.
+                  {isTeacher ? (
+                    "Betrete die virtuelle Schule, um deine Live-Klassen zu leiten und mit Schülern zu interagieren."
+                  ) : (
+                    "Betrete die virtuelle Schule. Wähle dein Niveau, finde Live-Klassen und lerne gemeinsam mit anderen."
+                  )}
                 </p>
               </div>
               
@@ -75,7 +86,9 @@ export default function Dashboard() {
         {/* My Courses */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-title-md text-title-md text-on-surface">Meine Kurse</h3>
+            <h3 className="font-title-md text-title-md text-on-surface">
+              {isTeacher ? "Meine Klassen" : "Meine Kurse"}
+            </h3>
           </div>
           {/* Horizontal Scroll on Mobile, Grid on Desktop */}
           <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-3 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
@@ -183,7 +196,9 @@ export default function Dashboard() {
         <section className="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-4">
-              <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">Aktueller Kurs</span>
+              <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
+                {isTeacher ? "Aktuelle Klasse" : "Aktueller Kurs"}
+              </span>
               <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">B1 Standard</span>
             </div>
             
@@ -217,7 +232,7 @@ export default function Dashboard() {
           </div>
           
           <Link to="/uebung" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
-            Lektion fortsetzen
+            {isTeacher ? "Unterricht starten" : "Lektion fortsetzen"}
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>
         </section>

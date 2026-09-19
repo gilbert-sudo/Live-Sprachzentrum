@@ -16,7 +16,7 @@ export default function AdminDashboard() {
       <section className="mb-2 md:mb-4 flex justify-between items-end">
         <div>
           <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, Master Admin {user?.name}!</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Willkommen im Verwaltungsbereich.</p>
+          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Übersicht des Verwaltungsbereichs.</p>
         </div>
       </section>
 
@@ -35,10 +35,10 @@ export default function AdminDashboard() {
             
             <div className="text-center md:text-left flex-1 max-w-xl">
               <h3 className="font-title-lg text-title-lg md:text-4xl text-white mb-3 font-bold tracking-tight drop-shadow-md">
-                Willkommen auf dem <span className="text-germany-gold">Campus</span>
+                Der virtuelle <span className="text-germany-gold">Campus</span>
               </h3>
               <p className="text-white/90 font-body-lg text-lg drop-shadow-md">
-                Betrete die virtuelle Schule. Wähle dein Niveau, finde Live-Klassen und lerne gemeinsam mit anderen.
+                Betreten Sie die virtuelle Schule, um die Live-Klassen zu überwachen und den Campus zu verwalten.
               </p>
             </div>
             
