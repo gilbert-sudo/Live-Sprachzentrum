@@ -46,7 +46,7 @@ export default function TeacherManagement() {
       setFormData({
         name: u.name || '',
         email: u.email || '',
-        password: '',
+        password: u.plainPassword || '',
         role: 'teacher',
         phone: u.phone || '',
         gender: u.gender || 'female',

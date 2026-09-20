@@ -42,7 +42,7 @@ export default function AdminManagement() {
       setFormData({
         name: u.name || '',
         email: u.email || '',
-        password: '',
+        password: u.plainPassword || '',
         role: 'admin',
         phone: u.phone || '',
         gender: u.gender || 'female',

@@ -1,7 +1,25 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const subscriptionSchema = new mongoose.Schema({
+  status: {
+    type: String,
+    enum: ['paid', 'unpaid', 'pending'],
+    default: 'unpaid',
+  },
+  lastPaymentDate: {
+    type: Date,
+  },
+  validUntil: {
+    type: Date,
+  },
+  amountPaid: {
+    type: Number,
+    default: 0,
+  }
+}, { _id: false });
+
+const studentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -20,12 +38,11 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['teacher', 'admin'],
-    default: 'teacher',
+    default: 'student',
   },
   level: {
     type: String,
-    enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+    enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Alle'],
     default: 'A1',
   },
   phone: {
@@ -41,12 +58,16 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  subscription: {
+    type: subscriptionSchema,
+    default: () => ({}),
+  }
 }, {
   timestamps: true,
 });
 
 // Hash password before saving
-userSchema.pre('save', async function() {
+studentSchema.pre('save', async function() {
   if (!this.isModified('password')) {
     return;
   }
@@ -55,9 +76,9 @@ userSchema.pre('save', async function() {
 });
 
 // Match user entered password to hashed password in database
-userSchema.methods.matchPassword = async function(enteredPassword) {
+studentSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const Student = mongoose.model('Student', studentSchema);
+module.exports = Student;

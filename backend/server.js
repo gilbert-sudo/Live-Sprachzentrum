@@ -47,10 +47,12 @@ const jitsiRoutes = require('./routes/jitsiRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const homeworkRoutes = require('./routes/homeworkRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/students', studentRoutes);
 app.use('/api/jitsi', jitsiRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/homework', homeworkRoutes);

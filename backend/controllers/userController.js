@@ -48,16 +48,19 @@ const updateUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      user.role = req.body.role || user.role;
-      user.level = req.body.level || user.level;
-      user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
-      user.gender = req.body.gender || user.gender;
-      user.birthday = req.body.birthday || user.birthday;
-      user.photo = req.body.photo !== undefined ? req.body.photo : user.photo;
+      const updatableFields = ['name', 'email', 'role', 'level', 'phone', 'gender', 'birthday', 'photo'];
+      
+      updatableFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+          if (field === 'birthday' && req.body[field] === '') {
+            user[field] = null;
+          } else {
+            user[field] = req.body[field];
+          }
+        }
+      });
 
-      if (req.body.password) {
+      if (req.body.password && req.body.password.trim() !== '') {
         user.password = req.body.password;
         user.encryptedPassword = encrypt(req.body.password);
       }
@@ -120,7 +123,7 @@ const createUser = async (req, res) => {
       email,
       password,
       encryptedPassword: encrypt(password),
-      role: role || 'student',
+      role: role || 'teacher',
       level: level || 'A1',
       phone,
       gender,

@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '../store/adminUsersSlice';
+import { fetchAdminStudents, createAdminStudent, updateAdminStudent, deleteAdminStudent } from '../store/adminStudentsSlice';
 import { getLevelColor } from '../utils/levelColors';
 
 export default function StudentManagement() {
   const { user } = useSelector((state) => state.auth);
-  const { users: allUsers, status } = useSelector((state) => state.adminUsers);
+  const { students: users, status } = useSelector((state) => state.adminStudents);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const users = allUsers.filter(u => u.role === 'student');
   const isLoading = status === 'loading';
   const [error, setError] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -32,10 +30,14 @@ export default function StudentManagement() {
     gender: 'female',
     birthday: '',
     photo: '',
+    subscription: {
+      status: 'unpaid',
+      validUntil: '',
+    }
   });
 
   useEffect(() => {
-    dispatch(fetchAdminUsers());
+    dispatch(fetchAdminStudents());
   }, [dispatch]);
 
   const generatePassword = () => {
@@ -48,18 +50,23 @@ export default function StudentManagement() {
       setFormData({
         name: u.name || '',
         email: u.email || '',
-        password: '',
+        password: u.plainPassword || '',
         role: 'student',
         level: u.level || 'A1',
         phone: u.phone || '',
         gender: u.gender || 'female',
         birthday: u.birthday ? new Date(u.birthday).toISOString().split('T')[0] : '',
         photo: u.photo || '',
+        subscription: {
+          status: u.subscription?.status || 'unpaid',
+          validUntil: u.subscription?.validUntil ? new Date(u.subscription.validUntil).toISOString().split('T')[0] : '',
+        }
       });
     } else {
       setEditingUser(null);
       setFormData({
         name: '', email: '', password: generatePassword(), role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
+        subscription: { status: 'unpaid', validUntil: '' }
       });
     }
     setIsModalOpen(true);
@@ -95,9 +102,9 @@ export default function StudentManagement() {
     e.preventDefault();
     try {
       if (editingUser) {
-        await dispatch(updateAdminUser({ id: editingUser._id, userData: formData })).unwrap();
+        await dispatch(updateAdminStudent({ id: editingUser._id, studentData: formData })).unwrap();
       } else {
-        await dispatch(createAdminUser(formData)).unwrap();
+        await dispatch(createAdminStudent(formData)).unwrap();
       }
       handleCloseModal();
     } catch (err) {
@@ -109,7 +116,7 @@ export default function StudentManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm('Möchten Sie diesen Schüler wirklich löschen?')) return;
     try {
-      await dispatch(deleteAdminUser(id)).unwrap();
+      await dispatch(deleteAdminStudent(id)).unwrap();
     } catch (err) {
       console.error(err);
       alert('Fehler beim Löschen des Schülers.');
@@ -172,6 +179,7 @@ export default function StudentManagement() {
                 <th className="p-4 font-medium">Name</th>
                 <th className="p-4 font-medium">Kontakt</th>
                 <th className="p-4 font-medium">Niveau</th>
+                <th className="p-4 font-medium">Gebührenstatus</th>
                 <th className="p-4 font-medium">Aktionen</th>
               </tr>
             </thead>
@@ -219,6 +227,18 @@ export default function StudentManagement() {
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-widest ${getLevelColor(u.level).badge}`}>
                       {u.level}
                     </span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex flex-col gap-1 text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold w-fit ${u.subscription?.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        {u.subscription?.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}
+                      </span>
+                      {u.subscription?.validUntil && (
+                        <span className="text-xs text-secondary">
+                          Gültig bis: {new Date(u.subscription.validUntil).toLocaleDateString('de-DE')}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="p-4 flex gap-2">
                     <button onClick={() => handleOpenModal(u)} className="p-2 bg-surface-container hover:bg-surface-variant rounded-lg text-secondary hover:text-on-surface transition-colors">
@@ -296,7 +316,23 @@ export default function StudentManagement() {
                 <label className="block text-sm font-medium mb-1">Geburtsdatum</label>
                 <input type="date" value={formData.birthday} onChange={e => setFormData({...formData, birthday: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
-              <div className="md:col-span-2">
+              <div className="md:col-span-2 border-t border-surface-variant pt-4 mt-2">
+                <h3 className="text-lg font-bold mb-4">Gebühren & Abonnement</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Zahlungsstatus</label>
+                    <select value={formData.subscription.status} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, status: e.target.value }})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
+                      <option value="unpaid">Ausstehend</option>
+                      <option value="paid">Bezahlt</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Bezahlt bis (Gültig bis)</label>
+                    <input type="date" value={formData.subscription.validUntil} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, validUntil: e.target.value }})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
+                  </div>
+                </div>
+              </div>
+              <div className="md:col-span-2 mt-2">
                 <label className="block text-sm font-medium mb-1">Foto (Avatar)</label>
                 <div className="flex items-center gap-4">
                   {formData.photo && (
@@ -384,6 +420,18 @@ export default function StudentManagement() {
                   <div>
                     <p className="text-xs text-secondary font-semibold uppercase">Geschlecht</p>
                     <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : 'Weiblich'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-secondary text-[20px]">payments</span>
+                  <div>
+                    <p className="text-xs text-secondary font-semibold uppercase">Gebührenstatus</p>
+                    <p className="text-sm font-medium">
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${viewingUser.subscription?.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        {viewingUser.subscription?.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}
+                      </span>
+                      {viewingUser.subscription?.validUntil && ` (bis ${new Date(viewingUser.subscription.validUntil).toLocaleDateString('de-DE')})`}
+                    </p>
                   </div>
                 </div>
                 {viewingUser.plainPassword && (

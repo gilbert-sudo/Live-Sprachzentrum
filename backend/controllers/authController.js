@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Student = require('../models/Student');
 const jwt = require('jsonwebtoken');
 const { encrypt } = require('../utils/encryption');
 
@@ -9,7 +10,7 @@ const generateToken = (id) => {
   });
 };
 
-// @desc    Register a new user
+// @desc    Register a new user or student
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
@@ -17,17 +18,31 @@ const registerUser = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     const userExists = await User.findOne({ email });
-    if (userExists) {
+    const studentExists = await Student.findOne({ email });
+    
+    if (userExists || studentExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      encryptedPassword: encrypt(password),
-      role: role || 'student', // Use provided role, otherwise default to student
-    });
+    let user;
+    if (!role || role === 'student') {
+      user = await Student.create({
+        name,
+        email,
+        password,
+        encryptedPassword: encrypt(password),
+        role: 'student',
+        subscription: { status: 'unpaid', amountPaid: 0 }
+      });
+    } else {
+      user = await User.create({
+        name,
+        email,
+        password,
+        encryptedPassword: encrypt(password),
+        role,
+      });
+    }
 
     if (user) {
       res.status(201).json({
@@ -54,7 +69,11 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      user = await Student.findOne({ email });
+    }
 
     if (user && (await user.matchPassword(password))) {
       res.json({
@@ -79,7 +98,11 @@ const loginUser = async (req, res) => {
 // @access  Private
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    let user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      user = await Student.findById(req.user._id).select('-password');
+    }
+    
     if (user) {
       res.json(user);
     } else {
