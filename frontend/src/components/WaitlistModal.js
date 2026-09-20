@@ -96,11 +96,11 @@ export default function WaitlistModal({ isOpen, onClose }) {
       const submitData = { ...formData };
 
       try {
-        await dispatch(signup(submitData)).unwrap();
-        onClose();
+        await axios.post('/api/auth/register', submitData);
         setLoading(false);
+        setStep(4);
       } catch (err) {
-        setError(err || 'Registration failed');
+        setError(err.response?.data?.message || err.message || 'Registration failed');
         setLoading(false);
       }
     }
@@ -110,9 +110,33 @@ export default function WaitlistModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm md:p-4">
       <div className="bg-surface w-full h-full md:w-[500px] md:h-auto md:max-h-[90vh] md:rounded-[2.5rem] shadow-2xl flex flex-col relative overflow-hidden animate-in fade-in zoom-in duration-300">
         
-        {/* Header */}
-        <div className="flex-shrink-0 flex items-center justify-between p-4 md:px-8 md:py-6 border-b border-surface-variant bg-surface relative z-10 shadow-sm">
-          <div className="flex items-center gap-3 md:gap-4">
+        {step === 4 ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-surface animate-in slide-in-from-right-8 fade-in duration-500 relative min-h-[400px]">
+            <div className="relative mb-8">
+              <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Willkommen" className="w-40 h-40 object-cover rounded-full border-4 border-surface shadow-2xl ring-4 ring-germany-red/10" />
+              <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center absolute bottom-0 right-0 border-4 border-surface shadow-lg animate-bounce">
+                <span className="material-symbols-outlined text-[24px] font-bold">check</span>
+              </div>
+            </div>
+            
+            <h2 className="text-2xl font-black text-on-surface mb-3 tracking-tight">Fantastisch! 🎉</h2>
+            <p className="text-secondary font-medium leading-relaxed mb-8">
+              Dein Account wurde erfolgreich erstellt und zur Warteschlange hinzugefügt. Unser Team wird deine Anmeldung in Kürze prüfen und freischalten.
+            </p>
+            
+            <button 
+              onClick={onClose} 
+              className="w-full bg-germany-red hover:bg-red-700 text-white py-4 rounded-full font-bold transition-all active:scale-[0.98] shadow-[0_4px_14px_rgba(220,38,38,0.3)] flex justify-center items-center gap-2 group"
+            >
+              <span>Zurück zur Startseite</span>
+              <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">home</span>
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="flex-shrink-0 flex items-center justify-between p-4 md:px-8 md:py-6 border-b border-surface-variant bg-surface relative z-10 shadow-sm">
+              <div className="flex items-center gap-3 md:gap-4">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-germany-red flex items-center justify-center text-white shadow-lg">
               <span className="material-symbols-outlined text-[24px] md:text-[28px]">how_to_reg</span>
             </div>
@@ -324,10 +348,8 @@ export default function WaitlistModal({ isOpen, onClose }) {
             )}
           </form>
         </div>
-
         {/* Sticky Footer */}
         <div className="flex-shrink-0 p-4 md:px-8 md:py-6 border-t border-surface-variant bg-surface/80 backdrop-blur-xl w-full z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
-          
           <div className="flex items-center justify-between mb-4">
             <div className="flex gap-2 flex-1 max-w-[150px]">
               <div className={`h-1.5 rounded-full flex-1 transition-colors duration-300 ${step >= 1 ? 'bg-germany-red' : 'bg-surface-variant'}`}></div>
@@ -379,7 +401,8 @@ export default function WaitlistModal({ isOpen, onClose }) {
             </p>
           </div>
         </div>
-
+        </>
+        )}
       </div>
     </div>
   );

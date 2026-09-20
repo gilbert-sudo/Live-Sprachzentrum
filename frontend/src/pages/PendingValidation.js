@@ -26,33 +26,33 @@ export default function PendingValidation() {
         </svg>
       </div>
 
-      <div className="bg-surface-container-lowest border border-surface-variant rounded-3xl p-8 md:p-12 max-w-lg w-full mx-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] z-10 text-center flex flex-col items-center">
-        <div className="w-24 h-24 rounded-full bg-yellow-50 dark:bg-yellow-500/10 flex items-center justify-center mb-6 relative">
-          <div className="absolute inset-0 rounded-full border-4 border-germany-gold border-dashed animate-[spin_10s_linear_infinite] opacity-50"></div>
-          <span className="material-symbols-outlined text-[48px] text-germany-gold relative z-10 animate-pulse">
-            visibility
-          </span>
+      <div className="z-10 flex flex-col items-center justify-center p-8 md:p-16 text-center bg-surface-container-lowest border border-surface-variant rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl w-full mx-4 relative overflow-hidden">
+        
+        {/* Top accent */}
+        <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-germany-black via-germany-red to-germany-gold"></div>
+
+        <div className="relative mb-8 mt-4 animate-in zoom-in duration-500">
+          <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Willkommen" className="w-48 h-48 object-cover rounded-full border-8 border-surface shadow-2xl ring-4 ring-germany-red/20" />
+          <div className="w-14 h-14 bg-green-500 text-white rounded-full flex items-center justify-center absolute bottom-2 right-2 border-4 border-surface shadow-lg animate-bounce">
+            <span className="material-symbols-outlined text-[28px] font-bold">check</span>
+          </div>
         </div>
         
-        <h1 className="text-3xl font-bold text-on-surface mb-4">Account in Prüfung</h1>
-        <p className="text-secondary mb-8 leading-relaxed">
-          Vielen Dank für Ihre Registrierung! Ihr Account wurde erfolgreich erstellt und befindet sich derzeit in der Warteschlange. Ein Administrator wird Ihre Anmeldung in Kürze überprüfen und validieren.
+        <h1 className="text-4xl md:text-5xl font-black text-on-surface mb-6 tracking-tight">Fantastisch! 🎉</h1>
+        <p className="text-lg md:text-xl text-secondary font-medium leading-relaxed mb-10 max-w-lg">
+          Dein Account wurde erfolgreich erstellt und zur Warteschlange hinzugefügt. Unser Team wird deine Anmeldung in Kürze prüfen und freischalten.
         </p>
-
-        <div className="bg-surface-container rounded-2xl p-4 w-full mb-8 text-left border border-surface-variant flex items-start gap-4">
-          <span className="material-symbols-outlined text-germany-gold mt-1">info</span>
-          <p className="text-sm text-on-surface-variant">
-            Sie erhalten Zugang zu Ihrem Dashboard und allen Lernmaterialien, sobald Ihr Account validiert wurde.
-          </p>
+        
+        <div className="w-full flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            onClick={handleLogout}
+            className="px-8 py-4 bg-germany-red hover:bg-red-700 text-white rounded-full font-bold transition-all active:scale-[0.98] shadow-[0_4px_14px_rgba(220,38,38,0.3)] flex justify-center items-center gap-2 group"
+          >
+            <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">logout</span>
+            <span>Abmelden & Zurück</span>
+          </button>
         </div>
 
-        <button 
-          onClick={handleLogout}
-          className="px-8 py-3 bg-surface-container hover:bg-surface-variant text-on-surface rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined text-[20px]">logout</span>
-          Abmelden
-        </button>
       </div>
     </div>
   );
