@@ -66,6 +66,13 @@ export default function Bibliothek({ readOnly = false }) {
   };
 
   const filteredLibraryItems = libraryItems.filter(item => {
+    // Restrict access based on student level
+    if (user && user.role === 'student' && user.level !== 'Tous' && user.level !== 'Alle') {
+      if (item.level && item.level !== user.level && item.level !== 'Alle' && item.level !== 'Tous') {
+        return false;
+      }
+    }
+
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
     return (
@@ -79,7 +86,7 @@ export default function Bibliothek({ readOnly = false }) {
   const audios = filteredLibraryItems.filter(item => item.type === 'audio' || item.type === 'album');
 
   return (
-    <div className="max-w-container-max-width mx-auto animate-fade-in pb-24">
+    <div className="w-full max-w-container-max-width mx-auto animate-fade-in pb-24">
       {/* Sticky Header Container */}
       <div className={`sticky ${readOnly ? 'top-0' : 'top-14 md:top-[72px]'} z-40 bg-surface-container-lowest/95 backdrop-blur-md px-4 md:px-8 pt-6 md:pt-8 pb-4 border-b border-surface-variant shadow-sm mb-6`}>
         {/* Header */}

@@ -12,7 +12,11 @@ const getHomeworks = async (req, res) => {
     const conditions = [];
 
     if (roomId) conditions.push({ roomId });
-    if (level) conditions.push({ level });
+    if (level) {
+      conditions.push({ level });
+      conditions.push({ level: 'Alle' });
+      conditions.push({ level: 'Tous' });
+    }
     
     if (conditions.length > 0) {
       query = { $or: conditions };

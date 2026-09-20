@@ -21,7 +21,11 @@ export default function Dashboard() {
     setCourses(myCourses);
 
     if (user && user.role !== 'admin') {
-      dispatch(fetchHomeworks({ isPinned: true }));
+      const fetchParams = { isPinned: true };
+      if (user.role === 'student') {
+        fetchParams.level = user.level;
+      }
+      dispatch(fetchHomeworks(fetchParams));
     }
   }, [user, dispatch]);
 
@@ -124,17 +128,17 @@ export default function Dashboard() {
         </section>
 
         {/* Pinned Homeworks Section */}
-        {pinnedHomeworks.length > 0 && (
-          <section className="mb-2">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="font-title-md text-title-md text-on-surface flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-germany-gold/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-germany-gold icon-filled text-[18px]">push_pin</span>
-                </div>
-                Aufgaben des Tages
-              </h3>
-            </div>
-            
+        <section className="mb-2">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-title-md text-title-md text-on-surface flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-germany-gold/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-germany-gold icon-filled text-[18px]">push_pin</span>
+              </div>
+              Aufgaben des Tages
+            </h3>
+          </div>
+          
+          {pinnedHomeworks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {pinnedHomeworks.map(hw => (
                 <div key={hw._id} className="group flex flex-col bg-surface-container-lowest/80 backdrop-blur-xl rounded-3xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 dark:border-white/10 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-1 h-full">
@@ -189,8 +193,47 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+              {/* Abstract Background Blobs */}
+              <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-germany-gold/20 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+              <div className="absolute bottom-0 left-0 w-40 h-40 md:w-56 h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4 dark:bg-germany-red/20"></div>
+              <div className="absolute top-1/2 left-1/2 w-24 h-24 md:w-32 md:h-32 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl md:blur-3xl opacity-50 animate-pulse -translate-x-1/2 -translate-y-1/2"></div>
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left flex-1 order-2 md:order-1 w-full">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success-green/10 text-success-green font-bold text-[10px] md:text-xs mb-2 md:mb-3 border border-success-green/20 backdrop-blur-md">
+                  <span className="material-symbols-outlined text-[14px] md:text-[16px]">celebration</span>
+                  Alles erledigt!
+                </div>
+                <h4 className="text-xl md:text-3xl font-black text-on-surface mb-1.5 md:mb-2 tracking-tight">Keine Aufgaben</h4>
+                <p className="text-on-surface-variant text-xs md:text-base max-w-md font-medium leading-relaxed mb-4 md:mb-0">
+                  Du bist auf dem neuesten Stand! Nutze die Zeit, um in der <span className="text-germany-red font-bold">Bibliothek</span> zu stöbern.
+                </p>
+                
+                <Link to="/bibliothek" className="w-full md:w-auto mt-0 md:mt-5 px-5 py-2.5 rounded-xl text-xs md:text-sm bg-germany-black dark:bg-white text-white dark:text-germany-black font-bold flex items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                  <span className="material-symbols-outlined text-[16px] md:text-[18px]">local_library</span>
+                  Zur Bibliothek
+                </Link>
+              </div>
+              
+              {/* Graphic / Icon Area */}
+              <div className="relative z-10 shrink-0 w-24 h-24 md:w-48 md:h-48 flex items-center justify-center order-1 md:order-2 mb-2 md:mb-0">
+                <div className="absolute inset-0 bg-gradient-to-tr from-germany-red/20 to-germany-gold/20 rounded-full animate-[spin_15s_linear_infinite]"></div>
+                <div className="absolute inset-2 md:inset-3 bg-surface rounded-full shadow-inner flex items-center justify-center border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+                  <span className="material-symbols-outlined text-[40px] md:text-[80px] text-germany-gold drop-shadow-md" style={{ fontVariationSettings: "'FILL' 1" }}>task_alt</span>
+                </div>
+                {/* Floating badges */}
+                <div className="absolute -top-1 -right-1 md:top-2 md:right-2 w-7 h-7 md:w-10 md:h-10 bg-surface rounded-lg md:rounded-xl shadow-lg border border-surface-variant flex items-center justify-center animate-[bounce_3s_infinite]">
+                  <span className="material-symbols-outlined text-success-green text-[14px] md:text-[20px]">mood</span>
+                </div>
+                <div className="absolute -bottom-1 -left-1 md:bottom-6 md:left-0 w-6 h-6 md:w-8 md:h-8 bg-surface rounded-full shadow-lg border border-surface-variant flex items-center justify-center animate-[bounce_4s_infinite] delay-1000">
+                  <span className="material-symbols-outlined text-germany-red text-[12px] md:text-[16px]">star</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* Main Course Card & Weekly Goal */}
         <section className="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
