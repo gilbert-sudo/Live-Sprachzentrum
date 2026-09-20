@@ -2,6 +2,7 @@ import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice';
+import { getLevelColor } from '../utils/levelColors';
 
 export default function Profile() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -25,9 +26,9 @@ export default function Profile() {
             <h2 className="font-title-lg md:font-headline-lg text-title-lg md:text-headline-lg text-on-surface leading-tight truncate">{user?.name}</h2>
             <p className="font-body-sm md:font-body-md text-sm md:text-body-md text-on-surface-variant mt-0.5 md:mt-1 truncate">{user?.email}</p>
             <div className="flex items-center justify-start gap-2 mt-2 md:mt-3">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 md:px-3 md:py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-[10px] md:text-label-sm rounded-full whitespace-nowrap">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 font-black tracking-widest text-[10px] md:text-xs rounded-full whitespace-nowrap shadow-sm ${getLevelColor(user?.level || 'Alle').badge}`}>
                 <span className="material-symbols-outlined text-[14px] md:text-[16px]">school</span>
-                B1 Standard
+                {user?.level || 'Alle'} Standard
               </span>
             </div>
           </div>

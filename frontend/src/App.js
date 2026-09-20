@@ -37,8 +37,7 @@ function App() {
     if (isAuthenticated) {
       dispatch(fetchUserProfile());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isAuthenticated, dispatch]);
 
   // Initialize smooth scrolling with Lenis
   useEffect(() => {

@@ -199,7 +199,7 @@ export default function Dashboard() {
               <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
                 {isTeacher ? "Aktuelle Klasse" : "Aktueller Kurs"}
               </span>
-              <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">B1 Standard</span>
+              <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">{user?.level || 'B1'} Standard</span>
             </div>
             
             <div className="flex gap-4 items-center">
@@ -213,7 +213,7 @@ export default function Dashboard() {
               </div>
               
               <div>
-                <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">B1 Standard</h3>
+                <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">{user?.level || 'B1'} Standard</h3>
                 <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">Nächste Lektion</p>
                 <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight">Passiv mit Modalverben</p>
               </div>
