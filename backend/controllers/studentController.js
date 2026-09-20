@@ -69,16 +69,10 @@ const updateStudent = async (req, res) => {
         const currentSubscription = student.subscription 
           ? (typeof student.subscription.toObject === 'function' ? student.subscription.toObject() : student.subscription)
           : {};
-        
-        let validUntil = req.body.subscription.validUntil;
-        if (validUntil === '') {
-          validUntil = null;
-        }
           
         student.subscription = {
           ...currentSubscription,
           ...req.body.subscription,
-          validUntil,
         };
       }
 
@@ -148,7 +142,7 @@ const createStudent = async (req, res) => {
       gender,
       birthday,
       photo,
-      subscription: subscription || { status: 'unpaid', amountPaid: 0 }
+      subscription: subscription || { paymentType: 'full', firstPaymentPaid: false, secondPaymentPaid: false }
     });
 
     if (student) {

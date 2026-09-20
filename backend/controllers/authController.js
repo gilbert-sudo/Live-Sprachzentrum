@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
         password,
         encryptedPassword: encrypt(password),
         role: 'student',
-        subscription: { status: 'unpaid', amountPaid: 0 }
+        subscription: { paymentType: 'full', firstPaymentPaid: false, secondPaymentPaid: false }
       });
     } else {
       user = await User.create({

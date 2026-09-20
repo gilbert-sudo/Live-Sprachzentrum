@@ -2,20 +2,18 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const subscriptionSchema = new mongoose.Schema({
-  status: {
+  paymentType: {
     type: String,
-    enum: ['paid', 'unpaid', 'pending'],
-    default: 'unpaid',
+    enum: ['full', 'twice'],
+    default: 'full',
   },
-  lastPaymentDate: {
-    type: Date,
+  firstPaymentPaid: {
+    type: Boolean,
+    default: false,
   },
-  validUntil: {
-    type: Date,
-  },
-  amountPaid: {
-    type: Number,
-    default: 0,
+  secondPaymentPaid: {
+    type: Boolean,
+    default: false,
   }
 }, { _id: false });
 

@@ -31,8 +31,9 @@ export default function StudentManagement() {
     birthday: '',
     photo: '',
     subscription: {
-      status: 'unpaid',
-      validUntil: '',
+      paymentType: 'full',
+      firstPaymentPaid: false,
+      secondPaymentPaid: false,
     }
   });
 
@@ -58,15 +59,16 @@ export default function StudentManagement() {
         birthday: u.birthday ? new Date(u.birthday).toISOString().split('T')[0] : '',
         photo: u.photo || '',
         subscription: {
-          status: u.subscription?.status || 'unpaid',
-          validUntil: u.subscription?.validUntil ? new Date(u.subscription.validUntil).toISOString().split('T')[0] : '',
+          paymentType: u.subscription?.paymentType || 'full',
+          firstPaymentPaid: u.subscription?.firstPaymentPaid || false,
+          secondPaymentPaid: u.subscription?.secondPaymentPaid || false,
         }
       });
     } else {
       setEditingUser(null);
       setFormData({
         name: '', email: '', password: generatePassword(), role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
-        subscription: { status: 'unpaid', validUntil: '' }
+        subscription: { paymentType: 'full', firstPaymentPaid: false, secondPaymentPaid: false }
       });
     }
     setIsModalOpen(true);
@@ -229,14 +231,26 @@ export default function StudentManagement() {
                     </span>
                   </td>
                   <td className="p-4">
-                    <div className="flex flex-col gap-1 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold w-fit ${u.subscription?.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {u.subscription?.status === 'paid' ? 'Payé' : 'En attente'}
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-surface-variant text-on-surface-variant border border-surface-subtle" title={u.subscription?.paymentType === 'full' ? 'En une fois' : 'En deux fois'}>
+                        {u.subscription?.paymentType === 'full' ? '1x' : '2x'}
                       </span>
-                      {u.subscription?.validUntil && (
-                        <span className="text-xs text-secondary">
-                          Valable jusqu'au : {new Date(u.subscription.validUntil).toLocaleDateString('de-DE')}
-                        </span>
+                      {u.subscription?.paymentType === 'full' ? (
+                        <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${u.subscription?.firstPaymentPaid ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`} title={u.subscription?.firstPaymentPaid ? 'Payé' : 'Non payé'}>
+                          <span className="material-symbols-outlined text-[12px]">{u.subscription?.firstPaymentPaid ? 'check' : 'close'}</span>
+                          Payé
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <div className={`px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${u.subscription?.firstPaymentPaid ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`} title="1er paiement">
+                            <span className="material-symbols-outlined text-[12px]">{u.subscription?.firstPaymentPaid ? 'check' : 'close'}</span>
+                            1er
+                          </div>
+                          <div className={`px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${u.subscription?.secondPaymentPaid ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`} title="2ème paiement">
+                            <span className="material-symbols-outlined text-[12px]">{u.subscription?.secondPaymentPaid ? 'check' : 'close'}</span>
+                            2ème
+                          </div>
+                        </div>
                       )}
                     </div>
                   </td>
@@ -317,19 +331,29 @@ export default function StudentManagement() {
                 <input type="date" value={formData.birthday} onChange={e => setFormData({...formData, birthday: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div className="md:col-span-2 border-t border-surface-variant pt-4 mt-2">
-                <h3 className="text-lg font-bold mb-4">Frais & Abonnement</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 className="text-lg font-bold mb-4">Frais de scolarité</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Statut du paiement</label>
-                    <select value={formData.subscription.status} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, status: e.target.value }})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
-                      <option value="unpaid">En attente</option>
-                      <option value="paid">Payé</option>
+                    <label className="block text-sm font-medium mb-1">Mode de paiement</label>
+                    <select value={formData.subscription.paymentType} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, paymentType: e.target.value }})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
+                      <option value="full">En une fois</option>
+                      <option value="twice">En deux fois</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Payé jusqu'au (Valable jusqu'au)</label>
-                    <input type="date" value={formData.subscription.validUntil} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, validUntil: e.target.value }})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
+                  <div className="flex flex-col justify-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer mt-4">
+                      <input type="checkbox" checked={formData.subscription.firstPaymentPaid} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, firstPaymentPaid: e.target.checked }})} className="w-5 h-5 rounded accent-germany-gold cursor-pointer" />
+                      <span className="text-sm font-medium">{formData.subscription.paymentType === 'full' ? 'Paiement effectué' : '1er Paiement effectué'}</span>
+                    </label>
                   </div>
+                  {formData.subscription.paymentType === 'twice' && (
+                    <div className="flex flex-col justify-center gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer mt-4">
+                        <input type="checkbox" checked={formData.subscription.secondPaymentPaid} onChange={e => setFormData({...formData, subscription: { ...formData.subscription, secondPaymentPaid: e.target.checked }})} className="w-5 h-5 rounded accent-germany-gold cursor-pointer" />
+                        <span className="text-sm font-medium">2ème Paiement effectué</span>
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="md:col-span-2 mt-2">
@@ -425,13 +449,29 @@ export default function StudentManagement() {
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-secondary text-[20px]">payments</span>
                   <div>
-                    <p className="text-xs text-secondary font-semibold uppercase">Statut des frais</p>
-                    <p className="text-sm font-medium">
-                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${viewingUser.subscription?.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {viewingUser.subscription?.status === 'paid' ? 'Payé' : 'En attente'}
+                    <p className="text-xs text-secondary font-semibold uppercase mb-1.5">Frais de scolarité</p>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-1 rounded-md text-xs font-black bg-surface-variant text-on-surface-variant border border-surface-subtle">
+                        {viewingUser.subscription?.paymentType === 'full' ? '1x (En une fois)' : '2x (En deux fois)'}
                       </span>
-                      {viewingUser.subscription?.validUntil && ` (jusqu'au ${new Date(viewingUser.subscription.validUntil).toLocaleDateString('de-DE')})`}
-                    </p>
+                      {viewingUser.subscription?.paymentType === 'full' ? (
+                        <div className={`px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 border ${viewingUser.subscription?.firstPaymentPaid ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                          <span className="material-symbols-outlined text-[14px]">{viewingUser.subscription?.firstPaymentPaid ? 'check_circle' : 'cancel'}</span>
+                          Payé
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5">
+                          <div className={`px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 border ${viewingUser.subscription?.firstPaymentPaid ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                            <span className="material-symbols-outlined text-[14px]">{viewingUser.subscription?.firstPaymentPaid ? 'check_circle' : 'cancel'}</span>
+                            1er
+                          </div>
+                          <div className={`px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 border ${viewingUser.subscription?.secondPaymentPaid ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                            <span className="material-symbols-outlined text-[14px]">{viewingUser.subscription?.secondPaymentPaid ? 'check_circle' : 'cancel'}</span>
+                            2ème
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {viewingUser.plainPassword && (
