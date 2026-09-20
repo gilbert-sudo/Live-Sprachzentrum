@@ -40,4 +40,27 @@ router.post('/avatar', protect, admin, upload.single('avatar'), async (req, res)
   }
 });
 
+// POST /api/upload/public-avatar
+// Public, for waitlist registration
+router.post('/public-avatar', upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Bitte laden Sie ein Bild hoch' });
+    }
+
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'live-sprachzentrum/avatars',
+      resource_type: 'image',
+    });
+
+    res.status(200).json({ url: result.secure_url });
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    res.status(500).json({ message: 'Fehler beim Hochladen des Bildes' });
+  }
+});
+
 module.exports = router;

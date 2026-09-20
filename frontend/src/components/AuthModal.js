@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { login } from '../store/authSlice';
+import { login, openWaitlistModal, closeAuthModal } from '../store/authSlice';
 
 export default function AuthModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('');
@@ -11,6 +11,11 @@ export default function AuthModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
 
   if (!isOpen) return null;
+
+  const handleOpenWaitlist = () => {
+    dispatch(closeAuthModal());
+    dispatch(openWaitlistModal());
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -132,6 +137,19 @@ export default function AuthModal({ isOpen, onClose }) {
               </button>
             </div>
           </form>
+          
+          <div className="mt-6 text-center">
+            <p className="text-secondary/80 font-medium">
+              Du hast noch keinen Account?{' '}
+              <button 
+                type="button" 
+                onClick={handleOpenWaitlist}
+                className="text-germany-red font-bold hover:underline"
+              >
+                Auf die Warteliste
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

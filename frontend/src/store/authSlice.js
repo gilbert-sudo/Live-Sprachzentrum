@@ -16,6 +16,7 @@ const initialState = {
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
   isAuthModalOpen: false,
+  isWaitlistModalOpen: false,
 };
 
 export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue }) => {
@@ -29,9 +30,9 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }, 
   }
 });
 
-export const signup = createAsyncThunk('auth/signup', async ({ name, email, password }, { rejectWithValue }) => {
+export const signup = createAsyncThunk('auth/signup', async (userData, { rejectWithValue }) => {
   try {
-    const { data } = await axios.post(`/api/auth/register`, { name, email, password });
+    const { data } = await axios.post(`/api/auth/register`, userData);
     localStorage.setItem('userInfo', JSON.stringify(data));
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     return data;
@@ -75,6 +76,12 @@ const authSlice = createSlice({
     },
     closeAuthModal(state) {
       state.isAuthModalOpen = false;
+    },
+    openWaitlistModal(state) {
+      state.isWaitlistModalOpen = true;
+    },
+    closeWaitlistModal(state) {
+      state.isWaitlistModalOpen = false;
     }
   },
   extraReducers: (builder) => {
@@ -120,5 +127,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, openAuthModal, closeAuthModal } = authSlice.actions;
+export const { logout, openAuthModal, closeAuthModal, openWaitlistModal, closeWaitlistModal } = authSlice.actions;
 export default authSlice.reducer;

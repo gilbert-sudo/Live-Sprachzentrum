@@ -14,6 +14,7 @@ export default function StudentManagement() {
   const [error, setError] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -62,12 +63,13 @@ export default function StudentManagement() {
           paymentType: u.subscription?.paymentType || 'full',
           firstPaymentPaid: u.subscription?.firstPaymentPaid || false,
           secondPaymentPaid: u.subscription?.secondPaymentPaid || false,
-        }
+        },
+        status: u.status || 'active',
       });
     } else {
       setEditingUser(null);
       setFormData({
-        name: '', email: '', password: generatePassword(), role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
+        name: '', email: '', password: generatePassword(), role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '', status: 'active',
         subscription: { paymentType: 'full', firstPaymentPaid: false, secondPaymentPaid: false }
       });
     }
@@ -125,11 +127,26 @@ export default function StudentManagement() {
     }
   };
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (u._id && u._id.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const handleApprove = async (id) => {
+    if (!window.confirm('Voulez-vous valider cet étudiant ?')) return;
+    try {
+      await dispatch(updateAdminStudent({ id, studentData: { status: 'active' } })).unwrap();
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de la validation.');
+    }
+  };
+
+  const filteredUsers = users.filter(u => {
+    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (u._id && u._id.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const userStatus = u.status || 'active';
+    const matchesStatus = statusFilter === 'all' || userStatus === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6">
@@ -172,6 +189,19 @@ export default function StudentManagement() {
               </button>
             )}
           </div>
+          
+          <div className="flex gap-2 ml-4">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-gold focus:ring-1 focus:ring-germany-gold transition-all text-sm font-medium text-on-surface"
+            >
+              <option value="all">Tous les statuts</option>
+              <option value="active">Actif</option>
+              <option value="pending">En attente (Warteliste)</option>
+              <option value="rejected">Rejeté</option>
+            </select>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -181,6 +211,7 @@ export default function StudentManagement() {
                 <th className="p-4 font-medium">Nom</th>
                 <th className="p-4 font-medium">Contact</th>
                 <th className="p-4 font-medium">Niveau</th>
+                <th className="p-4 font-medium">Statut compte</th>
                 <th className="p-4 font-medium">Statut des frais</th>
                 <th className="p-4 font-medium">Actions</th>
               </tr>
@@ -231,6 +262,11 @@ export default function StudentManagement() {
                     </span>
                   </td>
                   <td className="p-4">
+                    {(!u.status || u.status === 'active') && <span className="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">Actif</span>}
+                    {u.status === 'pending' && <span className="px-2 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-700">En attente</span>}
+                    {u.status === 'rejected' && <span className="px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">Rejeté</span>}
+                  </td>
+                  <td className="p-4">
                     <div className="flex items-center gap-1.5">
                       <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-surface-variant text-on-surface-variant border border-surface-subtle" title={u.subscription?.paymentType === 'full' ? 'En une fois' : 'En deux fois'}>
                         {u.subscription?.paymentType === 'full' ? '1x' : '2x'}
@@ -254,13 +290,20 @@ export default function StudentManagement() {
                       )}
                     </div>
                   </td>
-                  <td className="p-4 flex gap-2">
-                    <button onClick={() => handleOpenModal(u)} className="p-2 bg-surface-container hover:bg-surface-variant rounded-lg text-secondary hover:text-on-surface transition-colors">
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
-                    </button>
-                    <button onClick={() => handleDelete(u._id)} className="p-2 bg-red-50 hover:bg-red-100 text-germany-red rounded-lg transition-colors">
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
+                  <td className="p-4 align-middle">
+                    <div className="flex items-center gap-2 flex-nowrap">
+                      {u.status === 'pending' && (
+                        <button onClick={() => handleApprove(u._id)} className="w-8 h-8 flex items-center justify-center bg-green-50 hover:bg-green-100 text-green-600 rounded-full transition-colors shrink-0" title="Valider l'étudiant">
+                          <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                        </button>
+                      )}
+                      <button onClick={() => handleOpenModal(u)} className="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-surface-variant rounded-full text-secondary hover:text-on-surface transition-colors shrink-0" title="Modifier">
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                      </button>
+                      <button onClick={() => handleDelete(u._id)} className="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-red-100 text-germany-red rounded-full transition-colors shrink-0" title="Supprimer">
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

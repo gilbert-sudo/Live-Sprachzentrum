@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { closeAuthModal, fetchUserProfile } from './store/authSlice';
+import { closeAuthModal, closeWaitlistModal, fetchUserProfile } from './store/authSlice';
 import AuthModal from './components/AuthModal';
+import WaitlistModal from './components/WaitlistModal';
 
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -18,6 +19,7 @@ import Bibliothek from './pages/Bibliothek';
 import LiveClassroom from './pages/LiveClassroom';
 import VirtualSchool from './pages/VirtualSchool';
 import LandingPage from './pages/LandingPage';
+import PendingValidation from './pages/PendingValidation';
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard';
@@ -31,7 +33,7 @@ import Lenis from 'lenis';
 
 function App() {
   const dispatch = useDispatch();
-  const { isAuthModalOpen, isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthModalOpen, isWaitlistModalOpen, isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -73,6 +75,9 @@ function App() {
           
           {/* Authenticated Routes */}
           {isAuthenticated ? (
+            user?.status === 'pending' ? (
+              <Route path="*" element={<PendingValidation />} />
+            ) : (
             <>
               <Route path="/room/:roomId" element={<LiveClassroom />} />
               <Route path="*" element={
@@ -98,12 +103,14 @@ function App() {
                 </Navbar>
               } />
             </>
+            )
           ) : (
             <Route path="*" element={<Navigate to="/" replace />} />
           )}
         </Routes>
       </Router>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => dispatch(closeAuthModal())} />
+      <WaitlistModal isOpen={isWaitlistModalOpen} onClose={() => dispatch(closeWaitlistModal())} />
     </>
   );
 }

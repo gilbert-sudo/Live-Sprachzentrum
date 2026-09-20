@@ -15,7 +15,7 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, paymentType, level, phone, gender, birthday, photo } = req.body;
 
     const userExists = await User.findOne({ email });
     const studentExists = await Student.findOne({ email });
@@ -24,25 +24,21 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    let user;
-    if (!role || role === 'student') {
-      user = await Student.create({
-        name,
-        email,
-        password,
-        encryptedPassword: encrypt(password),
-        role: 'student',
-        subscription: { paymentType: 'full', firstPaymentPaid: false, secondPaymentPaid: false }
-      });
-    } else {
-      user = await User.create({
-        name,
-        email,
-        password,
-        encryptedPassword: encrypt(password),
-        role,
-      });
-    }
+    // ALWAYS force student creation on this public endpoint
+    const user = await Student.create({
+      name,
+      email,
+      password,
+      encryptedPassword: encrypt(password),
+      role: 'student',
+      status: 'pending',
+      level: level || 'A1',
+      phone,
+      gender,
+      birthday,
+      photo,
+      subscription: { paymentType: paymentType || 'full', firstPaymentPaid: false, secondPaymentPaid: false }
+    });
 
     if (user) {
       res.status(201).json({
@@ -50,6 +46,7 @@ const registerUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         level: user.level,
         token: generateToken(user._id),
       });
@@ -81,6 +78,7 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         level: user.level,
         token: generateToken(user._id),
       });
@@ -113,8 +111,31 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Check if email exists
+// @route   GET /api/auth/check-email
+// @access  Public
+const checkEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const userExists = await User.findOne({ email });
+    const studentExists = await Student.findOne({ email });
+    
+    if (userExists || studentExists) {
+      return res.json({ exists: true });
+    }
+    return res.json({ exists: false });
+  } catch (error) {
+    console.error('Check Email Error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  checkEmail,
 };

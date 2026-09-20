@@ -49,7 +49,7 @@ const updateStudent = async (req, res) => {
     const student = await Student.findById(req.params.id);
 
     if (student) {
-      const updatableFields = ['name', 'email', 'level', 'phone', 'gender', 'birthday', 'photo'];
+      const updatableFields = ['name', 'email', 'level', 'phone', 'gender', 'birthday', 'photo', 'status'];
       
       updatableFields.forEach(field => {
         if (req.body[field] !== undefined) {
@@ -83,6 +83,7 @@ const updateStudent = async (req, res) => {
         name: updatedStudent.name,
         email: updatedStudent.email,
         role: updatedStudent.role,
+        status: updatedStudent.status,
         level: updatedStudent.level,
         phone: updatedStudent.phone,
         gender: updatedStudent.gender,
@@ -127,7 +128,7 @@ const deleteStudent = async (req, res) => {
 // @access  Private/Admin
 const createStudent = async (req, res) => {
   try {
-    const { name, email, password, level, phone, gender, birthday, photo, subscription } = req.body;
+    const { name, email, password, level, phone, gender, birthday, photo, subscription, status } = req.body;
 
     const studentExists = await Student.findOne({ email });
     const userExists = await require('../models/User').findOne({ email }); // email must be unique across both collections
@@ -141,6 +142,7 @@ const createStudent = async (req, res) => {
       password,
       encryptedPassword: encrypt(password),
       role: 'student',
+      status: status || 'active',
       level: level || 'A1',
       phone,
       gender,
@@ -155,6 +157,7 @@ const createStudent = async (req, res) => {
         name: student.name,
         email: student.email,
         role: student.role,
+        status: student.status,
         level: student.level,
         phone: student.phone,
         gender: student.gender,
