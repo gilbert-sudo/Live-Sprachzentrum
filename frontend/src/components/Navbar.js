@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, openAuthModal } from '../store/authSlice';
 import ThemeToggle from './ThemeToggle';
+import { useTranslation } from 'react-i18next';
 
 
 const UserMenu = () => {
@@ -10,6 +11,7 @@ const UserMenu = () => {
   const menuRef = useRef(null);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -43,11 +45,11 @@ const UserMenu = () => {
         <div className="flex flex-col gap-1">
           <Link to="/profil" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-all">
             <span className="material-symbols-outlined text-[20px]">person</span>
-            Mein Profil
+            {t('navbar.my_profile', 'Mein Profil')}
           </Link>
           <button onClick={() => { setIsOpen(false); dispatch(logout()); }} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
             <span className="material-symbols-outlined text-[20px]">logout</span>
-            Abmelden
+            {t('navbar.logout', 'Abmelden')}
           </button>
         </div>
       </div>
@@ -60,13 +62,14 @@ export default function Navbar({ children }) {
   const path = location.pathname;
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   const navItems = [
-    { path: '/dashboard', icon: 'home', label: 'Lernen', match: '/dashboard' },
-    { path: '/bibliothek', icon: 'local_library', label: 'Bibliothek', match: '/bibliothek' },
-    { path: '/karriere', icon: 'work', label: 'Karriere', match: '/karriere' },
-    { path: '/stammtisch', icon: 'groups', label: 'Stammtisch', match: '/stammtisch' },
-    { path: '/profil', icon: 'person', label: 'Profil', match: '/profil' },
+    { path: '/dashboard', icon: 'home', label: t('navbar.learn', 'Lernen'), match: '/dashboard' },
+    { path: '/bibliothek', icon: 'local_library', label: t('navbar.library', 'Bibliothek'), match: '/bibliothek' },
+    { path: '/karriere', icon: 'work', label: t('navbar.career', 'Karriere'), match: '/karriere' },
+    { path: '/stammtisch', icon: 'groups', label: t('navbar.regulars_table', 'Stammtisch'), match: '/stammtisch' },
+    { path: '/profil', icon: 'person', label: t('navbar.profile', 'Profil'), match: '/profil' },
   ];
 
   return (
@@ -92,7 +95,7 @@ export default function Navbar({ children }) {
               onClick={() => dispatch(openAuthModal())}
               className="bg-germany-red hover:bg-red-700 text-white px-5 py-2 rounded-full font-bold text-sm shadow-md transition-transform active:scale-95"
             >
-              Anmelden
+              {t('navbar.login', 'Anmelden')}
             </button>
           )}
         </div>

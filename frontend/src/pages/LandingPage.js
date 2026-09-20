@@ -6,6 +6,7 @@ import { openAuthModal } from '../store/authSlice';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageSelector from '../components/LanguageSelector';
 import AnimatedBackgroundLines from '../components/AnimatedBackgroundLines';
+import { useTranslation } from 'react-i18next';
 
 // A liquid glass component using Tailwind utilities
 const GlassCard = ({ children, className }) => (
@@ -16,6 +17,7 @@ const GlassCard = ({ children, className }) => (
 
 const LandingPage = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [contactStep, setContactStep] = useState(1);
   const [contactData, setContactData] = useState({ name: '', email: '', message: '' });
@@ -200,7 +202,7 @@ const LandingPage = () => {
               onClick={handleGetStarted}
               className="px-5 py-2 md:px-8 md:py-3.5 rounded-full bg-white/60 hover:bg-white/80 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md border border-slate-200/50 dark:border-white/30 transition-all duration-300 font-semibold flex items-center space-x-2 text-slate-900 dark:text-white"
             >
-              <span className="text-sm md:text-base hidden sm:block">Anmelden</span>
+              <span className="text-sm md:text-base hidden sm:block">{t('navbar.login', 'Anmelden')}</span>
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
@@ -243,19 +245,19 @@ const LandingPage = () => {
             
             <div className="flex items-center space-x-2">
               <Sparkles className="w-4 h-4 text-amber-600 dark:text-germany-gold" />
-              <span className="text-sm font-medium text-amber-600 dark:text-germany-gold">Deutsch erleben! Vivez la langue allemande!</span>
+              <span className="text-sm font-medium text-amber-600 dark:text-germany-gold">{t('landing.hero_badge', 'Deutsch erleben! Vivez la langue allemande!')}</span>
             </div>
           </motion.div>
 
           <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight max-w-5xl text-slate-900 dark:text-white drop-shadow-sm">
-            Lerne Deutsch für <br />
+            {t('landing.hero_title1', 'Lerne Deutsch für ')}<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-germany-red via-red-600 to-amber-600 dark:from-germany-red dark:via-red-400 dark:to-germany-gold">
-              deine Zukunft in Deutschland
+              {t('landing.hero_title2', 'deine Zukunft in Deutschland')}
             </span>
           </motion.h1>
 
           <motion.p variants={itemVariants} className="text-lg md:text-xl lg:text-2xl text-slate-800 dark:text-slate-200 max-w-3xl leading-relaxed font-medium drop-shadow-sm">
-            Dein Sprachpartner für Deutsch in Antananarivo. Strukturierte Kurse von A1 bis B2 mit erfahrenen Lehrkräften aus Madagaskar und Deutschland.
+            {t('landing.hero_desc', 'Dein Sprachpartner für Deutsch in Antananarivo. Strukturierte Kurse von A1 bis B2 mit erfahrenen Lehrkräften aus Madagaskar und Deutschland.')}
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 pt-10 w-full sm:w-auto px-4 sm:px-0">
@@ -263,7 +265,7 @@ const LandingPage = () => {
               onClick={handleGetStarted}
               className="w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-germany-red hover:bg-red-700 text-white font-bold text-lg shadow-[0_0_30px_rgba(220,38,38,0.3)] dark:shadow-[0_0_40px_rgba(220,38,38,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] dark:hover:shadow-[0_0_60px_rgba(220,38,38,0.6)] transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center space-x-3"
             >
-              <span>Jetzt durchstarten</span>
+              <span>{t('landing.get_started', 'Jetzt durchstarten')}</span>
               <ArrowRight className="w-6 h-6" />
             </button>
             <a
@@ -271,7 +273,7 @@ const LandingPage = () => {
               className="w-full sm:w-auto px-10 py-5 rounded-[2rem] bg-white/60 hover:bg-white/80 dark:bg-white/5 dark:hover:bg-white/10 backdrop-blur-xl border border-slate-200/50 dark:border-white/20 text-slate-900 dark:text-white font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 group"
             >
               <Globe className="w-6 h-6 text-amber-600 dark:text-germany-gold group-hover:scale-110 transition-transform" />
-              <span>Kontakt aufnehmen</span>
+              <span>{t('landing.contact', 'Kontakt aufnehmen')}</span>
             </a>
           </motion.div>
         </motion.div>
@@ -288,24 +290,24 @@ const LandingPage = () => {
             <div className="w-16 h-16 rounded-[1.5rem] bg-red-100 dark:bg-germany-red/20 flex items-center justify-center mb-8 group-hover:bg-red-200 dark:group-hover:bg-germany-red/40 transition-colors border border-red-200 dark:border-germany-red/30">
               <Users className="w-8 h-8 text-red-600 dark:text-red-300" />
             </div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Erfahrene Lehrkräfte</h3>
-            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">Lerne mit Dozenten der Universität Madagaskar und muttersprachlichen Lehrkräften aus Deutschland.</p>
+            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">{t('landing.feature1_title', 'Erfahrene Lehrkräfte')}</h3>
+            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">{t('landing.feature1_desc', 'Lerne mit Dozenten der Universität Madagaskar und muttersprachlichen Lehrkräften aus Deutschland.')}</p>
           </GlassCard>
 
           <GlassCard className="p-8 md:p-10 hover:-translate-y-3 transition-transform duration-500 group">
             <div className="w-16 h-16 rounded-[1.5rem] bg-amber-100 dark:bg-germany-gold/20 flex items-center justify-center mb-8 group-hover:bg-amber-200 dark:group-hover:bg-germany-gold/40 transition-colors border border-amber-200 dark:border-germany-gold/30">
               <BookOpen className="w-8 h-8 text-amber-600 dark:text-yellow-300" />
             </div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Strukturierte Kurse (A1-B2)</h3>
-            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">Von den Grundlagen bis zur Mittelstufe. Abendkurse für Berufstätige und Ferienworkshops für Jugendliche.</p>
+            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">{t('landing.feature2_title', 'Strukturierte Kurse (A1-B2)')}</h3>
+            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">{t('landing.feature2_desc', 'Von den Grundlagen bis zur Mittelstufe. Abendkurse für Berufstätige und Ferienworkshops für Jugendliche.')}</p>
           </GlassCard>
 
           <GlassCard className="p-8 md:p-10 hover:-translate-y-3 transition-transform duration-500 group">
             <div className="w-16 h-16 rounded-[1.5rem] bg-slate-100 dark:bg-white/20 flex items-center justify-center mb-8 group-hover:bg-slate-200 dark:group-hover:bg-white/40 transition-colors border border-slate-200 dark:border-white/30">
               <Globe className="w-8 h-8 text-slate-600 dark:text-white" />
             </div>
-            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Au Pair, FSJ & Ausbildung</h3>
-            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">Wir bereiten dich sprachlich auf deinen Aufenthalt in Deutschland vor und unterstützen bei Visa-Fragen.</p>
+            <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">{t('landing.feature3_title', 'Au Pair, FSJ & Ausbildung')}</h3>
+            <p className="text-slate-800 font-medium dark:text-slate-300/90 leading-relaxed text-lg">{t('landing.feature3_desc', 'Wir bereiten dich sprachlich auf deinen Aufenthalt in Deutschland vor und unterstützen bei Visa-Fragen.')}</p>
           </GlassCard>
         </motion.div>
 
@@ -328,13 +330,13 @@ const LandingPage = () => {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold tracking-wide bg-red-100 dark:bg-red-900/30 text-germany-red dark:text-red-400">
                 <Mail className="w-4 h-4" />
-                Kontakt aufnehmen
+                {t('landing.contact_badge', 'Kontakt aufnehmen')}
               </div>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                Hast du <span className="text-transparent bg-clip-text bg-gradient-to-r from-germany-red to-red-600 dark:from-germany-red dark:to-red-400">Fragen?</span>
+                {t('landing.contact_title1', 'Hast du ')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-germany-red to-red-600 dark:from-germany-red dark:to-red-400">{t('landing.contact_title2', 'Fragen?')}</span>
               </h2>
               <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 max-w-lg leading-relaxed">
-                Schreibe uns direkt eine Nachricht. Unser Team meldet sich umgehend bei dir, um dich auf deinem Weg nach Deutschland zu unterstützen.
+                {t('landing.contact_desc', 'Schreibe uns direkt eine Nachricht. Unser Team meldet sich umgehend bei dir, um dich auf deinem Weg nach Deutschland zu unterstützen.')}
               </p>
               
               <div className="flex items-center space-x-4 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 w-fit">
@@ -342,7 +344,7 @@ const LandingPage = () => {
                   <Mail className="w-6 h-6 text-germany-red" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Schreib uns eine E-Mail</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{t('landing.contact_email_label', 'Schreib uns eine E-Mail')}</p>
                   <p className="font-bold text-slate-900 dark:text-white text-lg">livesprachzentrum2@gmail.com</p>
                 </div>
               </div>
@@ -361,12 +363,12 @@ const LandingPage = () => {
                 {contactStep === 1 && (
                   <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Wie dürfen wir dich nennen?</h3>
-                      <p className="text-slate-500 font-medium dark:text-slate-400">Damit wir wissen, mit wem wir sprechen.</p>
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('landing.form_step1_title', 'Wie dürfen wir dich nennen?')}</h3>
+                      <p className="text-slate-500 font-medium dark:text-slate-400">{t('landing.form_step1_desc', 'Damit wir wissen, mit wem wir sprechen.')}</p>
                     </div>
-                    <input type="text" value={contactData.name} onChange={e => setContactData({...contactData, name: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg" placeholder="Dein Vor- und Nachname" />
+                    <input type="text" value={contactData.name} onChange={e => setContactData({...contactData, name: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg" placeholder={t('landing.form_step1_placeholder', 'Dein Vor- und Nachname')} />
                     <button onClick={handleNextStep} disabled={!contactData.name.trim()} className="w-full px-8 py-5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-between items-center group">
-                      <span>Weiter</span>
+                      <span>{t('landing.form_btn_next', 'Weiter')}</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </motion.div>
@@ -375,16 +377,16 @@ const LandingPage = () => {
                 {contactStep === 2 && (
                   <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Hallo {contactData.name.split(' ')[0]}, <br/>wie lautet deine E-Mail?</h3>
-                      <p className="text-slate-500 font-medium dark:text-slate-400">Wir nutzen diese nur, um dir zu antworten.</p>
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('landing.form_step2_title1', 'Hallo ')}{contactData.name.split(' ')[0]}<span dangerouslySetInnerHTML={{ __html: t('landing.form_step2_title2', ', <br/>wie lautet deine E-Mail?') }} /></h3>
+                      <p className="text-slate-500 font-medium dark:text-slate-400">{t('landing.form_step2_desc', 'Wir nutzen diese nur, um dir zu antworten.')}</p>
                     </div>
-                    <input type="email" value={contactData.email} onChange={e => setContactData({...contactData, email: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg" placeholder="deine@email.de" />
+                    <input type="email" value={contactData.email} onChange={e => setContactData({...contactData, email: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg" placeholder={t('landing.form_step2_placeholder', 'deine@email.de')} />
                     <div className="flex gap-4">
                       <button onClick={handlePrevStep} className="px-6 py-5 rounded-2xl bg-white dark:bg-gray-800 text-slate-900 dark:text-white font-bold text-lg shadow-sm border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors">
-                        Zurück
+                        {t('landing.form_btn_back', 'Zurück')}
                       </button>
                       <button onClick={handleNextStep} disabled={!contactData.email.includes('@')} className="flex-1 px-8 py-5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-between items-center group">
-                        <span>Weiter</span>
+                        <span>{t('landing.form_btn_next', 'Weiter')}</span>
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
@@ -394,17 +396,17 @@ const LandingPage = () => {
                 {contactStep === 3 && (
                   <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Was können wir für dich tun?</h3>
-                      <p className="text-slate-500 font-medium dark:text-slate-400">Stelle uns deine Fragen zu Kursen oder Visa.</p>
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('landing.form_step3_title', 'Was können wir für dich tun?')}</h3>
+                      <p className="text-slate-500 font-medium dark:text-slate-400">{t('landing.form_step3_desc', 'Stelle uns deine Fragen zu Kursen oder Visa.')}</p>
                     </div>
-                    <textarea rows="4" value={contactData.message} onChange={e => setContactData({...contactData, message: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg resize-none" placeholder="Deine Nachricht..."></textarea>
+                    <textarea rows="4" value={contactData.message} onChange={e => setContactData({...contactData, message: e.target.value})} className="w-full px-6 py-5 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 focus:outline-none focus:border-germany-red transition-colors text-slate-900 dark:text-white placeholder-slate-400 font-medium text-lg resize-none" placeholder={t('landing.form_step3_placeholder', 'Deine Nachricht...')}></textarea>
                     <div className="flex gap-4">
                       <button onClick={handlePrevStep} className="px-6 py-5 rounded-2xl bg-white dark:bg-gray-800 text-slate-900 dark:text-white font-bold text-lg shadow-sm border border-slate-200 dark:border-gray-700 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors">
-                        Zurück
+                        {t('landing.form_btn_back', 'Zurück')}
                       </button>
                       <button onClick={handleNextStep} disabled={!contactData.message.trim()} className="flex-1 px-8 py-5 rounded-2xl bg-gradient-to-r from-germany-red to-red-700 text-white font-bold text-lg shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center gap-2 group">
                         <Mail className="w-5 h-5" />
-                        <span>Nachricht Senden</span>
+                        <span>{t('landing.form_btn_send', 'Nachricht Senden')}</span>
                       </button>
                     </div>
                   </motion.div>
@@ -415,8 +417,8 @@ const LandingPage = () => {
                     <div className="w-24 h-24 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12 text-green-500"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
-                    <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white">Gesendet!</h3>
-                    <p className="text-slate-600 font-medium dark:text-slate-300 text-lg max-w-sm">Vielen Dank, {contactData.name.split(' ')[0]}. Wir haben deine Nachricht erhalten und melden uns in Kürze bei dir.</p>
+                    <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white">{t('landing.form_step4_title', 'Gesendet!')}</h3>
+                    <p className="text-slate-600 font-medium dark:text-slate-300 text-lg max-w-sm">{t('landing.form_step4_desc1', 'Vielen Dank, ')}{contactData.name.split(' ')[0]}{t('landing.form_step4_desc2', '. Wir haben deine Nachricht erhalten und melden uns in Kürze bei dir.')}</p>
                   </motion.div>
                 )}
               </div>
@@ -447,7 +449,7 @@ const LandingPage = () => {
                 <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">Live-<span className="text-transparent bg-clip-text bg-gradient-to-r from-germany-red to-red-500">Sprach</span><span className="text-amber-500">zentrum</span></h3>
               </div>
               <p className="text-slate-600 dark:text-slate-400 text-base max-w-sm font-medium leading-relaxed pl-[60px]">
-                Dein Sprachpartner für Deutsch. Erlebe die deutsche Sprache direkt in Antananarivo, Madagaskar.
+                {t('landing.footer_desc', 'Dein Sprachpartner für Deutsch. Erlebe die deutsche Sprache direkt in Antananarivo, Madagaskar.')}
               </p>
             </div>
             
@@ -457,7 +459,7 @@ const LandingPage = () => {
                 <div className="w-10 h-10 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-blue-500 shadow-sm border border-slate-100 dark:border-white/10">
                   <Globe className="w-5 h-5" />
                 </div>
-                Kontakt
+                {t('landing.footer_contact', 'Kontakt')}
               </h4>
               <div className="space-y-4 text-slate-600 dark:text-slate-300 font-medium text-sm pl-[52px]">
                 <p>
@@ -478,20 +480,20 @@ const LandingPage = () => {
                 <div className="w-10 h-10 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-emerald-500 shadow-sm border border-slate-100 dark:border-white/10">
                   <PlayCircle className="w-5 h-5" />
                 </div>
-                Öffnungszeiten
+                {t('landing.footer_hours', 'Öffnungszeiten')}
               </h4>
               <div className="pl-[52px]">
                 <ul className="text-slate-600 dark:text-slate-300 font-medium space-y-2 text-sm w-full">
                   <li className="flex justify-between items-center bg-white/40 dark:bg-white/5 px-3 py-2 rounded-lg border border-white/50 dark:border-white/10">
-                    <span>Mo, Mi, Do</span> 
+                    <span>{t('landing.footer_days1', 'Mo, Mi, Do')}</span> 
                     <span className="font-bold text-slate-800 dark:text-white">08:30 - 16:00</span>
                   </li>
                   <li className="flex justify-between items-center bg-white/40 dark:bg-white/5 px-3 py-2 rounded-lg border border-white/50 dark:border-white/10">
-                    <span>Di, Fr</span> 
+                    <span>{t('landing.footer_days2', 'Di, Fr')}</span> 
                     <span className="font-bold text-slate-800 dark:text-white">08:30 - 12:00</span>
                   </li>
                   <li className="flex justify-between items-center bg-white/40 dark:bg-white/5 px-3 py-2 rounded-lg border border-white/50 dark:border-white/10">
-                    <span>Samstag</span> 
+                    <span>{t('landing.footer_days3', 'Samstag')}</span> 
                     <span className="font-bold text-slate-800 dark:text-white">09:00 - 11:30</span>
                   </li>
                 </ul>
@@ -501,10 +503,10 @@ const LandingPage = () => {
           </div>
           
           <div className="pt-6 border-t border-slate-200 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-400 font-medium text-xs">
-            <p>&copy; {new Date().getFullYear()} Live-Sprachzentrum LIS. Alle Rechte vorbehalten.</p>
+            <p>&copy; {new Date().getFullYear()} {t('landing.footer_rights', 'Live-Sprachzentrum LIS. Alle Rechte vorbehalten.')}</p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Impressum</a>
-              <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Datenschutz</a>
+              <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">{t('landing.footer_imprint', 'Impressum')}</a>
+              <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">{t('landing.footer_privacy', 'Datenschutz')}</a>
             </div>
           </div>
         </div>
@@ -515,7 +517,7 @@ const LandingPage = () => {
         <button 
           onClick={scrollToTop}
           className="w-14 h-14 rounded-full bg-germany-red text-white shadow-2xl flex items-center justify-center hover:bg-red-700 hover:scale-110 active:scale-95 transition-all group border border-white/20"
-          aria-label="Nach oben scrollen"
+          aria-label={t('landing.scroll_top', 'Nach oben scrollen')}
         >
           <ArrowUp className="w-7 h-7 transition-transform group-hover:-translate-y-1" />
         </button>

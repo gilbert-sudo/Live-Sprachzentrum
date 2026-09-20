@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LanguageSelector = () => {
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('DE'); // 'FR' or 'DE'
+  const selectedLang = i18n.language || 'DE';
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -17,9 +19,8 @@ const LanguageSelector = () => {
 
   const selectLanguage = (lang, e) => {
     e.preventDefault();
-    setSelectedLang(lang);
+    i18n.changeLanguage(lang);
     setIsOpen(false);
-    // Future: Dispatch action to change language globally
   };
 
   return (
@@ -48,6 +49,15 @@ const LanguageSelector = () => {
           >
             <img src="https://flagcdn.com/w40/fr.png" alt="Français" className={`w-6 h-6 rounded-full object-cover shadow-sm ring-2 transition-all ${selectedLang === 'FR' ? 'ring-germany-red' : 'ring-transparent hover:ring-germany-red'}`} />
             <span>FR</span>
+          </a>
+          <a 
+            href="#" 
+            onClick={(e) => selectLanguage('EN', e)} 
+            className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all hover:-translate-y-1 ${selectedLang === 'EN' ? 'relative before:absolute before:inset-0 before:rounded-full before:ring-1 before:ring-slate-200 dark:before:ring-slate-700 bg-white/50 dark:bg-slate-800/50' : ''}`} 
+            role="menuitem"
+          >
+            <img src="https://flagcdn.com/w40/gb.png" alt="English" className={`w-6 h-6 rounded-full object-cover shadow-sm ring-2 transition-all ${selectedLang === 'EN' ? 'ring-germany-gold' : 'ring-transparent hover:ring-germany-gold'}`} />
+            <span>EN</span>
           </a>
           <a 
             href="#" 
