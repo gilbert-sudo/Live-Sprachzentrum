@@ -19,7 +19,6 @@ import Bibliothek from './pages/Bibliothek';
 import LiveClassroom from './pages/LiveClassroom';
 import VirtualSchool from './pages/VirtualSchool';
 import LandingPage from './pages/LandingPage';
-import PendingValidation from './pages/PendingValidation';
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard';
@@ -75,35 +74,44 @@ function App() {
           
           {/* Authenticated Routes */}
           {isAuthenticated ? (
-            user?.status === 'pending' ? (
-              <Route path="*" element={<PendingValidation />} />
-            ) : (
             <>
-              <Route path="/room/:roomId" element={<LiveClassroom />} />
+              {/* Route Guard: Only allow validated users to access classroom */}
+              {user?.status !== 'pending' && (
+                <Route path="/room/:roomId" element={<LiveClassroom />} />
+              )}
+              
               <Route path="*" element={
                 <Navbar>
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/bibliothek" element={<Bibliothek />} />
-                    <Route path="/karriere" element={<Karriere />} />
-                    <Route path="/campus" element={<VirtualSchool />} />
-                    <Route path="/simulator" element={<Prufungssimulator />} />
-                    <Route path="/uebung" element={<Uebung />} />
-                    <Route path="/stammtisch" element={<Stammtisch />} />
-                    <Route path="/profil" element={<Profile />} />
+                    
+                    {/* Route Guards for non-dashboard pages */}
+                    {user?.status !== 'pending' ? (
+                      <>
+                        <Route path="/bibliothek" element={<Bibliothek />} />
+                        <Route path="/karriere" element={<Karriere />} />
+                        <Route path="/campus" element={<VirtualSchool />} />
+                        <Route path="/simulator" element={<Prufungssimulator />} />
+                        <Route path="/uebung" element={<Uebung />} />
+                        <Route path="/stammtisch" element={<Stammtisch />} />
+                        <Route path="/profil" element={<Profile />} />
 
-                    {/* Admin Routes */}
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/admin/students" element={<StudentManagement />} />
-                    <Route path="/admin/teachers" element={<TeacherManagement />} />
-                    <Route path="/admin/admins" element={<AdminManagement />} />
+                        {/* Admin Routes */}
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/admin/students" element={<StudentManagement />} />
+                        <Route path="/admin/teachers" element={<TeacherManagement />} />
+                        <Route path="/admin/admins" element={<AdminManagement />} />
+                      </>
+                    ) : (
+                      // If pending user tries to visit any of these, redirect to dashboard
+                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    )}
                     
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </Navbar>
               } />
             </>
-            )
           ) : (
             <Route path="*" element={<Navigate to="/" replace />} />
           )}

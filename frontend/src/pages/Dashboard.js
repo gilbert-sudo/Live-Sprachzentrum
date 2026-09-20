@@ -33,6 +33,79 @@ export default function Dashboard() {
     return <AdminDashboard />;
   }
 
+  if (user?.status === 'pending') {
+    return (
+      <main className="flex-1 w-full max-w-container-max-width mx-auto px-4 md:px-margin-desktop py-6 md:py-12 flex items-center justify-center relative">
+        {/* Background lock icons subtle pattern */}
+        <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-5 pointer-events-none overflow-hidden flex flex-wrap justify-around items-center gap-10 md:gap-20">
+          {[...Array(20)].map((_, i) => (
+            <span key={i} className="material-symbols-outlined text-[60px] md:text-[80px]">lock</span>
+          ))}
+        </div>
+
+        <div className="z-10 flex flex-col items-center justify-center p-6 sm:p-8 md:p-12 text-center bg-surface-container-lowest border border-surface-variant rounded-3xl md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl w-full relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+          
+          {/* Top accent */}
+          <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-germany-black via-germany-red to-germany-gold"></div>
+
+          <div className="relative mb-6 md:mb-8 mt-2 md:mt-4 animate-in zoom-in duration-500 delay-150">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Willkommen" className="w-24 h-24 md:w-40 md:h-40 object-cover rounded-full border-4 md:border-8 border-surface shadow-xl md:shadow-2xl ring-4 ring-germany-red/20" />
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-surface text-germany-red rounded-full flex items-center justify-center absolute bottom-0 right-0 border-2 md:border-4 border-surface shadow-lg animate-bounce">
+              <span className="material-symbols-outlined text-[16px] md:text-[24px] font-bold">hourglass_top</span>
+            </div>
+          </div>
+          
+          <h1 className="text-2xl md:text-4xl font-black text-on-surface mb-3 md:mb-4 tracking-tight">Dein Account wird geprüft</h1>
+          <p className="text-sm md:text-lg text-secondary font-medium leading-relaxed mb-8 md:mb-10 max-w-lg">
+            Wir haben deine Anfrage erhalten. Ein Administrator wird deine Daten in Kürze prüfen und den Account freischalten.
+          </p>
+
+          {/* Stepper */}
+          <div className="w-full max-w-md mb-8 md:mb-10 relative px-1 sm:px-0">
+            <div className="relative flex justify-between items-center">
+              {/* Connecting Line */}
+              <div className="absolute left-[10%] right-[10%] top-[35%] md:top-1/2 h-0.5 md:h-1 bg-surface-variant -z-10 -translate-y-1/2"></div>
+              <div className="absolute left-[10%] w-[40%] top-[35%] md:top-1/2 h-0.5 md:h-1 bg-germany-red -z-10 -translate-y-1/2 transition-all duration-1000"></div>
+
+              {/* Step 1 */}
+              <div className="flex flex-col items-center gap-1.5 md:gap-2 bg-surface-container-lowest px-1 md:px-2">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-germany-red text-white flex items-center justify-center shadow-lg ring-4 ring-surface-container-lowest">
+                  <span className="material-symbols-outlined text-[16px] md:text-[20px]">check</span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-on-surface text-center">Registriert</span>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center gap-1.5 md:gap-2 bg-surface-container-lowest px-1 md:px-2">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-surface text-germany-red border-2 border-germany-red flex items-center justify-center shadow-lg ring-4 ring-surface-container-lowest relative">
+                  <div className="absolute inset-0 rounded-full border-2 border-germany-red border-t-transparent animate-[spin_3s_linear_infinite]"></div>
+                  <span className="material-symbols-outlined text-[16px] md:text-[20px] animate-pulse">visibility</span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-germany-red text-center">In Prüfung</span>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center gap-1.5 md:gap-2 bg-surface-container-lowest px-1 md:px-2 opacity-50">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-surface-variant text-secondary flex items-center justify-center shadow-sm ring-4 ring-surface-container-lowest">
+                  <span className="material-symbols-outlined text-[16px] md:text-[20px]">lock_open</span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-secondary text-center">Freigeschaltet</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="w-full flex justify-center mt-2">
+            <div className="bg-surface-container-high rounded-xl p-3 md:p-4 flex items-start gap-2 md:gap-3 border border-surface-variant max-w-sm w-full text-left shadow-sm">
+              <span className="material-symbols-outlined text-germany-gold text-[20px] md:text-[24px]">info</span>
+              <p className="text-[11px] md:text-sm text-on-surface-variant leading-snug pt-0.5 md:pt-0.5">Du erhältst vollen Zugriff auf das Dashboard und die Bibliothek, sobald der Prozess abgeschlossen ist.</p>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    );
+  }
+
   return (
     <>
       <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
