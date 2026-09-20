@@ -320,11 +320,25 @@ export default function StudentManagement() {
                 <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Genre</label>
-                <select value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
-                  <option value="male">Masculin</option>
-                  <option value="female">Féminin</option>
-                </select>
+                <label className="block text-sm font-medium mb-2">Genre</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({...formData, gender: 'male'})}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full border-2 transition-all ${formData.gender === 'male' ? 'border-blue-500 bg-blue-50 text-blue-700 font-bold shadow-sm' : 'border-surface-variant bg-surface-container text-secondary hover:bg-surface-variant'}`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">male</span>
+                    <span>Masculin</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({...formData, gender: 'female'})}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full border-2 transition-all ${formData.gender === 'female' ? 'border-pink-500 bg-pink-50 text-pink-700 font-bold shadow-sm' : 'border-surface-variant bg-surface-container text-secondary hover:bg-surface-variant'}`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">female</span>
+                    <span>Féminin</span>
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Date de naissance</label>
