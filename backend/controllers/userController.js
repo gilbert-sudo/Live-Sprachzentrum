@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const { encrypt, decrypt } = require('../utils/encryption');
+const storageService = require('../services/storageService');
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -96,6 +97,9 @@ const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
+      if (user.photo) {
+        await storageService.deleteFile(user.photo);
+      }
       await User.deleteOne({ _id: user._id });
       res.json({ message: 'User removed' });
     } else {

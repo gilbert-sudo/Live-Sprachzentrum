@@ -1,5 +1,6 @@
 const Student = require('../models/Student');
 const { encrypt, decrypt } = require('../utils/encryption');
+const storageService = require('../services/storageService');
 
 // @desc    Get all students
 // @route   GET /api/students
@@ -108,6 +109,9 @@ const deleteStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (student) {
+      if (student.photo) {
+        await storageService.deleteFile(student.photo);
+      }
       await Student.deleteOne({ _id: student._id });
       res.json({ message: 'Student removed' });
     } else {

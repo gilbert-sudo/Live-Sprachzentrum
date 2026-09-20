@@ -312,7 +312,7 @@ export default function TeacherManagement() {
               </div>
               
               <div className="md:col-span-2 mt-4">
-                <button type="submit" className="w-full bg-germany-red text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-colors">
+                <button type="submit" disabled={uploadingImage} className={`w-full bg-germany-red text-white py-3 rounded-xl font-bold transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'}`}>
                   {editingUser ? 'Enregistrer' : 'Créer le professeur'}
                 </button>
               </div>

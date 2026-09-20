@@ -291,7 +291,7 @@ export default function AdminManagement() {
               </div>
               
               <div className="md:col-span-2 mt-4">
-                <button type="submit" className="w-full bg-germany-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
+                <button type="submit" disabled={uploadingImage} className={`w-full bg-germany-black text-white py-3 rounded-xl font-bold transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}>
                   {editingUser ? 'Enregistrer' : 'Créer l\'administrateur'}
                 </button>
               </div>
