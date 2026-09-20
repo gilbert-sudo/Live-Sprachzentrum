@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchClassrooms } from '../store/classroomsSlice';
+import { getLevelColor } from '../utils/levelColors';
 
 export default function VirtualSchool() {
   const { user } = useSelector((state) => state.auth);
@@ -50,10 +51,10 @@ export default function VirtualSchool() {
   }, [dispatch]);
 
   const levels = [
-    { id: 'A1', title: 'Anfänger', color: 'from-blue-500 to-blue-700' },
-    { id: 'A2', title: 'Grundlagen', color: 'from-green-500 to-green-700' },
-    { id: 'B1', title: 'Mittelstufe', color: 'from-yellow-500 to-yellow-700' },
-    { id: 'B2', title: 'Gute Mittelstufe', color: 'from-orange-500 to-orange-700' }
+    { id: 'A1', title: 'Anfänger' },
+    { id: 'A2', title: 'Grundlagen' },
+    { id: 'B1', title: 'Mittelstufe' },
+    { id: 'B2', title: 'Gute Mittelstufe' }
   ];
 
   const handleDoorClick = (levelId) => {
@@ -221,7 +222,7 @@ export default function VirtualSchool() {
                       <div className="absolute bottom-[5%] w-[80%] h-[40%] border-[1px] border-surface-dim rounded-sm opacity-50 pointer-events-none"></div>
 
                       {/* Door Sign */}
-                      <div className={`w-[80%] bg-gradient-to-br ${level.color} p-3 rounded-md shadow-md mb-4 md:mb-3 transform -translate-y-2 relative flex flex-col items-center z-10 border border-white/20`}>
+                      <div className={`w-[80%] bg-gradient-to-br ${getLevelColor(level.id).gradient} p-3 rounded-md shadow-md mb-4 md:mb-3 transform -translate-y-2 relative flex flex-col items-center z-10 border border-white/20`}>
                         <span className="material-symbols-outlined text-white/30 text-[16px] md:text-[14px] absolute top-2 right-2">star</span>
                         <h2 className="text-white text-3xl md:text-2xl font-black text-center drop-shadow-md">{level.id}</h2>
                         <p className="text-white/95 text-[12px] md:text-[10px] text-center font-bold mt-1 whitespace-nowrap overflow-hidden text-ellipsis flex items-center justify-center gap-1.5 bg-black/10 px-2 py-1 rounded-sm w-full">

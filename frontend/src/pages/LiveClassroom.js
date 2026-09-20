@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import Bibliothek from './Bibliothek';
 import HomeworkPanel from '../components/HomeworkPanel';
 import ThemeToggle from '../components/ThemeToggle';
+import { getLevelColor } from '../utils/levelColors';
 
 function LiveClassroom() {
   const { roomId } = useParams();
@@ -40,6 +41,7 @@ function LiveClassroom() {
 
   // Formate le nom de la salle (ex: mock-1 -> Mock 1)
   const formattedRoomName = roomId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const levelMatch = roomId.replace('room-', '').toUpperCase();
 
   // Determine active domain and room name:
   // If activeJwt is present and fallback isn't forced, use 8x8.vc JaaS.
@@ -287,7 +289,12 @@ function LiveClassroom() {
         <div className="absolute top-4 left-4 z-10 pointer-events-auto flex flex-col items-start md:flex-row md:items-center gap-2">
           <div className="bg-gray-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-gray-700/70 shadow-lg flex items-center gap-2.5 text-xs max-w-[calc(100vw-32px)] overflow-hidden flex-wrap">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-white font-semibold">Salle: {formattedRoomName}</span>
+            <span className="text-white font-semibold flex items-center gap-2">
+              Salle:
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-widest ${getLevelColor(levelMatch).badge}`}>
+                {formattedRoomName}
+              </span>
+            </span>
             <span className="text-gray-400">|</span>
             <span className="text-gray-300">{username} ({role === 'teacher' ? 'Professeur' : (role === 'admin' ? 'Admin' : 'Étudiant')})</span>
             <span className="text-gray-400">|</span>

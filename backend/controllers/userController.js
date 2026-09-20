@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { encrypt, decrypt } = require('../utils/encryption');
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -6,7 +7,14 @@ const User = require('../models/User');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
-    res.json(users);
+    const usersWithPasswords = users.map(u => {
+      const userObj = u.toObject();
+      if (userObj.encryptedPassword) {
+        userObj.plainPassword = decrypt(userObj.encryptedPassword);
+      }
+      return userObj;
+    });
+    res.json(usersWithPasswords);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -19,7 +27,11 @@ const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     if (user) {
-      res.json(user);
+      const userObj = user.toObject();
+      if (userObj.encryptedPassword) {
+        userObj.plainPassword = decrypt(userObj.encryptedPassword);
+      }
+      res.json(userObj);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -47,10 +59,11 @@ const updateUser = async (req, res) => {
 
       if (req.body.password) {
         user.password = req.body.password;
+        user.encryptedPassword = encrypt(req.body.password);
       }
 
       const updatedUser = await user.save();
-      res.json({
+      const userResponse = {
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
@@ -60,7 +73,11 @@ const updateUser = async (req, res) => {
         gender: updatedUser.gender,
         birthday: updatedUser.birthday,
         photo: updatedUser.photo,
-      });
+      };
+      if (updatedUser.encryptedPassword) {
+        userResponse.plainPassword = decrypt(updatedUser.encryptedPassword);
+      }
+      res.json(userResponse);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -102,6 +119,7 @@ const createUser = async (req, res) => {
       name,
       email,
       password,
+      encryptedPassword: encrypt(password),
       role: role || 'student',
       level: level || 'A1',
       phone,
@@ -111,7 +129,7 @@ const createUser = async (req, res) => {
     });
 
     if (user) {
-      res.status(201).json({
+      const userResponse = {
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -121,7 +139,11 @@ const createUser = async (req, res) => {
         gender: user.gender,
         birthday: user.birthday,
         photo: user.photo,
-      });
+      };
+      if (user.encryptedPassword) {
+        userResponse.plainPassword = decrypt(user.encryptedPassword);
+      }
+      res.status(201).json(userResponse);
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }

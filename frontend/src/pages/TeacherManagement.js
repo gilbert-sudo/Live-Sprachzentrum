@@ -36,6 +36,10 @@ export default function TeacherManagement() {
     dispatch(fetchAdminUsers());
   }, [dispatch]);
 
+  const generatePassword = () => {
+    return Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase();
+  };
+
   const handleOpenModal = (u = null) => {
     if (u) {
       setEditingUser(u);
@@ -52,11 +56,12 @@ export default function TeacherManagement() {
     } else {
       setEditingUser(null);
       setFormData({
-        name: '', email: '', password: '', role: 'teacher', phone: '', gender: 'female', birthday: '', photo: '',
+        name: '', email: '', password: generatePassword(), role: 'teacher', phone: '', gender: 'female', birthday: '', photo: '',
       });
     }
     setIsModalOpen(true);
   };
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -164,8 +169,7 @@ export default function TeacherManagement() {
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant text-sm border-b border-surface-variant">
                 <th className="p-4 font-medium">Name</th>
-                <th className="p-4 font-medium">E-Mail</th>
-                <th className="p-4 font-medium">Telefon</th>
+                <th className="p-4 font-medium">Kontakt</th>
                 <th className="p-4 font-medium">Aktionen</th>
               </tr>
             </thead>
@@ -195,8 +199,20 @@ export default function TeacherManagement() {
                       <span className="group-hover:text-germany-red transition-colors">{u.name}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-secondary">{u.email}</td>
-                  <td className="p-4 text-secondary">{u.phone || '-'}</td>
+                  <td className="p-4">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-secondary">
+                        <span className="material-symbols-outlined text-[16px]">mail</span>
+                        <span>{u.email}</span>
+                      </div>
+                      {u.phone && (
+                        <div className="flex items-center gap-2 text-secondary/70 text-xs mt-0.5">
+                          <span className="material-symbols-outlined text-[14px]">phone</span>
+                          <span>{u.phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4 flex gap-2">
                     <button onClick={() => handleOpenModal(u)} className="p-2 bg-surface-container hover:bg-surface-variant rounded-lg text-secondary hover:text-on-surface transition-colors">
                       <span className="material-symbols-outlined text-[18px]">edit</span>
@@ -243,6 +259,11 @@ export default function TeacherManagement() {
                     </span>
                   </button>
                 </div>
+                {!editingUser && (
+                  <button type="button" onClick={() => setFormData({...formData, password: generatePassword()})} className="mt-1 text-xs text-germany-red hover:underline">
+                    Neues Passwort generieren
+                  </button>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Telefon</label>
@@ -340,10 +361,33 @@ export default function TeacherManagement() {
                     <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : 'Weiblich'}</p>
                   </div>
                 </div>
+                {viewingUser.plainPassword && (
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-secondary text-[20px]">key</span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-secondary font-semibold uppercase">Passwort</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate bg-surface px-2 py-1 rounded border border-surface-variant">{showPassword ? viewingUser.plainPassword : '••••••••'}</p>
+                        <button onClick={() => setShowPassword(!showPassword)} className="text-secondary hover:text-on-surface p-1 rounded-full transition-colors flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[16px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               
-              <div className="mt-6 flex gap-3 w-full">
-                <button onClick={() => { setViewingUser(null); handleOpenModal(viewingUser); }} className="flex-1 bg-surface-container hover:bg-surface-variant text-on-surface py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+              <div className="mt-6 flex flex-col gap-3 w-full">
+                {viewingUser.plainPassword && (
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(`Email: ${viewingUser.email}\nPasswort: ${viewingUser.plainPassword}`);
+                    alert('Zugangsdaten kopiert!');
+                  }} className="w-full bg-germany-red text-white py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 hover:bg-red-700">
+                    <span className="material-symbols-outlined text-[20px]">content_copy</span>
+                    Zugangsdaten kopieren
+                  </button>
+                )}
+                <button onClick={() => { setViewingUser(null); handleOpenModal(viewingUser); }} className="w-full bg-surface-container hover:bg-surface-variant text-on-surface py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-[20px]">edit</span>
                   Bearbeiten
                 </button>

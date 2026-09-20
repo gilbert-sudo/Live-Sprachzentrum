@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '../store/adminUsersSlice';
+import { getLevelColor } from '../utils/levelColors';
 
 export default function StudentManagement() {
   const { user } = useSelector((state) => state.auth);
@@ -37,6 +38,10 @@ export default function StudentManagement() {
     dispatch(fetchAdminUsers());
   }, [dispatch]);
 
+  const generatePassword = () => {
+    return Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase();
+  };
+
   const handleOpenModal = (u = null) => {
     if (u) {
       setEditingUser(u);
@@ -54,7 +59,7 @@ export default function StudentManagement() {
     } else {
       setEditingUser(null);
       setFormData({
-        name: '', email: '', password: '', role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
+        name: '', email: '', password: generatePassword(), role: 'student', level: 'A1', phone: '', gender: 'female', birthday: '', photo: '',
       });
     }
     setIsModalOpen(true);
@@ -165,7 +170,7 @@ export default function StudentManagement() {
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant text-sm border-b border-surface-variant">
                 <th className="p-4 font-medium">Name</th>
-                <th className="p-4 font-medium">E-Mail</th>
+                <th className="p-4 font-medium">Kontakt</th>
                 <th className="p-4 font-medium">Niveau</th>
                 <th className="p-4 font-medium">Aktionen</th>
               </tr>
@@ -196,8 +201,25 @@ export default function StudentManagement() {
                       <span className="group-hover:text-germany-gold transition-colors">{u.name}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-secondary">{u.email}</td>
-                  <td className="p-4 font-medium">{u.level}</td>
+                  <td className="p-4">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-secondary">
+                        <span className="material-symbols-outlined text-[16px]">mail</span>
+                        <span>{u.email}</span>
+                      </div>
+                      {u.phone && (
+                        <div className="flex items-center gap-2 text-secondary/70 text-xs mt-0.5">
+                          <span className="material-symbols-outlined text-[14px]">phone</span>
+                          <span>{u.phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4 font-medium">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-widest ${getLevelColor(u.level).badge}`}>
+                      {u.level}
+                    </span>
+                  </td>
                   <td className="p-4 flex gap-2">
                     <button onClick={() => handleOpenModal(u)} className="p-2 bg-surface-container hover:bg-surface-variant rounded-lg text-secondary hover:text-on-surface transition-colors">
                       <span className="material-symbols-outlined text-[18px]">edit</span>
@@ -244,6 +266,11 @@ export default function StudentManagement() {
                     </span>
                   </button>
                 </div>
+                {!editingUser && (
+                  <button type="button" onClick={() => setFormData({...formData, password: generatePassword()})} className="mt-1 text-xs text-germany-gold hover:underline">
+                    Neues Passwort generieren
+                  </button>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Niveau</label>
@@ -306,13 +333,22 @@ export default function StudentManagement() {
             </div>
             
             <div className="px-6 pb-6 relative -mt-16 text-center flex flex-col items-center">
-              {viewingUser.photo ? (
-                <img src={viewingUser.photo} alt={viewingUser.name} className="w-32 h-32 rounded-full object-cover border-4 border-surface shadow-lg bg-surface shrink-0 mb-4" />
-              ) : (
-                <div className="w-32 h-32 rounded-full border-4 border-surface shadow-lg bg-surface-variant flex items-center justify-center text-secondary shrink-0 mb-4">
-                  <span className="material-symbols-outlined text-[48px]">person</span>
-                </div>
-              )}
+              <div className="relative mb-4">
+                {viewingUser.photo ? (
+                  <img src={viewingUser.photo} alt={viewingUser.name} className="w-32 h-32 rounded-full object-cover border-4 border-surface shadow-lg bg-surface shrink-0" />
+                ) : (
+                  <div className="w-32 h-32 rounded-full border-4 border-surface shadow-lg bg-surface-variant flex items-center justify-center text-secondary shrink-0">
+                    <span className="material-symbols-outlined text-[48px]">person</span>
+                  </div>
+                )}
+                {viewingUser.level && (
+                  <div className="absolute bottom-0 right-0 z-10 transform translate-x-2 -translate-y-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-black tracking-widest ${getLevelColor(viewingUser.level).badge} shadow-lg border-[3px] border-surface`}>
+                      {viewingUser.level}
+                    </span>
+                  </div>
+                )}
+              </div>
               
               <h2 className="text-2xl font-bold text-on-surface mb-1">{viewingUser.name}</h2>
               <p className="text-secondary font-medium mb-4 uppercase tracking-widest text-xs flex items-center justify-center gap-1">
@@ -343,15 +379,6 @@ export default function StudentManagement() {
                     <p className="text-sm font-medium">{viewingUser.birthday ? new Date(viewingUser.birthday).toLocaleDateString('de-DE') : 'Keine Angabe'}</p>
                   </div>
                 </div>
-                {viewingUser.level && (
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary text-[20px]">analytics</span>
-                    <div>
-                      <p className="text-xs text-secondary font-semibold uppercase">Niveau</p>
-                      <p className="text-sm font-medium">{viewingUser.level}</p>
-                    </div>
-                  </div>
-                )}
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-secondary text-[20px]">wc</span>
                   <div>
@@ -359,10 +386,33 @@ export default function StudentManagement() {
                     <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : 'Weiblich'}</p>
                   </div>
                 </div>
+                {viewingUser.plainPassword && (
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-secondary text-[20px]">key</span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-secondary font-semibold uppercase">Passwort</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate bg-surface px-2 py-1 rounded border border-surface-variant">{showPassword ? viewingUser.plainPassword : '••••••••'}</p>
+                        <button onClick={() => setShowPassword(!showPassword)} className="text-secondary hover:text-on-surface p-1 rounded-full transition-colors flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[16px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               
-              <div className="mt-6 flex gap-3 w-full">
-                <button onClick={() => { setViewingUser(null); handleOpenModal(viewingUser); }} className="flex-1 bg-surface-container hover:bg-surface-variant text-on-surface py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+              <div className="mt-6 flex flex-col gap-3 w-full">
+                {viewingUser.plainPassword && (
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(`Email: ${viewingUser.email}\nPasswort: ${viewingUser.plainPassword}`);
+                    alert('Zugangsdaten kopiert!');
+                  }} className="w-full bg-germany-gold text-white py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 hover:bg-yellow-600">
+                    <span className="material-symbols-outlined text-[20px]">content_copy</span>
+                    Zugangsdaten kopieren
+                  </button>
+                )}
+                <button onClick={() => { setViewingUser(null); handleOpenModal(viewingUser); }} className="w-full bg-surface-container hover:bg-surface-variant text-on-surface py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-[20px]">edit</span>
                   Bearbeiten
                 </button>

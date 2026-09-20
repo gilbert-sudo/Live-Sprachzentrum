@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { encrypt } = require('../utils/encryption');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -24,6 +25,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
+      encryptedPassword: encrypt(password),
       role: role || 'student', // Use provided role, otherwise default to student
     });
 
