@@ -15,8 +15,8 @@ export default function AdminDashboard() {
     <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
       <section className="mb-2 md:mb-4 flex justify-between items-end">
         <div>
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Hallo, Master Admin {user?.name}!</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Übersicht des Verwaltungsbereichs.</p>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Bonjour, Master Admin {user?.name}!</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Aperçu de la zone d'administration.</p>
         </div>
       </section>
 
@@ -35,17 +35,17 @@ export default function AdminDashboard() {
             
             <div className="text-center md:text-left flex-1 max-w-xl">
               <h3 className="font-title-lg text-title-lg md:text-4xl text-white mb-3 font-bold tracking-tight drop-shadow-md">
-                Der virtuelle <span className="text-germany-gold">Campus</span>
+                Le <span className="text-germany-gold">Campus</span> virtuel
               </h3>
               <p className="text-white/90 font-body-lg text-lg drop-shadow-md">
-                Betreten Sie die virtuelle Schule, um die Live-Klassen zu überwachen und den Campus zu verwalten.
+                Entrez dans l'école virtuelle pour superviser les classes en direct et gérer le campus.
               </p>
             </div>
             
             <div className="shrink-0 w-full md:w-auto">
               <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-lg group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer backdrop-blur-sm border border-white/20">
                 <span className="material-symbols-outlined">meeting_room</span>
-                Campus betreten
+                Entrer dans le campus
               </div>
             </div>
           </div>
@@ -58,10 +58,10 @@ export default function AdminDashboard() {
           <div className="w-12 h-12 rounded-full bg-germany-gold/10 text-germany-gold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <span className="material-symbols-outlined icon-filled text-[28px]">school</span>
           </div>
-          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Schüler</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Verwalten Sie alle Schüler. Fügen Sie neue hinzu, ändern Sie Niveaus oder aktualisieren Sie Profile.</p>
+          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Étudiants</h3>
+          <p className="text-on-surface-variant mb-6 flex-1">Gérez tous les étudiants. Ajoutez-en de nouveaux, modifiez les niveaux ou mettez à jour les profils.</p>
           <div className="flex items-center text-germany-gold font-bold gap-2">
-            Schüler verwalten
+            Gérer les étudiants
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </div>
         </Link>
@@ -71,10 +71,10 @@ export default function AdminDashboard() {
           <div className="w-12 h-12 rounded-full bg-germany-red/10 text-germany-red flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <span className="material-symbols-outlined icon-filled text-[28px]">history_edu</span>
           </div>
-          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Lehrer</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Verwalten Sie das Lehrpersonal. Weisen Sie Rechte zu und pflegen Sie die Lehrerprofile.</p>
+          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Professeurs</h3>
+          <p className="text-on-surface-variant mb-6 flex-1">Gérez le personnel enseignant. Attribuez des droits et maintenez les profils des professeurs.</p>
           <div className="flex items-center text-germany-red font-bold gap-2">
-            Lehrer verwalten
+            Gérer les professeurs
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </div>
         </Link>
@@ -84,10 +84,10 @@ export default function AdminDashboard() {
           <div className="w-12 h-12 rounded-full bg-germany-black/10 text-germany-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <span className="material-symbols-outlined icon-filled text-[28px]">admin_panel_settings</span>
           </div>
-          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Admins</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Verwalten Sie andere Administratoren mit weitreichenden Systemrechten.</p>
+          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Administrateurs</h3>
+          <p className="text-on-surface-variant mb-6 flex-1">Gérez d'autres administrateurs avec des droits système étendus.</p>
           <div className="flex items-center text-germany-black font-bold gap-2">
-            Admins verwalten
+            Gérer les administrateurs
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </div>
         </Link>

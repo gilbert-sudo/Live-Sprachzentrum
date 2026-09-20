@@ -83,7 +83,7 @@ export default function TeacherManagement() {
       setFormData({ ...formData, photo: data.url });
     } catch (err) {
       console.error(err);
-      alert('Fehler beim Hochladen des Bildes.');
+      alert('Erreur lors du téléchargement de l\'image.');
     } finally {
       setUploadingImage(false);
     }
@@ -101,17 +101,17 @@ export default function TeacherManagement() {
       handleCloseModal();
     } catch (err) {
       console.error(err);
-      alert(err || 'Ein Fehler ist aufgetreten.');
+      alert(err || 'Une erreur s\'est produite.');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Möchten Sie diesen Lehrer wirklich löschen?')) return;
+    if (!window.confirm('Voulez-vous vraiment supprimer ce professeur ?')) return;
     try {
       await dispatch(deleteAdminUser(id)).unwrap();
     } catch (err) {
       console.error(err);
-      alert('Fehler beim Löschen des Lehrers.');
+      alert('Erreur lors de la suppression du professeur.');
     }
   };
 
@@ -128,14 +128,14 @@ export default function TeacherManagement() {
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 bg-surface hover:bg-surface-variant rounded-full text-secondary hover:text-on-surface transition-colors flex items-center justify-center shadow-sm border border-surface-variant">
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
           </button>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Lehrerverwaltung</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface">Gestion des professeurs</h2>
         </div>
         <button 
           onClick={() => handleOpenModal()} 
           className="bg-germany-red text-white px-4 py-2.5 rounded-xl hover:bg-red-700 flex items-center justify-center gap-2 transition-colors shadow-lg font-bold w-full md:w-auto shrink-0"
         >
           <span className="material-symbols-outlined">person_add</span>
-          Neuer Lehrer
+          Nouveau professeur
         </button>
       </div>
 
@@ -148,7 +148,7 @@ export default function TeacherManagement() {
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
             <input 
               type="text" 
-              placeholder="Suche nach Name, E-Mail oder ID..." 
+              placeholder="Rechercher par nom, e-mail ou ID..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-red focus:ring-1 focus:ring-germany-red transition-all text-sm font-medium"
@@ -168,20 +168,20 @@ export default function TeacherManagement() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant text-sm border-b border-surface-variant">
-                <th className="p-4 font-medium">Name</th>
-                <th className="p-4 font-medium">Kontakt</th>
-                <th className="p-4 font-medium">Aktionen</th>
+                <th className="p-4 font-medium">Nom</th>
+                <th className="p-4 font-medium">Contact</th>
+                <th className="p-4 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan="4" className="p-4 text-center">Laden...</td></tr>
+                <tr><td colSpan="4" className="p-4 text-center">Chargement...</td></tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="p-8 text-center">
                     <div className="flex flex-col items-center justify-center text-secondary">
                       <span className="material-symbols-outlined text-4xl mb-2 opacity-50">search_off</span>
-                      <p>Keine Lehrer gefunden.</p>
+                      <p>Aucun professeur trouvé.</p>
                     </div>
                   </td>
                 </tr>
@@ -234,21 +234,21 @@ export default function TeacherManagement() {
             <button onClick={handleCloseModal} className="absolute top-4 right-4 p-2 text-secondary hover:bg-surface-variant rounded-full transition-colors">
               <span className="material-symbols-outlined">close</span>
             </button>
-            <h2 className="text-2xl font-bold mb-6">{editingUser ? 'Lehrer bearbeiten' : 'Neuer Lehrer'}</h2>
+            <h2 className="text-2xl font-bold mb-6">{editingUser ? 'Modifier le professeur' : 'Nouveau professeur'}</h2>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1">Nom</label>
                 <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">E-Mail</label>
+                <label className="block text-sm font-medium mb-1">E-mail</label>
                 <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Passwort {!editingUser && '*'}</label>
+                <label className="block text-sm font-medium mb-1">Mot de passe {!editingUser && '*'}</label>
                 <div className="relative">
-                  <input required={!editingUser} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-4 pr-12 py-2 rounded-xl bg-surface-container border border-surface-variant" placeholder={editingUser ? "(leer lassen, um zu behalten)" : ""} />
+                  <input required={!editingUser} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full pl-4 pr-12 py-2 rounded-xl bg-surface-container border border-surface-variant" placeholder={editingUser ? "(laisser vide pour conserver)" : ""} />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -261,27 +261,27 @@ export default function TeacherManagement() {
                 </div>
                 {!editingUser && (
                   <button type="button" onClick={() => setFormData({...formData, password: generatePassword()})} className="mt-1 text-xs text-germany-red hover:underline">
-                    Neues Passwort generieren
+                    Générer un nouveau mot de passe
                   </button>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Telefon</label>
+                <label className="block text-sm font-medium mb-1">Téléphone</label>
                 <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Geschlecht</label>
+                <label className="block text-sm font-medium mb-1">Genre</label>
                 <select value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
-                  <option value="male">Männlich</option>
-                  <option value="female">Weiblich</option>
+                  <option value="male">Masculin</option>
+                  <option value="female">Féminin</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Geburtsdatum</label>
+                <label className="block text-sm font-medium mb-1">Date de naissance</label>
                 <input type="date" value={formData.birthday} onChange={e => setFormData({...formData, birthday: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-1">Foto (Avatar)</label>
+                <label className="block text-sm font-medium mb-1">Photo (Avatar)</label>
                 <div className="flex items-center gap-4">
                   {formData.photo && (
                     <img src={formData.photo} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-surface-variant" />
@@ -299,7 +299,7 @@ export default function TeacherManagement() {
               
               <div className="md:col-span-2 mt-4">
                 <button type="submit" className="w-full bg-germany-red text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-colors">
-                  {editingUser ? 'Speichern' : 'Lehrer erstellen'}
+                  {editingUser ? 'Enregistrer' : 'Créer le professeur'}
                 </button>
               </div>
             </form>
@@ -327,14 +327,14 @@ export default function TeacherManagement() {
               
               <h2 className="text-2xl font-bold text-on-surface mb-1">{viewingUser.name}</h2>
               <p className="text-secondary font-medium mb-4 uppercase tracking-widest text-xs flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">school</span> Lehrer
+                <span className="material-symbols-outlined text-[16px]">school</span> Professeur
               </p>
               
               <div className="w-full bg-surface-container-lowest rounded-2xl p-4 border border-surface-variant space-y-3 text-left">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-secondary text-[20px]">mail</span>
                   <div className="min-w-0">
-                    <p className="text-xs text-secondary font-semibold uppercase">E-Mail</p>
+                    <p className="text-xs text-secondary font-semibold uppercase">E-mail</p>
                     <p className="text-sm font-medium truncate">{viewingUser.email}</p>
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export default function TeacherManagement() {
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-secondary text-[20px]">phone</span>
                     <div>
-                      <p className="text-xs text-secondary font-semibold uppercase">Telefon</p>
+                      <p className="text-xs text-secondary font-semibold uppercase">Téléphone</p>
                       <p className="text-sm font-medium">{viewingUser.phone}</p>
                     </div>
                   </div>
@@ -350,22 +350,22 @@ export default function TeacherManagement() {
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-secondary text-[20px]">calendar_month</span>
                   <div>
-                    <p className="text-xs text-secondary font-semibold uppercase">Geburtsdatum</p>
-                    <p className="text-sm font-medium">{viewingUser.birthday ? new Date(viewingUser.birthday).toLocaleDateString('de-DE') : 'Keine Angabe'}</p>
+                    <p className="text-xs text-secondary font-semibold uppercase">Date de naissance</p>
+                    <p className="text-sm font-medium">{viewingUser.birthday ? new Date(viewingUser.birthday).toLocaleDateString('de-DE') : 'Non renseigné'}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-secondary text-[20px]">wc</span>
                   <div>
-                    <p className="text-xs text-secondary font-semibold uppercase">Geschlecht</p>
-                    <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Männlich' : 'Weiblich'}</p>
+                    <p className="text-xs text-secondary font-semibold uppercase">Genre</p>
+                    <p className="text-sm font-medium capitalize">{viewingUser.gender === 'male' ? 'Masculin' : 'Féminin'}</p>
                   </div>
                 </div>
                 {viewingUser.plainPassword && (
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-secondary text-[20px]">key</span>
                     <div className="min-w-0">
-                      <p className="text-xs text-secondary font-semibold uppercase">Passwort</p>
+                      <p className="text-xs text-secondary font-semibold uppercase">Mot de passe</p>
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium truncate bg-surface px-2 py-1 rounded border border-surface-variant">{showPassword ? viewingUser.plainPassword : '••••••••'}</p>
                         <button onClick={() => setShowPassword(!showPassword)} className="text-secondary hover:text-on-surface p-1 rounded-full transition-colors flex items-center justify-center">
@@ -380,16 +380,16 @@ export default function TeacherManagement() {
               <div className="mt-6 flex flex-col gap-3 w-full">
                 {viewingUser.plainPassword && (
                   <button onClick={() => {
-                    navigator.clipboard.writeText(`Email: ${viewingUser.email}\nPasswort: ${viewingUser.plainPassword}`);
-                    alert('Zugangsdaten kopiert!');
+                    navigator.clipboard.writeText(`Email: ${viewingUser.email}\nMot de passe: ${viewingUser.plainPassword}`);
+                    alert('Identifiants copiés !');
                   }} className="w-full bg-germany-red text-white py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 hover:bg-red-700">
                     <span className="material-symbols-outlined text-[20px]">content_copy</span>
-                    Zugangsdaten kopieren
+                    Copier les identifiants
                   </button>
                 )}
                 <button onClick={() => { setViewingUser(null); handleOpenModal(viewingUser); }} className="w-full bg-surface-container hover:bg-surface-variant text-on-surface py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-[20px]">edit</span>
-                  Bearbeiten
+                  Modifier
                 </button>
               </div>
             </div>
