@@ -7,6 +7,7 @@ export default function AuthModal({ isOpen, onClose }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   if (!isOpen) return null;
@@ -14,12 +15,15 @@ export default function AuthModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       await dispatch(login({ email, password })).unwrap();
       onClose();
+      setLoading(false);
     } catch (err) {
       setError(err || 'Authentication failed');
+      setLoading(false);
     }
   };
 
@@ -110,11 +114,21 @@ export default function AuthModal({ isOpen, onClose }) {
 
             <div className="pt-2">
               <button 
-                type="submit" 
-                className="w-full py-4 px-4 bg-gradient-to-r from-germany-red to-[#FF4B53] hover:from-[#E61E25] hover:to-[#FF333D] text-white rounded-2xl font-bold shadow-xl shadow-red-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 px-4 bg-gradient-to-r from-germany-red to-[#FF4B53] hover:from-[#E61E25] hover:to-[#FF333D] text-white rounded-2xl font-bold shadow-xl shadow-red-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-70 disabled:pointer-events-none"
               >
-                <span className="text-lg">Anmelden</span>
-                <span className="material-symbols-outlined text-[22px] transition-transform group-hover:translate-x-1">login</span>
+                {loading ? (
+                  <>
+                    <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <span className="text-lg">Anmelden...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg">Anmelden</span>
+                    <span className="material-symbols-outlined text-[22px] transition-transform group-hover:translate-x-1">login</span>
+                  </>
+                )}
               </button>
             </div>
           </form>

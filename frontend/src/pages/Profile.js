@@ -26,10 +26,19 @@ export default function Profile() {
             <h2 className="font-title-lg md:font-headline-lg text-title-lg md:text-headline-lg text-on-surface leading-tight truncate">{user?.name}</h2>
             <p className="font-body-sm md:font-body-md text-sm md:text-body-md text-on-surface-variant mt-0.5 md:mt-1 truncate">{user?.email}</p>
             <div className="flex items-center justify-start gap-2 mt-2 md:mt-3">
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 font-black tracking-widest text-[10px] md:text-xs rounded-full whitespace-nowrap shadow-sm ${getLevelColor(user?.level || 'Alle').badge}`}>
-                <span className="material-symbols-outlined text-[14px] md:text-[16px]">school</span>
-                {user?.level || 'Alle'} Standard
-              </span>
+              {user?.role === 'student' ? (
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 font-black tracking-widest text-[10px] md:text-xs rounded-full whitespace-nowrap shadow-sm ${getLevelColor(user?.level || 'Alle').badge}`}>
+                  <span className="material-symbols-outlined text-[14px] md:text-[16px]">school</span>
+                  {user?.level || 'Alle'} Standard
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 font-black tracking-widest text-[10px] md:text-xs rounded-full whitespace-nowrap shadow-sm bg-surface-variant text-on-surface-variant dark:bg-white/10 dark:text-white border border-surface-subtle uppercase">
+                  <span className="material-symbols-outlined text-[14px] md:text-[16px]">
+                    {user?.role === 'master_admin' ? 'workspace_premium' : user?.role === 'admin' ? 'admin_panel_settings' : 'badge'}
+                  </span>
+                  {user?.role === 'master_admin' ? 'Master Admin' : user?.role === 'admin' ? 'Admin' : 'Lehrer'}
+                </span>
+              )}
             </div>
           </div>
         </section>
