@@ -2,13 +2,16 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAdminUsers } from '../store/adminUsersSlice';
+import { fetchAdminStudents } from '../store/adminStudentsSlice';
 
 export default function AdminDashboard() {
   const { user } = useSelector((state) => state.auth);
+  const { students } = useSelector((state) => state.adminStudents);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchAdminUsers());
+    dispatch(fetchAdminStudents());
   }, [dispatch]);
 
   return (
@@ -59,7 +62,11 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined icon-filled text-[28px]">school</span>
           </div>
           <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Étudiants</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Gérez tous les étudiants. Ajoutez-en de nouveaux, modifiez les niveaux ou mettez à jour les profils.</p>
+          <p className="text-on-surface-variant mb-4 flex-1">Gérez tous les étudiants. Ajoutez-en de nouveaux, modifiez les niveaux ou mettez à jour les profils.</p>
+          <div className="bg-surface-variant rounded-lg p-3 mb-6 flex justify-between items-center">
+            <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Total</span>
+            <span className="text-xl font-black text-germany-gold">{students?.length || 0}</span>
+          </div>
           <div className="flex items-center text-germany-gold font-bold gap-2">
             Gérer les étudiants
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>

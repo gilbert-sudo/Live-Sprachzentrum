@@ -80,6 +80,7 @@ const updateStudent = async (req, res) => {
       const updatedStudent = await student.save();
       const studentResponse = {
         _id: updatedStudent._id,
+        badgeNumber: updatedStudent.badgeNumber,
         name: updatedStudent.name,
         email: updatedStudent.email,
         role: updatedStudent.role,
@@ -154,6 +155,7 @@ const createStudent = async (req, res) => {
     if (student) {
       const studentResponse = {
         _id: student._id,
+        badgeNumber: student.badgeNumber,
         name: student.name,
         email: student.email,
         role: student.role,

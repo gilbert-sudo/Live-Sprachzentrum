@@ -140,6 +140,7 @@ export default function StudentManagement() {
   const filteredUsers = users.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (u.badgeNumber && u.badgeNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
                           (u._id && u._id.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const userStatus = u.status || 'active';
@@ -211,7 +212,6 @@ export default function StudentManagement() {
                 <th className="p-4 font-medium">Nom</th>
                 <th className="p-4 font-medium">Contact</th>
                 <th className="p-4 font-medium">Niveau</th>
-                <th className="p-4 font-medium">Statut compte</th>
                 <th className="p-4 font-medium">Statut des frais</th>
                 <th className="p-4 font-medium">Actions</th>
               </tr>
@@ -229,7 +229,11 @@ export default function StudentManagement() {
                   </td>
                 </tr>
               ) : filteredUsers.map(u => (
-                <tr key={u._id} className="border-b border-surface-variant last:border-0 hover:bg-surface-container/50 transition-colors">
+                <tr key={u._id} className={`border-b border-surface-variant last:border-0 transition-colors ${
+                  u.status === 'pending' ? 'bg-germany-gold/10 hover:bg-germany-gold/20' :
+                  u.status === 'rejected' ? 'bg-germany-red/10 hover:bg-germany-red/20' :
+                  'hover:bg-surface-container/50'
+                }`}>
                   <td className="p-4 font-bold text-on-surface cursor-pointer group" onClick={() => setViewingUser(u)}>
                     <div className="flex items-center gap-3">
                       {u.photo ? (
@@ -239,7 +243,15 @@ export default function StudentManagement() {
                           <span className="material-symbols-outlined text-[20px]">person</span>
                         </div>
                       )}
-                      <span className="group-hover:text-germany-gold transition-colors">{u.name}</span>
+                      <div className="flex flex-col">
+                        <span className="group-hover:text-germany-gold transition-colors">{u.name}</span>
+                        {u.badgeNumber && (
+                          <div className="flex items-center gap-1 text-xs text-secondary font-medium mt-0.5">
+                            <span className="material-symbols-outlined text-[14px]">badge</span>
+                            <span className="font-mono tracking-widest">{u.badgeNumber}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="p-4">
@@ -260,11 +272,6 @@ export default function StudentManagement() {
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-widest ${getLevelColor(u.level).badge}`}>
                       {u.level}
                     </span>
-                  </td>
-                  <td className="p-4">
-                    {(!u.status || u.status === 'active') && <span className="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">Actif</span>}
-                    {u.status === 'pending' && <span className="px-2 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-700">En attente</span>}
-                    {u.status === 'rejected' && <span className="px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">Rejeté</span>}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-1.5">
@@ -358,6 +365,16 @@ export default function StudentManagement() {
                   <option value="Tous">Tous</option>
                 </select>
               </div>
+              {editingUser && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">Statut du compte</label>
+                  <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant">
+                    <option value="active">Actif (Validé)</option>
+                    <option value="pending">En attente</option>
+                    <option value="rejected">Rejeté</option>
+                  </select>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium mb-1">Téléphone</label>
                 <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-surface-container border border-surface-variant" />
@@ -468,6 +485,18 @@ export default function StudentManagement() {
               </div>
               
               <h2 className="text-2xl font-bold text-on-surface mb-1">{viewingUser.name}</h2>
+              {viewingUser.badgeNumber && (
+                <div className="bg-surface-variant px-3 py-1 rounded-lg border border-surface-subtle mb-3 flex items-center gap-2 shadow-inner">
+                  <span className="text-secondary text-xs uppercase font-bold tracking-wider">Badge:</span>
+                  <span className="font-mono text-lg font-black tracking-widest text-germany-gold">{viewingUser.badgeNumber}</span>
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(viewingUser.badgeNumber);
+                    alert('Numéro de badge copié !');
+                  }} className="ml-1 text-secondary hover:text-on-surface transition-colors p-1" title="Copier le badge">
+                    <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                  </button>
+                </div>
+              )}
               <p className="text-secondary font-medium mb-4 uppercase tracking-widest text-xs flex items-center justify-center gap-1">
                 <span className="material-symbols-outlined text-[16px]">school</span> Étudiant
               </p>

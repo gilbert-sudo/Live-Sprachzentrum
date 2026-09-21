@@ -64,13 +64,29 @@ const studentSchema = new mongoose.Schema({
   subscription: {
     type: subscriptionSchema,
     default: () => ({}),
+  },
+  badgeNumber: {
+    type: String,
+    unique: true,
   }
 }, {
   timestamps: true,
 });
 
-// Hash password before saving
+// Generate badgeNumber and Hash password before saving
 studentSchema.pre('save', async function() {
+  if (!this.badgeNumber) {
+    let exists = true;
+    while (exists) {
+      const badge = Math.floor(10000 + Math.random() * 90000).toString();
+      const existing = await mongoose.models.Student.findOne({ badgeNumber: badge });
+      if (!existing) {
+        this.badgeNumber = badge;
+        exists = false;
+      }
+    }
+  }
+
   if (!this.isModified('password')) {
     return;
   }
