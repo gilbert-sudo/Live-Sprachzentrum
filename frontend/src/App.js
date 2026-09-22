@@ -25,6 +25,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import StudentManagement from './pages/StudentManagement';
 import TeacherManagement from './pages/TeacherManagement';
 import AdminManagement from './pages/AdminManagement';
+import ExerciseTestPage from './pages/ExerciseTestPage';
 
 
 
@@ -101,6 +102,7 @@ function App() {
                         <Route path="/admin/students" element={<StudentManagement />} />
                         <Route path="/admin/teachers" element={<TeacherManagement />} />
                         <Route path="/admin/admins" element={<AdminManagement />} />
+                        <Route path="/admin/exercise-test" element={<ExerciseTestPage />} />
                       </>
                     ) : (
                       // If pending user tries to visit any of these, redirect to dashboard
