@@ -14,6 +14,7 @@ import Uebung from './pages/Uebung';
 import Profile from './pages/Profile';
 import Stammtisch from './pages/Stammtisch';
 import Bibliothek from './pages/Bibliothek';
+import HomeworkPage from './pages/HomeworkPage';
 
 // New Virtual School pages
 import LiveClassroom from './pages/LiveClassroom';
@@ -109,6 +110,7 @@ function App() {
                         <Route path="/uebung" element={<Uebung />} />
                         <Route path="/stammtisch" element={<Stammtisch />} />
                         <Route path="/profil" element={<Profile />} />
+                        <Route path="/homework" element={<HomeworkPage />} />
 
                         {/* Admin Routes */}
                         <Route path="/admin" element={<AdminDashboard />} />

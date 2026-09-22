@@ -469,7 +469,7 @@ function LiveClassroom() {
         {/* The Panel Content embedded inside */}
         <div className="flex-1 flex overflow-hidden relative">
           <div className="flex-1 flex flex-col min-w-0 relative bg-surface-container-lowest">
-            <div className="flex-1 overflow-y-auto hide-scrollbar">
+            <div className="flex-1 overflow-y-auto hide-scrollbar" data-lenis-prevent>
               {activePanel === 'bibliothek' && <Bibliothek readOnly={true} />}
               {activePanel === 'homework' && <HomeworkPanel roomId={roomId} socket={socket} />}
             </div>

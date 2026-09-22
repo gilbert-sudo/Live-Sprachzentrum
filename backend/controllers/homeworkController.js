@@ -110,9 +110,36 @@ const togglePinHomework = async (req, res) => {
   }
 };
 
+// @desc    Update exercises in a homework
+// @route   PUT /api/homework/:id/exercises
+// @access  Private/Teacher
+const updateHomeworkExercises = async (req, res) => {
+  try {
+    const { exercises } = req.body;
+    const homework = await Homework.findById(req.params.id);
+    
+    if (!homework) {
+      return res.status(404).json({ message: 'Devoir non trouvé' });
+    }
+    
+    // Ensure only the teacher who created it or an admin can edit
+    if (homework.teacherId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(401).json({ message: 'Non autorisé' });
+    }
+
+    homework.exercises = exercises || [];
+    await homework.save();
+    
+    res.json(homework);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   getHomeworks,
   createHomework,
   deleteHomework,
-  togglePinHomework
+  togglePinHomework,
+  updateHomeworkExercises
 };

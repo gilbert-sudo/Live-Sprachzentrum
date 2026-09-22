@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchHomeworks, addHomework, deleteHomework } from '../store/homeworkSlice';
+import HomeworkExercise from '../pages/HomeworkExercise';
 
-export default function HomeworkPanel({ roomId, socket }) {
+export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const { user } = useSelector((state) => state.auth);
   const { homeworks, status } = useSelector((state) => state.homework);
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ export default function HomeworkPanel({ roomId, socket }) {
   const isLoading = status === 'loading';
 
   // Form states for teachers
+  const [activeExerciseId, setActiveExerciseId] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
   const [description, setDescription] = useState('');
@@ -128,10 +130,14 @@ export default function HomeworkPanel({ roomId, socket }) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#FAFAFC] dark:bg-[#121214] text-gray-900 dark:text-gray-100 font-sans relative">
+    <div className="flex flex-col h-full w-full bg-[#FAFAFC] dark:bg-[#121214] text-gray-900 dark:text-gray-100 font-sans relative min-h-0">
       
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-[#18181B] sticky top-0 z-10 pr-16">
+      {activeExerciseId ? (
+        <HomeworkExercise id={activeExerciseId} onClose={() => setActiveExerciseId(null)} isStandalonePage={isStandalonePage} />
+      ) : (
+        <>
+          {/* Header */}
+          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-[#18181B] sticky top-0 z-10 pr-16">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <span className="material-symbols-outlined text-gray-400 text-xl">assignment</span>
           Devoirs
@@ -148,7 +154,7 @@ export default function HomeworkPanel({ roomId, socket }) {
       </div>
 
       {/* Main List */}
-      <div className="flex-1 overflow-y-auto p-4 hide-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 hide-scrollbar" data-lenis-prevent>
         {isLoading ? (
           <div className="flex justify-center py-10">
             <div className="w-5 h-5 border-2 border-gray-300 border-t-black dark:border-gray-600 dark:border-t-white rounded-full animate-spin"></div>
@@ -177,17 +183,15 @@ export default function HomeworkPanel({ roomId, socket }) {
                   {hw.description}
                 </p>
 
-                {hw.exercises && hw.exercises.length > 0 && role === 'student' && (
+                {hw.exercises && hw.exercises.length > 0 && (
                   <div className="mb-4">
-                     <a 
-                       href={`/homework/${hw._id}/exercise`}
-                       target="_blank"
-                       rel="noopener noreferrer"
+                     <button 
+                       onClick={() => setActiveExerciseId(hw._id)}
                        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors hover:shadow-md"
                      >
                        <span className="material-symbols-outlined text-[18px]">menu_book</span>
                        Faire l'exercice
-                     </a>
+                     </button>
                   </div>
                 )}
                 
@@ -320,6 +324,8 @@ export default function HomeworkPanel({ roomId, socket }) {
             </form>
           </div>
         </div>
+      )}
+      </>
       )}
       
     </div>

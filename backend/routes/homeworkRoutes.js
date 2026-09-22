@@ -5,7 +5,8 @@ const {
   getHomeworks,
   createHomework,
   deleteHomework,
-  togglePinHomework
+  togglePinHomework,
+  updateHomeworkExercises
 } = require('../controllers/homeworkController');
 
 // @route   GET /api/homework
@@ -27,5 +28,10 @@ router.route('/:id').delete(protect, teacher, deleteHomework);
 // @desc    Toggle pin status for homework
 // @access  Private/Teacher
 router.route('/:id/pin').patch(protect, teacher, togglePinHomework);
+
+// @route   PUT /api/homework/:id/exercises
+// @desc    Update exercises in a homework
+// @access  Private/Teacher
+router.route('/:id/exercises').put(protect, teacher, updateHomeworkExercises);
 
 module.exports = router;
