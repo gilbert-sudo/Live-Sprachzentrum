@@ -7,7 +7,7 @@ const storageService = require('../services/storageService');
 // @access  Private/Teacher
 const getStudents = async (req, res) => {
   try {
-    const students = await Student.find({}).select('-password');
+    const students = await Student.find({}).sort({ createdAt: -1 }).select('-password');
     const studentsWithPasswords = students.map(s => {
       const studentObj = s.toObject();
       if (studentObj.encryptedPassword) {

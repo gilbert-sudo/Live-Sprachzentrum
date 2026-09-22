@@ -15,6 +15,16 @@ export default function StudentManagement() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -149,9 +159,12 @@ export default function StudentManagement() {
     return matchesSearch && matchesStatus;
   });
 
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
+    <div className="flex flex-col flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 gap-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div className="flex items-center gap-2">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 bg-surface hover:bg-surface-variant rounded-full text-secondary hover:text-on-surface transition-colors flex items-center justify-center shadow-sm border border-surface-variant">
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
@@ -167,47 +180,49 @@ export default function StudentManagement() {
         </button>
       </div>
 
-      {error && <div className="text-germany-red mb-4">{error}</div>}
+      {error && <div className="text-germany-red">{error}</div>}
 
-      <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] overflow-hidden">
-        {/* Search Bar */}
-        <div className="p-4 border-b border-surface-variant flex items-center bg-surface-container/30">
-          <div className="relative w-full max-w-md">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
-            <input 
-              type="text" 
-              placeholder="Rechercher par nom, e-mail ou ID..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-gold focus:ring-1 focus:ring-germany-gold transition-all text-sm font-medium"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface flex items-center justify-center"
-              >
-                <span className="material-symbols-outlined text-[18px]">close</span>
-              </button>
-            )}
-          </div>
-          
-          <div className="flex gap-2 ml-4">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-gold focus:ring-1 focus:ring-germany-gold transition-all text-sm font-medium text-on-surface"
-            >
-              <option value="all">Tous les statuts</option>
-              <option value="active">Actif</option>
-              <option value="pending">En attente (Warteliste)</option>
-              <option value="rejected">Rejeté</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
+      <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-variant relative">
+        <div className="w-full">
           <table className="w-full text-left border-collapse">
-            <thead>
+            <thead className="sticky top-[56px] md:top-[72px] z-20 shadow-md">
+              <tr className="bg-surface-container-lowest">
+                <th colSpan="5" className="p-0 border-b border-surface-variant rounded-t-xl overflow-hidden">
+                  <div className="p-4 flex flex-col md:flex-row items-center justify-between gap-4 bg-surface-container/30">
+                    <div className="relative w-full max-w-md">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+                      <input 
+                        type="text" 
+                        placeholder="Rechercher par nom, e-mail ou ID..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-gold focus:ring-1 focus:ring-germany-gold transition-all text-sm font-medium"
+                      />
+                      {searchQuery && (
+                        <button 
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface flex items-center justify-center"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="flex gap-2 ml-4">
+                      <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="px-4 py-2.5 bg-surface rounded-xl border border-surface-variant focus:outline-none focus:border-germany-gold focus:ring-1 focus:ring-germany-gold transition-all text-sm font-medium text-on-surface"
+                      >
+                        <option value="all">Tous les statuts</option>
+                        <option value="active">Actif</option>
+                        <option value="pending">En attente (Warteliste)</option>
+                        <option value="rejected">Rejeté</option>
+                      </select>
+                    </div>
+                  </div>
+                </th>
+              </tr>
               <tr className="bg-surface-container-low text-on-surface-variant text-sm border-b border-surface-variant">
                 <th className="p-4 font-medium">Nom</th>
                 <th className="p-4 font-medium">Contact</th>
@@ -219,7 +234,7 @@ export default function StudentManagement() {
             <tbody>
               {isLoading ? (
                 <tr><td colSpan="4" className="p-4 text-center">Chargement...</td></tr>
-              ) : filteredUsers.length === 0 ? (
+              ) : paginatedUsers.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="p-8 text-center">
                     <div className="flex flex-col items-center justify-center text-secondary">
@@ -228,7 +243,7 @@ export default function StudentManagement() {
                     </div>
                   </td>
                 </tr>
-              ) : filteredUsers.map(u => (
+              ) : paginatedUsers.map(u => (
                 <tr key={u._id} className={`border-b border-surface-variant last:border-0 transition-colors ${
                   u.status === 'pending' ? 'bg-germany-gold/10 hover:bg-germany-gold/20' :
                   u.status === 'rejected' ? 'bg-germany-red/10 hover:bg-germany-red/20' :
@@ -317,6 +332,39 @@ export default function StudentManagement() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="sticky bottom-0 z-20 p-4 border-t border-surface-variant flex flex-col md:flex-row items-center justify-between gap-4 bg-surface-container-lowest/95 backdrop-blur-md rounded-b-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <span className="text-sm text-secondary font-medium">
+              Affichage {((currentPage - 1) * itemsPerPage) + 1} à {Math.min(currentPage * itemsPerPage, filteredUsers.length)} sur {filteredUsers.length} étudiants
+            </span>
+            <div className="flex gap-1 overflow-x-auto max-w-full pb-1 md:pb-0">
+              <button
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1}
+                className="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-surface-variant text-secondary hover:bg-surface-variant hover:text-on-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`w-8 h-8 shrink-0 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${currentPage === page ? 'bg-germany-gold text-white border-germany-gold' : 'border border-surface-variant text-secondary hover:bg-surface-variant hover:text-on-surface'}`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-surface-variant text-secondary hover:bg-surface-variant hover:text-on-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
@@ -595,6 +643,6 @@ export default function StudentManagement() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
