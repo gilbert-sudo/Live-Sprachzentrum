@@ -1,102 +1,194 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ExerciseShell from './ExerciseShell';
 
-const Categorization = ({ exercise }) => {
-  const { title, instruction, categories, items } = exercise;
-  
-  // State: item.id -> category name
-  const [placements, setPlacements] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [shuffledItems, setShuffledItems] = useState([]);
+/* ─── chip spring variants ───────────────────────────────────────── */
+const chipV = {
+  hidden:  { scale: 0.75, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 380, damping: 22 } },
+  exit:    { scale: 0.75, opacity: 0, transition: { duration: 0.13 } },
+};
 
-  useEffect(() => {
-    setShuffledItems([...items].map((it, idx) => ({ ...it, id: idx })).sort(() => Math.random() - 0.5));
-  }, [items]);
-
-  const handlePlace = (itemId, cat) => {
-    if (isSubmitted) return;
-    setPlacements({ ...placements, [itemId]: cat });
+/* ─── WordChip ───────────────────────────────────────────────────── */
+const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }) => {
+  const colorMap = {
+    correct: 'bg-green-50 border-green-400 text-green-800',
+    wrong:   'bg-red-50 border-red-400 text-red-800',
+    default: 'bg-white border-stone-200 text-stone-700 hover:border-indigo-300 hover:shadow-sm cursor-grab active:cursor-grabbing',
   };
-
-  const checkAnswers = () => setIsSubmitted(true);
-
-  let score = 0;
-  if (isSubmitted) {
-    shuffledItems.forEach(item => {
-      if (placements[item.id] === item.category) score++;
-    });
-  }
-
-  const unplaced = shuffledItems.filter(item => !placements[item.id]);
-
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-      <h3 className="text-xl font-semibold text-slate-800 mb-2">{title}</h3>
-      {instruction && <p className="text-slate-600 mb-6">{instruction}</p>}
-
-      <div className="mb-8">
-        <h4 className="text-sm font-semibold text-slate-500 uppercase mb-3">To Sort:</h4>
-        <div className="flex flex-wrap gap-2 min-h-[50px] p-4 bg-slate-50 border border-slate-200 rounded-lg">
-          <AnimatePresence>
-            {unplaced.map(item => (
-              <motion.div layout initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} key={item.id} className="bg-white border border-slate-300 shadow-sm px-3 py-1.5 rounded-md font-medium text-slate-700 cursor-pointer hover:bg-slate-50 flex items-center">
-                {item.word}
-                <select 
-                  className="ml-2 bg-transparent text-sm text-indigo-600 font-bold focus:outline-none cursor-pointer"
-                  onChange={(e) => handlePlace(item.id, e.target.value)}
-                  value=""
-                >
-                  <option value="" disabled>Move...</option>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {unplaced.length === 0 && <span className="text-slate-400 italic">All items placed.</span>}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {categories.map(cat => {
-          const catItems = shuffledItems.filter(item => placements[item.id] === cat);
-          
-          return (
-            <div key={cat} className="bg-slate-50 border border-slate-200 rounded-lg overflow-hidden flex flex-col">
-              <div className="bg-slate-200 px-4 py-2 font-semibold text-slate-700 text-center">{cat}</div>
-              <div className="p-4 flex-1 flex flex-col gap-2 min-h-[100px]">
-                <AnimatePresence>
-                  {catItems.map(item => {
-                    const isCorrect = isSubmitted && item.category === cat;
-                    const isWrong = isSubmitted && !isCorrect;
-
-                    return (
-                      <motion.div layout initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} key={item.id} className={`flex justify-between items-center bg-white border px-3 py-2 rounded shadow-sm ${isCorrect ? 'border-green-500' : isWrong ? 'border-red-500' : 'border-slate-300'}`}>
-                        <span className={`font-medium ${isCorrect ? 'text-green-700' : isWrong ? 'text-red-700' : 'text-slate-700'}`}>{item.word}</span>
-                        {!isSubmitted && (
-                          <button onClick={() => handlePlace(item.id, null)} className="text-slate-400 hover:text-red-500 font-bold">&times;</button>
-                        )}
-                        {isWrong && <span className="text-xs text-red-500 font-bold ml-2">({item.category})</span>}
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex items-center justify-between border-t border-slate-100 pt-6 mt-6">
-        <button onClick={checkAnswers} disabled={isSubmitted || unplaced.length > 0} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
-          Check Answers
-        </button>
-        {isSubmitted && (
-          <div className="text-lg font-bold text-slate-800">
-            Score: <span className={score === items.length ? 'text-green-500' : 'text-indigo-600'}>{score} / {items.length}</span>
-          </div>
-        )}
-      </div>
+    <motion.div
+      layout
+      variants={chipV}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      draggable={!disabled && status === 'default'}
+      onDragStart={() => onDragStart(item.id)}
+      onDragEnd={onDragEnd}
+      style={{ opacity: isDragging ? 0.35 : 1 }}
+      className={`select-none px-2.5 py-1 rounded border text-xs font-medium shadow-sm transition-colors duration-150 ${colorMap[status] ?? colorMap.default}`}
+    >
+      {item.word}
+      {status === 'wrong' && (
+        <span className="ml-1.5 text-[10px] font-normal text-red-400">→ {item.category}</span>
+      )}
     </motion.div>
   );
 };
+
+/* ─── DropBucket ─────────────────────────────────────────────────── */
+const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onReturn, isSubmitted }) => (
+  <motion.div
+    animate={isOver ? { scale: 1.02 } : { scale: 1 }}
+    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+    onDragOver={onDragOver}
+    onDragLeave={onDragLeave}
+    onDrop={onDrop}
+    className={`rounded border-2 border-dashed flex flex-col overflow-hidden transition-colors duration-150 ${
+      isOver ? 'border-indigo-400 bg-indigo-50/50 shadow shadow-indigo-100' : 'border-stone-200 bg-stone-50/50'
+    }`}
+  >
+    {/* bucket header */}
+    <div className={`px-3 py-1.5 text-xs font-bold tracking-wide text-center border-b transition-colors ${
+      isOver ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-stone-100 text-stone-600 border-stone-200'
+    }`}>
+      {cat}
+      <span className="ml-1 font-normal opacity-50 text-[10px]">({items.length})</span>
+    </div>
+    {/* drop zone */}
+    <div className="p-2 flex-1 min-h-[80px] flex flex-col gap-1.5">
+      <AnimatePresence>
+        {items.map(item => {
+          const isCorrect = isSubmitted && item.category === cat;
+          const isWrong   = isSubmitted && !isCorrect;
+          return (
+            <div key={item.id} className="flex items-center gap-1">
+              <WordChip item={item} isDragging={false} onDragStart={() => {}} onDragEnd={() => {}}
+                disabled={isSubmitted} status={isSubmitted ? (isCorrect ? 'correct' : 'wrong') : 'default'} />
+              {!isSubmitted && (
+                <button onClick={() => onReturn(item.id)}
+                  className="text-stone-300 hover:text-red-400 transition-colors text-sm leading-none font-bold ml-auto">
+                  ×
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </AnimatePresence>
+      {items.length === 0 && (
+        <p className={`m-auto text-[10px] italic ${isOver ? 'text-indigo-400' : 'text-stone-300'}`}>
+          {isOver ? 'Hier ablegen' : 'Wörter hierher ziehen'}
+        </p>
+      )}
+    </div>
+  </motion.div>
+);
+
+/* ─── Main Component ─────────────────────────────────────────────── */
+const Categorization = ({ index, exercise }) => {
+  const { title, instruction, categories, items } = exercise;
+
+  const [shuffledItems, setShuffledItems] = useState([]);
+  const [placements, setPlacements]       = useState({});
+  const [isSubmitted, setIsSubmitted]     = useState(false);
+  const [overZone, setOverZone]           = useState(null);
+  const draggingId = useRef(null);
+
+  useEffect(() => {
+    setShuffledItems([...items].map((it, idx) => ({ ...it, id: idx })).sort(() => Math.random() - 0.5));
+    setPlacements({});
+    setIsSubmitted(false);
+  }, [items]);
+
+  /* drag handlers */
+  const handleDragStart = (id) => { draggingId.current = id; };
+  const handleDragEnd   = ()   => { draggingId.current = null; setOverZone(null); };
+  const makeDragOver    = (zone) => (e) => { e.preventDefault(); setOverZone(zone); };
+  const handleDragLeave = () => setOverZone(null);
+
+  const handleDropOnCategory = (cat) => (e) => {
+    e.preventDefault();
+    if (draggingId.current == null || isSubmitted) return;
+    setPlacements(prev => ({ ...prev, [draggingId.current]: cat }));
+    setOverZone(null); draggingId.current = null;
+  };
+
+  const handleDropOnPool = (e) => {
+    e.preventDefault();
+    if (draggingId.current == null || isSubmitted) return;
+    setPlacements(prev => { const n = { ...prev }; delete n[draggingId.current]; return n; });
+    setOverZone(null); draggingId.current = null;
+  };
+
+  const returnToPool = (id) => {
+    if (isSubmitted) return;
+    setPlacements(prev => { const n = { ...prev }; delete n[id]; return n; });
+  };
+
+  const unplaced  = shuffledItems.filter(it => !placements[it.id]);
+  const allPlaced = unplaced.length === 0 && shuffledItems.length > 0;
+
+  let score = 0;
+  if (isSubmitted) shuffledItems.forEach(it => { if (placements[it.id] === it.category) score++; });
+
+  const colClass = categories.length <= 2 ? 'grid-cols-2' : categories.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4';
+
+  return (
+    <ExerciseShell
+      index={index}
+      typeLabel="Kategorisierung"
+      title={title}
+      instruction={instruction}
+      onCheck={() => setIsSubmitted(true)}
+      canCheck={!isSubmitted && allPlaced}
+      isSubmitted={isSubmitted}
+      score={score}
+      total={shuffledItems.length}
+    >
+      {/* Word Pool */}
+      <div className="mb-4">
+        <p className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-1.5">Zu sortieren</p>
+        <motion.div
+          onDragOver={makeDragOver('pool')}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDropOnPool}
+          className={`min-h-[48px] p-2 rounded border-2 border-dashed flex flex-wrap gap-1.5 transition-colors duration-150 ${
+            overZone === 'pool' ? 'border-stone-400 bg-stone-100' : 'border-stone-200 bg-stone-50/40'
+          }`}
+        >
+          <AnimatePresence>
+            {unplaced.map(item => (
+              <WordChip key={item.id} item={item} isDragging={draggingId.current === item.id}
+                onDragStart={handleDragStart} onDragEnd={handleDragEnd} disabled={isSubmitted} status="default" />
+            ))}
+          </AnimatePresence>
+          {unplaced.length === 0 && (
+            <span className="m-auto text-[10px] italic text-stone-300">
+              {shuffledItems.length === 0 ? '—' : 'Alle Wörter platziert ✓'}
+            </span>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Buckets */}
+      <div className={`grid gap-3 ${colClass}`}>
+        {categories.map(cat => (
+          <DropBucket
+            key={cat}
+            cat={cat}
+            items={shuffledItems.filter(it => placements[it.id] === cat)}
+            isOver={overZone === cat}
+            onDragOver={makeDragOver(cat)}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDropOnCategory(cat)}
+            onReturn={returnToPool}
+            isSubmitted={isSubmitted}
+          />
+        ))}
+      </div>
+    </ExerciseShell>
+  );
+};
+
 export default Categorization;

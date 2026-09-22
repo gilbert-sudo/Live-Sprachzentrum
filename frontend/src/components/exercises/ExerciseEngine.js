@@ -15,19 +15,20 @@ const ExerciseEngine = ({ exercises }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto w-full space-y-8 pb-12">
+    <div className="max-w-3xl mx-auto w-full space-y-5 pb-12">
       <AnimatePresence>
         {exercises.map((exercise, index) => {
           const key = exercise.id || index;
+          const idx = index + 1;
           switch (exercise.type) {
-            case 'fill-in-the-blanks': return <FillInTheBlanks key={key} exercise={exercise} />;
-            case 'matching': return <Matching key={key} exercise={exercise} />;
-            case 'multiple-choice': return <MultipleChoice key={key} exercise={exercise} />;
-            case 'true-false': return <TrueFalse key={key} exercise={exercise} />;
-            case 'transformation': return <Transformation key={key} exercise={exercise} />;
-            case 'categorization': return <Categorization key={key} exercise={exercise} />;
-            case 'ordering': return <Ordering key={key} exercise={exercise} />;
-            case 'crossword': return <Crossword key={key} exercise={exercise} />;
+            case 'fill-in-the-blanks': return <FillInTheBlanks key={key} index={idx} exercise={exercise} />;
+            case 'matching':           return <Matching         key={key} index={idx} exercise={exercise} />;
+            case 'multiple-choice':    return <MultipleChoice   key={key} index={idx} exercise={exercise} />;
+            case 'true-false':         return <TrueFalse        key={key} index={idx} exercise={exercise} />;
+            case 'transformation':     return <Transformation   key={key} index={idx} exercise={exercise} />;
+            case 'categorization':     return <Categorization   key={key} index={idx} exercise={exercise} />;
+            case 'ordering':           return <Ordering         key={key} index={idx} exercise={exercise} />;
+            case 'crossword':          return <Crossword        key={key} index={idx} exercise={exercise} />;
             default:
               return (
                 <div key={key} className="p-4 text-orange-600 bg-orange-50 rounded-lg border border-orange-200">
@@ -42,3 +43,4 @@ const ExerciseEngine = ({ exercises }) => {
 };
 
 export default ExerciseEngine;
+
