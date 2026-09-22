@@ -73,7 +73,7 @@ export default function Navbar({ children }) {
   ];
 
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <div className="bg-background text-on-background font-body-md h-screen flex flex-col overflow-hidden">
       
       {/* Top AppBar */}
       <header className="bg-surface shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-14 md:h-[72px] flex justify-between items-center px-4 md:px-8">
@@ -117,7 +117,7 @@ export default function Navbar({ children }) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32 flex flex-col">
+      <main className="flex-1 min-h-0 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32 flex flex-col overflow-hidden">
         {children}
       </main>
 

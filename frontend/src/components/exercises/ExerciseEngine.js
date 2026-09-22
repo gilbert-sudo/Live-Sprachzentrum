@@ -7,6 +7,7 @@ import Transformation from './Transformation';
 import Categorization from './Categorization';
 import Ordering from './Ordering';
 import Crossword from './Crossword';
+import TextMarking from './TextMarking';
 import { AnimatePresence } from 'framer-motion';
 
 const ExerciseEngine = ({ exercises }) => {
@@ -29,6 +30,7 @@ const ExerciseEngine = ({ exercises }) => {
             case 'categorization':     return <Categorization   key={key} index={idx} exercise={exercise} />;
             case 'ordering':           return <Ordering         key={key} index={idx} exercise={exercise} />;
             case 'crossword':          return <Crossword        key={key} index={idx} exercise={exercise} />;
+            case 'text-marking':       return <TextMarking      key={key} index={idx} exercise={exercise} />;
             default:
               return (
                 <div key={key} className="p-4 text-orange-600 bg-orange-50 rounded-lg border border-orange-200">
