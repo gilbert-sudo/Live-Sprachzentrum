@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchHomeworks } from '../store/homeworkSlice';
 import AdminDashboard from './AdminDashboard';
+import HomeworkPanel from '../components/HomeworkPanel';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const { homeworks: pinnedHomeworks } = useSelector((state) => state.homework);
   const isTeacher = user?.role === 'teacher';
   const [courses, setCourses] = useState([]);
+  const [isHomeworkPanelOpen, setIsHomeworkPanelOpen] = useState(false);
 
   useEffect(() => {
     // Replaced Live Classes with Mock "My Courses" for the new UI
@@ -209,6 +211,15 @@ export default function Dashboard() {
               </div>
               Aufgaben des Tages
             </h3>
+            {isTeacher && (
+              <button 
+                onClick={() => setIsHomeworkPanelOpen(true)}
+                className="flex items-center gap-2 bg-germany-red text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">add_task</span>
+                <span className="hidden md:inline">Aufgabe verwalten</span>
+              </button>
+            )}
           </div>
           
           {pinnedHomeworks.length > 0 ? (
@@ -238,12 +249,26 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Description */}
-                  <div className="bg-surface-variant/30 rounded-2xl p-4 mb-5 flex-1">
+                  <div className="bg-surface-variant/30 rounded-2xl p-4 mb-3 flex-1">
                     <p className="text-on-surface-variant text-sm whitespace-pre-wrap leading-relaxed">
                       {hw.description}
                     </p>
                   </div>
                   
+                  {hw.exercises && hw.exercises.length > 0 && (
+                    <div className="mb-4">
+                       <a 
+                         href={`/homework/${hw._id}/exercise`}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors hover:shadow-md"
+                       >
+                         <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                         Übung starten
+                       </a>
+                    </div>
+                  )}
+
                   {/* Footer Tags */}
                   <div className="mt-auto flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -430,6 +455,22 @@ export default function Dashboard() {
 
       </main>
 
+      {/* Homework Management Modal */}
+      {isHomeworkPanelOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+          <div className="w-full max-w-md bg-surface h-full flex flex-col shadow-2xl relative animate-in slide-in-from-right duration-300">
+            <button 
+              onClick={() => setIsHomeworkPanelOpen(false)}
+              className="absolute -left-12 top-4 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <div className="flex-1 overflow-hidden">
+              <HomeworkPanel roomId="" socket={null} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

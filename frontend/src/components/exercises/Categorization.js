@@ -61,7 +61,6 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
       <AnimatePresence>
         {items.map(item => {
           const isCorrect = isSubmitted && item.category === cat;
-          const isWrong   = isSubmitted && !isCorrect;
           return (
             <div key={item.id} className="flex items-center gap-1">
               <WordChip item={item} isDragging={false} onDragStart={() => {}} onDragEnd={() => {}}

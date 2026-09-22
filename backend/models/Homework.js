@@ -35,6 +35,10 @@ const homeworkSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  exercises: {
+    type: [mongoose.Schema.Types.Mixed],
+    default: []
   }
 });
 

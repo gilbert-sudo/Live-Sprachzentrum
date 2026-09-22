@@ -15,7 +15,9 @@ export default function HomeworkPanel({ roomId, socket }) {
   const [title, setTitle] = useState(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState('room');
-  const [level, setLevel] = useState(roomId.split('-')[1] || 'A1');
+  const level = roomId ? roomId.split('-')[1] : 'A1';
+  const [exercisesData, setExercisesData] = useState(null);
+  const [jsonFileName, setJsonFileName] = useState('');
 
   useEffect(() => {
     loadHomeworks();
@@ -30,6 +32,7 @@ export default function HomeworkPanel({ roomId, socket }) {
         socket.off('homework_updated', onHomeworkUpdated);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, roomId]);
 
   const notifyUpdate = () => {
@@ -52,12 +55,15 @@ export default function HomeworkPanel({ roomId, socket }) {
         description,
         dueDate: new Date().toISOString(), // Automatically set to today
         roomId: scope === 'room' ? roomId : null,
-        level: scope === 'level' ? level : null
+        level: scope === 'level' ? level : null,
+        exercises: exercisesData || []
       };
 
       await dispatch(addHomework(payload)).unwrap();
       setTitle(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
       setDescription('');
+      setExercisesData(null);
+      setJsonFileName('');
       setIsFormOpen(false);
       loadHomeworks();
       notifyUpdate();
@@ -92,6 +98,33 @@ export default function HomeworkPanel({ roomId, socket }) {
     if (!dateString) return null;
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+      alert("Veuillez sélectionner un fichier JSON valide.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (Array.isArray(parsed)) {
+          setExercisesData(parsed);
+          setJsonFileName(file.name);
+        } else {
+          alert("Le fichier JSON doit contenir un tableau d'exercices.");
+        }
+      } catch (err) {
+        console.error("Error parsing JSON:", err);
+        alert("Le fichier JSON est invalide.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -143,6 +176,20 @@ export default function HomeworkPanel({ roomId, socket }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed mb-4">
                   {hw.description}
                 </p>
+
+                {hw.exercises && hw.exercises.length > 0 && role === 'student' && (
+                  <div className="mb-4">
+                     <a 
+                       href={`/homework/${hw._id}/exercise`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors hover:shadow-md"
+                     >
+                       <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                       Faire l'exercice
+                     </a>
+                  </div>
+                )}
                 
                 {/* Footer with badges and actions on the bottom right */}
                 <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-3">
@@ -234,6 +281,34 @@ export default function HomeworkPanel({ roomId, socket }) {
                   <option value="room">Cette classe uniquement</option>
                   <option value="level">Tout le niveau ({level})</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">Exercices (JSON)</label>
+                <div className="relative">
+                  <input 
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="json-upload"
+                  />
+                  <label 
+                    htmlFor="json-upload" 
+                    className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <span className="material-symbols-outlined text-gray-400 text-2xl mb-2">upload_file</span>
+                      <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                        {jsonFileName ? (
+                           <span className="font-semibold text-indigo-600 dark:text-indigo-400">{jsonFileName}</span>
+                        ) : (
+                           <span className="font-semibold">Cliquez pour ajouter des exercices</span>
+                        )}
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
               <button 

@@ -25,9 +25,11 @@ import AdminDashboard from './pages/AdminDashboard';
 import StudentManagement from './pages/StudentManagement';
 import TeacherManagement from './pages/TeacherManagement';
 import AdminManagement from './pages/AdminManagement';
+
+import HomeworkExercise from './pages/HomeworkExercise';
 import ExerciseTestPage from './pages/ExerciseTestPage';
 
-
+import ProtectedRoute from './components/ProtectedRoute';
 
 import Lenis from 'lenis';
 
@@ -78,7 +80,18 @@ function App() {
             <>
               {/* Route Guard: Only allow validated users to access classroom */}
               {user?.status !== 'pending' && (
-                <Route path="/room/:roomId" element={<LiveClassroom />} />
+                <>
+                  <Route path="/room/:roomId" element={
+                    <ProtectedRoute>
+                      <LiveClassroom />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/homework/:id/exercise" element={
+                    <ProtectedRoute>
+                      <HomeworkExercise />
+                    </ProtectedRoute>
+                  } />
+                </>
               )}
               
               <Route path="*" element={

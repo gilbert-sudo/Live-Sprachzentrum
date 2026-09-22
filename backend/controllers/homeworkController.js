@@ -38,7 +38,7 @@ const getHomeworks = async (req, res) => {
 // @route   POST /api/homework
 // @access  Private/Teacher
 const createHomework = async (req, res) => {
-  const { title, description, dueDate, roomId, level } = req.body;
+  const { title, description, dueDate, roomId, level, exercises } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({ message: 'Titre et description sont requis' });
@@ -50,6 +50,7 @@ const createHomework = async (req, res) => {
     dueDate,
     roomId: roomId || null,
     level: level || null,
+    exercises: exercises || [],
     teacherName: req.user.name,
     teacherId: req.user._id
   });
