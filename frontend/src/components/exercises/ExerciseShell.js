@@ -24,8 +24,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ExerciseShell = ({
   index,
   typeLabel,
+  tag,
   title,
   instruction,
+  context,
   onCheck,
   canCheck,
   checkLabel = 'Antworten prüfen',
@@ -53,7 +55,7 @@ const ExerciseShell = ({
         )}
         <div className="flex-1 min-w-0">
           <p className="text-[9px] font-extrabold uppercase tracking-[0.2em] text-stone-400 mb-0.5 font-sans">
-            {typeLabel}
+            {tag || typeLabel}
           </p>
           <h3 className="font-serif text-stone-800 text-[15px] font-bold leading-snug">
             {title}
@@ -62,6 +64,11 @@ const ExerciseShell = ({
             <p className="text-stone-500 text-xs italic mt-1 leading-relaxed font-sans">
               {instruction}
             </p>
+          )}
+          {context && (
+            <div className="mt-3 text-sm text-stone-700 leading-relaxed font-sans bg-stone-50 p-3 rounded border border-stone-100">
+              {context}
+            </div>
           )}
         </div>
       </div>

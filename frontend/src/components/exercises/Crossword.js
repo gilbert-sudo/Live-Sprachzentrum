@@ -4,7 +4,7 @@ import ExerciseShell from './ExerciseShell';
 const CELL_SIZE = 36; // px — fixed size for every cell
 
 const Crossword = ({ index, exercise }) => {
-  const { title, instruction, clues } = exercise;
+  const { title, instruction, clues, tag, context } = exercise;
   const [grid, setGrid]             = useState([]);
   const [userInputs, setUserInputs] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -95,6 +95,8 @@ const Crossword = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Kreuzworträtsel"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import ExerciseShell from './ExerciseShell';
 
 const Transformation = ({ index, exercise }) => {
-  const { title, instruction, items } = exercise;
+  const { title, instruction, items, tag, context } = exercise;
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -11,6 +11,8 @@ const Transformation = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Umformung"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

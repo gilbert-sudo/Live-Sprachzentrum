@@ -4,7 +4,7 @@ import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
 const Ordering = ({ index, exercise }) => {
-  const { title, instruction, items } = exercise;
+  const { title, instruction, items, tag, context } = exercise;
   const [order, setOrder] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -21,6 +21,8 @@ const Ordering = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Reihenfolge"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

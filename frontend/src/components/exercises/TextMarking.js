@@ -3,7 +3,7 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
 const TextMarking = ({ index, exercise }) => {
-  const { title, instruction, text, categories } = exercise;
+  const { title, instruction, text, categories, tag, context } = exercise;
 
   const [markedUids, setMarkedUids] = useState(new Set());
   const [placements, setPlacements] = useState({}); 
@@ -66,6 +66,8 @@ const TextMarking = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Grammatik entdecken"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

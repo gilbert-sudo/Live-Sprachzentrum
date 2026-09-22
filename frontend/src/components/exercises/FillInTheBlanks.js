@@ -73,7 +73,7 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
 
 /* ─── Main Component ─────────────────────────────────────────────── */
 const FillInTheBlanks = ({ index, exercise }) => {
-  const { title, instruction, text, wordBank, answers } = exercise;
+  const { title, instruction, text, wordBank, answers, tag, context } = exercise;
 
   const [placements, setPlacements] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -128,6 +128,8 @@ const FillInTheBlanks = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Lückentext"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

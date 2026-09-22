@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ExerciseShell from './ExerciseShell';
 
 const MultipleChoice = ({ index, exercise }) => {
-  const { title, instruction, questions } = exercise;
+  const { title, instruction, questions, tag, context } = exercise;
   const [userAnswers, setUserAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -22,6 +22,8 @@ const MultipleChoice = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Multiple Choice"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

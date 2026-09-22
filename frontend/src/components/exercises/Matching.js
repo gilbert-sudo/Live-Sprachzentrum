@@ -4,7 +4,7 @@ import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
 const Matching = ({ index, exercise }) => {
-  const { title, instruction, pairs } = exercise;
+  const { title, instruction, pairs, tag, context } = exercise;
 
   const [leftItems]  = useState(pairs.map(p => ({ id: p.id, text: p.left })));
   const [rightItems, setRightItems] = useState([]);
@@ -25,6 +25,8 @@ const Matching = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Zuordnungsübung"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

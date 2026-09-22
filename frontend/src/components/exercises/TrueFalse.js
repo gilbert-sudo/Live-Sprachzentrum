@@ -3,7 +3,7 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
 const TrueFalse = ({ index, exercise }) => {
-  const { title, instruction, questions } = exercise;
+  const { title, instruction, questions, tag, context } = exercise;
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -23,6 +23,8 @@ const TrueFalse = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Richtig oder Falsch"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}

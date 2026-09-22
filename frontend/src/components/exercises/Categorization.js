@@ -87,7 +87,7 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
 
 /* ─── Main Component ─────────────────────────────────────────────── */
 const Categorization = ({ index, exercise }) => {
-  const { title, instruction, categories, items } = exercise;
+  const { title, instruction, categories, items, tag, context } = exercise;
 
   const [shuffledItems, setShuffledItems] = useState([]);
   const [placements, setPlacements]       = useState({});
@@ -138,6 +138,8 @@ const Categorization = ({ index, exercise }) => {
     <ExerciseShell
       index={index}
       typeLabel="Kategorisierung"
+      tag={tag}
+      context={context}
       title={title}
       instruction={instruction}
       onCheck={() => setIsSubmitted(true)}
