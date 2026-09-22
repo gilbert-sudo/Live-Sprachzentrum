@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ExerciseShell from './ExerciseShell';
 
-const CELL_SIZE = 36; // px — fixed size for every cell
-
 const Crossword = ({ index, exercise }) => {
   const { title, instruction, clues, tag, context } = exercise;
   const [grid, setGrid]             = useState([]);
@@ -108,13 +106,13 @@ const Crossword = ({ index, exercise }) => {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
 
         {/* ── Grid ────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto shrink-0">
+        <div className="overflow-x-auto shrink-0 w-full lg:w-auto">
           <div
-            className="relative bg-stone-800 rounded-lg p-2 inline-block"
+            className="relative bg-stone-800 rounded-lg p-1.5 sm:p-2 inline-block min-w-full lg:min-w-0"
             style={{ lineHeight: 0 }}
           >
             {grid.map((row, rIdx) => (
-              <div key={rIdx} style={{ display: 'flex', height: CELL_SIZE }}>
+              <div key={rIdx} className="flex">
                 {row.map((cell, cIdx) => {
                   const key = `${rIdx}-${cIdx}`;
                   const val = userInputs[key] || '';
@@ -125,13 +123,8 @@ const Crossword = ({ index, exercise }) => {
                   return (
                     <div
                       key={key}
+                      className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 m-[1px] sm:m-[2px] relative shrink-0 rounded-[2px] sm:rounded-[3px] overflow-hidden"
                       style={{
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
-                        margin: 2,
-                        position: 'relative',
-                        flexShrink: 0,
-                        borderRadius: 3,
                         background: cell
                           ? isCorrect ? '#dcfce7'
                           : isWrong   ? '#fee2e2'
@@ -142,24 +135,13 @@ const Crossword = ({ index, exercise }) => {
                         border: cell
                           ? `1.5px solid ${isCorrect ? '#86efac' : isWrong ? '#fca5a5' : '#d1d5db'}`
                           : 'none',
-                        overflow: 'hidden',
                       }}
                     >
                       {cell && (
                         <>
                           {/* Clue number badge */}
                           {cell.clueNumber && (
-                            <span style={{
-                              position: 'absolute',
-                              top: 1,
-                              left: 2,
-                              fontSize: 8,
-                              fontWeight: 700,
-                              color: '#6b7280',
-                              lineHeight: 1,
-                              pointerEvents: 'none',
-                              zIndex: 2,
-                            }}>
+                            <span className="absolute top-[1px] left-[2px] text-[6px] sm:text-[8px] font-bold text-stone-500 leading-none pointer-events-none z-10">
                               {cell.clueNumber}
                             </span>
                           )}
@@ -177,42 +159,18 @@ const Crossword = ({ index, exercise }) => {
                             onKeyDown={e => handleKeyDown(rIdx, cIdx, e)}
                             disabled={isSubmitted}
                             maxLength={1}
+                            className={`absolute inset-0 w-full h-full text-center font-bold uppercase bg-transparent border-none outline-none z-0 ${cell.clueNumber ? 'pt-2 sm:pt-3' : ''} text-[12px] sm:text-[14px] md:text-[15px] ${isSubmitted ? 'cursor-default' : 'cursor-text'}`}
                             style={{
-                              position: 'absolute',
-                              inset: 0,
-                              width: '100%',
-                              height: '100%',
-                              textAlign: 'center',
-                              fontSize: 15,
-                              fontWeight: 700,
-                              textTransform: 'uppercase',
-                              background: 'transparent',
-                              border: 'none',
-                              outline: 'none',
-                              cursor: isSubmitted ? 'default' : 'text',
-                              paddingTop: cell.clueNumber ? 8 : 0,
                               color: isCorrect ? '#15803d'
                                    : isWrong   ? '#b91c1c'
                                    : isEmpty   ? '#dc2626'
                                    : '#1c1917',   // ← always dark/readable
-                              zIndex: 1,
                             }}
                           />
 
                           {/* Correct answer hint for wrong/empty cells after submit */}
                           {isSubmitted && (isWrong || isEmpty) && (
-                            <span style={{
-                              position: 'absolute',
-                              bottom: 1,
-                              right: 2,
-                              fontSize: 8,
-                              fontWeight: 700,
-                              color: '#ef4444',
-                              lineHeight: 1,
-                              pointerEvents: 'none',
-                              zIndex: 2,
-                              opacity: 0.7,
-                            }}>
+                            <span className="absolute bottom-[1px] right-[2px] text-[6px] sm:text-[8px] font-bold text-red-500 leading-none pointer-events-none z-10 opacity-70">
                               {cell.correctChar}
                             </span>
                           )}
@@ -227,7 +185,7 @@ const Crossword = ({ index, exercise }) => {
         </div>
 
         {/* ── Clue List ────────────────────────────────────────────── */}
-        <div className="flex-1 space-y-4 text-xs min-w-0">
+        <div className="flex-1 space-y-4 text-xs min-w-0 w-full">
           {clues.some(c => c.direction === 'across') && (
             <div>
               <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-2 border-b border-stone-100 pb-1">
