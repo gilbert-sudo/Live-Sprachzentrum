@@ -30,6 +30,25 @@ export default function Dashboard() {
     }
   }, [user, dispatch]);
 
+  const totalHomeworks = pinnedHomeworks.length;
+  let completedHomeworks = 0;
+  
+  if (user?.role === 'student') {
+    pinnedHomeworks.forEach(hw => {
+      if (hw.scores && hw.scores.some(s => s.studentId === user?._id)) {
+        completedHomeworks++;
+      }
+    });
+  } else {
+    pinnedHomeworks.forEach(hw => {
+      if (hw.scores && hw.scores.length > 0) {
+        completedHomeworks++;
+      }
+    });
+  }
+
+  const homeworkProgress = totalHomeworks > 0 ? Math.round((completedHomeworks / totalHomeworks) * 100) : 0;
+
   if (user?.role === 'admin') {
     return <AdminDashboard />;
   }
@@ -218,9 +237,9 @@ export default function Dashboard() {
               <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                   <path className="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4"></path>
-                  <path className="text-germany-red" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray="65, 100" strokeLinecap="round" strokeWidth="4"></path>
+                  <path className="text-germany-red" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray={`${homeworkProgress}, 100`} strokeLinecap="round" strokeWidth="4"></path>
                 </svg>
-                <span className="absolute font-label-md text-label-md text-on-surface">65%</span>
+                <span className="absolute font-label-md text-label-md text-on-surface">{homeworkProgress}%</span>
               </div>
               
               <div>
@@ -237,11 +256,15 @@ export default function Dashboard() {
             {/* Homework Goal */}
             <div className="mt-5 pt-5 border-t border-surface-variant">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-label-sm text-label-sm text-secondary">Ziel: Hausaufgaben erledigen</span>
-                <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
+                <span className="font-label-sm text-label-sm text-secondary">
+                  {isTeacher ? "Ziel: Alle Schüler antworten" : "Ziel: Alle Hausaufgaben erledigen"}
+                </span>
+                {homeworkProgress === 100 && totalHomeworks > 0 && (
+                  <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
+                )}
               </div>
               <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
-                <div className="bg-success-green h-full rounded-full" style={{ width: '65%' }}></div>
+                <div className="bg-success-green h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${homeworkProgress}%` }}></div>
               </div>
             </div>
           </div>
