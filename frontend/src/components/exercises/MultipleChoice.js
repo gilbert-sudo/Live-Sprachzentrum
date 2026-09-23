@@ -44,10 +44,10 @@ const MultipleChoice = ({ index, exercise, savedAnswers, onScoreReport }) => {
           const userAnswer = userAnswers[q.id];
 
           return (
-            <div key={q.id} className="border-l-2 border-stone-100 pl-3">
+            <div key={q.id} className="border-l-2 border-surface-variant/40 pl-4 mb-4">
               {/* Question */}
-              <p className="text-sm text-stone-700 mb-2 flex items-start gap-1.5">
-                <span className="text-stone-400 tabular-nums text-xs font-medium shrink-0 mt-0.5">{idx + 1}.</span>
+              <p className="text-body-md text-on-surface mb-3 flex items-start gap-2">
+                <span className="text-secondary tabular-nums text-sm font-bold shrink-0 mt-0.5">{idx + 1}.</span>
                 <span className="font-medium">{q.question}</span>
               </p>
 
@@ -57,22 +57,22 @@ const MultipleChoice = ({ index, exercise, savedAnswers, onScoreReport }) => {
                   const isSelected = userAnswer === option;
                   const isCorrectOpt = option === q.correctAnswer;
 
-                  let rowCls = 'flex items-center gap-2 py-1 px-2 rounded cursor-pointer text-sm transition-colors duration-100 ';
-                  let dotCls = 'w-3.5 h-3.5 rounded-full border-[1.5px] shrink-0 flex items-center justify-center transition-colors ';
+                  let rowCls = 'flex items-center gap-3 py-2 px-3 rounded-xl cursor-pointer text-body-md transition-colors duration-100 ';
+                  let dotCls = 'w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ';
 
                   if (!isSubmitted) {
-                    rowCls += isSelected ? 'text-indigo-700 font-medium' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50';
-                    dotCls += isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-stone-300';
+                    rowCls += isSelected ? 'text-primary font-bold bg-primary/10' : 'text-secondary hover:text-on-surface hover:bg-surface-variant/30';
+                    dotCls += isSelected ? 'border-primary bg-primary' : 'border-secondary/50';
                   } else {
                     if (isCorrectOpt) {
-                      rowCls += 'text-green-700 font-medium';
-                      dotCls += 'border-green-500 bg-green-500';
+                      rowCls += 'text-success-green font-bold bg-success-green/10';
+                      dotCls += 'border-success-green bg-success-green';
                     } else if (isSelected && !isCorrectOpt) {
-                      rowCls += 'text-red-600 line-through opacity-70';
-                      dotCls += 'border-red-400 bg-red-400';
+                      rowCls += 'text-error line-through opacity-70 bg-error/10';
+                      dotCls += 'border-error bg-error';
                     } else {
-                      rowCls += 'text-stone-400';
-                      dotCls += 'border-stone-200';
+                      rowCls += 'text-secondary/50';
+                      dotCls += 'border-surface-variant/40';
                     }
                   }
 

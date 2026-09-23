@@ -12,9 +12,9 @@ const chipV = {
 /* ─── WordChip ───────────────────────────────────────────────────── */
 const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }) => {
   const colorMap = {
-    correct: 'bg-green-50 border-green-400 text-green-800',
-    wrong:   'bg-red-50 border-red-400 text-red-800',
-    default: 'bg-white border-stone-200 text-stone-700 hover:border-indigo-300 hover:shadow-sm cursor-grab active:cursor-grabbing',
+    correct: 'bg-success-green/20 border-success-green/50 text-success-green font-bold',
+    wrong:   'bg-error/20 border-error/50 text-error font-bold',
+    default: 'bg-surface border-surface-variant/40 text-on-surface hover:border-primary/50 hover:shadow-sm cursor-grab active:cursor-grabbing',
   };
   return (
     <motion.div
@@ -27,11 +27,11 @@ const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }
       onDragStart={() => onDragStart(item.id)}
       onDragEnd={onDragEnd}
       style={{ opacity: isDragging ? 0.35 : 1 }}
-      className={`select-none px-2.5 py-1 rounded border text-xs font-medium shadow-sm transition-colors duration-150 ${colorMap[status] ?? colorMap.default}`}
+      className={`select-none px-3 py-1.5 rounded-lg border text-sm font-medium shadow-sm transition-colors duration-150 ${colorMap[status] ?? colorMap.default}`}
     >
       {item.word}
       {status === 'wrong' && (
-        <span className="ml-1.5 text-[10px] font-normal text-red-400">→ {item.category}</span>
+        <span className="ml-1.5 text-xs font-normal text-error">→ {item.category}</span>
       )}
     </motion.div>
   );
@@ -45,16 +45,16 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
     onDragOver={onDragOver}
     onDragLeave={onDragLeave}
     onDrop={onDrop}
-    className={`rounded border-2 border-dashed flex flex-col overflow-hidden transition-colors duration-150 ${
-      isOver ? 'border-indigo-400 bg-indigo-50/50 shadow shadow-indigo-100' : 'border-stone-200 bg-stone-50/50'
+    className={`rounded-xl border-2 border-dashed flex flex-col overflow-hidden transition-colors duration-150 ${
+      isOver ? 'border-primary bg-primary/20 shadow shadow-primary/30' : 'border-surface-variant/40 bg-surface-variant/10'
     }`}
   >
     {/* bucket header */}
-    <div className={`px-3 py-1.5 text-xs font-bold tracking-wide text-center border-b transition-colors ${
-      isOver ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-stone-100 text-stone-600 border-stone-200'
+    <div className={`px-3 py-2 text-sm font-bold tracking-wide text-center border-b transition-colors ${
+      isOver ? 'bg-primary/20 text-primary border-primary/30' : 'bg-surface-variant/20 text-secondary border-surface-variant/40'
     }`}>
       {cat}
-      <span className="ml-1 font-normal opacity-50 text-[10px]">({items.length})</span>
+      <span className="ml-1 font-normal opacity-70 text-xs">({items.length})</span>
     </div>
     {/* drop zone */}
     <div className="p-2 flex-1 min-h-[80px] flex flex-col gap-1.5">
@@ -67,7 +67,7 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
                 disabled={isSubmitted} status={isSubmitted ? (isCorrect ? 'correct' : 'wrong') : 'default'} />
               {!isSubmitted && (
                 <button onClick={() => onReturn(item.id)}
-                  className="text-stone-300 hover:text-red-400 transition-colors text-sm leading-none font-bold ml-auto">
+                  className="text-secondary hover:text-error transition-colors text-base leading-none font-bold ml-auto">
                   ×
                 </button>
               )}
@@ -76,7 +76,7 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
         })}
       </AnimatePresence>
       {items.length === 0 && (
-        <p className={`m-auto text-[10px] italic ${isOver ? 'text-indigo-400' : 'text-stone-300'}`}>
+        <p className={`m-auto text-xs italic ${isOver ? 'text-primary' : 'text-secondary/50'}`}>
           {isOver ? 'Hier ablegen' : 'Wörter hierher ziehen'}
         </p>
       )}
@@ -156,13 +156,13 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
     >
       {/* Word Pool */}
       <div className="mb-4">
-        <p className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-1.5">Zu sortieren</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">Zu sortieren</p>
         <motion.div
           onDragOver={makeDragOver('pool')}
           onDragLeave={handleDragLeave}
           onDrop={handleDropOnPool}
-          className={`min-h-[48px] p-2 rounded border-2 border-dashed flex flex-wrap gap-1.5 transition-colors duration-150 ${
-            overZone === 'pool' ? 'border-stone-400 bg-stone-100' : 'border-stone-200 bg-stone-50/40'
+          className={`min-h-[48px] p-3 rounded-xl border-2 border-dashed flex flex-wrap gap-2 transition-colors duration-150 ${
+            overZone === 'pool' ? 'border-primary bg-primary/10' : 'border-surface-variant/40 bg-surface-variant/20'
           }`}
         >
           <AnimatePresence>
@@ -172,7 +172,7 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
             ))}
           </AnimatePresence>
           {unplaced.length === 0 && (
-            <span className="m-auto text-[10px] italic text-stone-300">
+            <span className="m-auto text-xs italic text-secondary/50">
               {shuffledItems.length === 0 ? '—' : 'Alle Wörter platziert ✓'}
             </span>
           )}

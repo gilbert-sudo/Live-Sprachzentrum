@@ -120,7 +120,7 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
         {/* ── Grid ────────────────────────────────────────────────── */}
         <div className="overflow-x-auto shrink-0 w-full lg:w-auto">
           <div
-            className="relative bg-stone-800 rounded-lg p-1.5 sm:p-2 inline-block min-w-full lg:min-w-0"
+            className="relative bg-stone-200 dark:bg-stone-800 rounded-xl p-2 sm:p-3 border border-surface-variant/40 inline-block min-w-full lg:min-w-0"
             style={{ lineHeight: 0 }}
           >
             {grid.map((row, rIdx) => (
@@ -135,19 +135,15 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
                   return (
                     <div
                       key={key}
-                      className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 m-[1px] sm:m-[2px] relative shrink-0 rounded-[2px] sm:rounded-[3px] overflow-hidden"
-                      style={{
-                        background: cell
-                          ? isCorrect ? '#dcfce7'
-                          : isWrong   ? '#fee2e2'
-                          : isEmpty   ? '#fff1f2'
-                          : activeKey === key ? '#eef2ff'
-                          : '#ffffff'
-                          : 'transparent',
-                        border: cell
-                          ? `1.5px solid ${isCorrect ? '#86efac' : isWrong ? '#fca5a5' : '#d1d5db'}`
-                          : 'none',
-                      }}
+                      className={`w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 m-[1px] sm:m-[2px] relative shrink-0 rounded-[2px] sm:rounded-[3px] overflow-hidden border-[1.5px]
+                        ${!cell ? 'border-transparent bg-transparent' : 
+                          isCorrect ? 'bg-green-100 border-green-400' :
+                          isWrong ? 'bg-red-100 border-red-400' :
+                          isEmpty ? 'bg-red-50 border-red-300' :
+                          activeKey === key ? 'bg-indigo-50 border-indigo-400' :
+                          'bg-white border-stone-300'
+                        }
+                      `}
                     >
                       {cell && (
                         <>
@@ -171,13 +167,9 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
                             onKeyDown={e => handleKeyDown(rIdx, cIdx, e)}
                             disabled={isSubmitted}
                             maxLength={1}
-                            className={`absolute inset-0 w-full h-full text-center font-bold uppercase bg-transparent border-none outline-none z-0 ${cell.clueNumber ? 'pt-2 sm:pt-3' : ''} text-[12px] sm:text-[14px] md:text-[15px] ${isSubmitted ? 'cursor-default' : 'cursor-text'}`}
-                            style={{
-                              color: isCorrect ? '#15803d'
-                                   : isWrong   ? '#b91c1c'
-                                   : isEmpty   ? '#dc2626'
-                                   : '#1c1917',   // ← always dark/readable
-                            }}
+                            className={`absolute inset-0 w-full h-full text-center font-bold uppercase bg-transparent border-none outline-none z-0 ${cell.clueNumber ? 'pt-2 sm:pt-3' : ''} text-[12px] sm:text-[14px] md:text-[15px] ${isSubmitted ? 'cursor-default' : 'cursor-text'}
+                              ${isCorrect ? 'text-green-700' : isWrong || isEmpty ? 'text-red-600' : 'text-stone-900'}
+                            `}
                           />
 
                           {/* Correct answer hint for wrong/empty cells after submit */}
@@ -200,14 +192,14 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
         <div className="flex-1 space-y-4 text-xs min-w-0 w-full">
           {clues.some(c => c.direction === 'across') && (
             <div>
-              <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-2 border-b border-stone-100 pb-1">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
                 Waagerecht
               </h4>
-              <ul className="space-y-1.5 text-stone-600">
+              <ul className="space-y-2 text-secondary">
                 {clues.filter(c => c.direction === 'across').sort((a, b) => a.number - b.number).map(c => (
                   <li key={c.number} className="leading-snug">
-                    <strong className="text-stone-800">{c.number}.</strong> {c.clue}
-                    <span className="ml-1 text-stone-300 text-[10px]">({c.answer.length})</span>
+                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
+                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
                   </li>
                 ))}
               </ul>
@@ -215,14 +207,14 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
           )}
           {clues.some(c => c.direction === 'down') && (
             <div>
-              <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-2 border-b border-stone-100 pb-1">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
                 Senkrecht
               </h4>
-              <ul className="space-y-1.5 text-stone-600">
+              <ul className="space-y-2 text-secondary">
                 {clues.filter(c => c.direction === 'down').sort((a, b) => a.number - b.number).map(c => (
                   <li key={c.number} className="leading-snug">
-                    <strong className="text-stone-800">{c.number}.</strong> {c.clue}
-                    <span className="ml-1 text-stone-300 text-[10px]">({c.answer.length})</span>
+                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
+                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
                   </li>
                 ))}
               </ul>

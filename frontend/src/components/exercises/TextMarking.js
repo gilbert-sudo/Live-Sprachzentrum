@@ -62,6 +62,10 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
     return [...categories].map(c => c.label).sort(() => Math.random() - 0.5);
   }, [categories]);
 
+  const selectedOptions = useMemo(() => {
+    return new Set(Object.values(placements).filter(Boolean));
+  }, [placements]);
+
   return (
     <ExerciseShell
       index={index}
@@ -85,8 +89,8 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
       total={total}
     >
       <div className="mb-6">
-        <p className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-2">Text</p>
-        <div className="text-sm text-stone-800 leading-9 bg-stone-50 p-4 rounded-lg border border-stone-200">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3">Text</p>
+        <div className="text-body-md text-on-surface leading-10 bg-surface-variant/10 p-5 rounded-2xl border border-surface-variant/40">
           {parsedContent.map((part, idx) => {
             if (part.type === 'text') {
               return <span key={idx}>{part.content}</span>;
@@ -95,11 +99,11 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
               
               let cls = "cursor-pointer px-1 py-0.5 rounded transition-colors duration-150 ";
               if (isSubmitted) {
-                if (isMarked) cls += "bg-green-100 text-green-800 font-bold underline decoration-green-400";
-                else cls += "bg-red-100 text-red-800 font-bold underline decoration-red-400";
+                if (isMarked) cls += "bg-success-green/20 text-success-green font-bold underline decoration-success-green/50";
+                else cls += "bg-error/20 text-error font-bold underline decoration-error/50";
               } else {
-                if (isMarked) cls += "bg-indigo-100 text-indigo-700 font-bold underline decoration-indigo-400";
-                else cls += "hover:bg-stone-200";
+                if (isMarked) cls += "bg-primary/20 text-primary font-bold underline decoration-primary/50";
+                else cls += "hover:bg-surface-variant/30";
               }
 
               return (
@@ -115,22 +119,22 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
           })}
         </div>
         {isSubmitted && !allMarked && (
-          <p className="mt-2 text-xs text-red-500">Du hast nicht alle relevanten Wörter markiert.</p>
+          <p className="mt-2 text-xs text-error">Du hast nicht alle relevanten Wörter markiert.</p>
         )}
       </div>
 
       {categories && categories.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-2">Zuordnung</p>
+        <div className="space-y-4 mt-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3">Zuordnung</p>
           {categories.map((cat, idx) => {
             const selected = placements[cat.id] || '';
             const isCorrect = isSubmitted && selected === cat.label;
             const isWrong = isSubmitted && !isCorrect;
 
             return (
-              <div key={cat.id} className="flex items-center flex-wrap gap-2 text-sm border-b border-stone-100 pb-2">
-                <span className="font-medium text-stone-600 min-w-[200px] flex-1">{cat.function}</span>
-                <span className="text-stone-400">→</span>
+              <div key={cat.id} className="flex items-center flex-wrap gap-3 text-body-md border-b border-surface-variant/40 pb-3">
+                <span className="font-medium text-on-surface min-w-[200px] flex-1">{cat.function}</span>
+                <span className="text-secondary/50">→</span>
                 <div className="flex items-center gap-2">
                   <select
                     value={selected}
@@ -139,22 +143,27 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
                       setPlacements(prev => ({ ...prev, [cat.id]: e.target.value }));
                     }}
                     disabled={isSubmitted}
-                    className={`border rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 min-w-[200px]
-                      ${isCorrect ? 'border-green-400 bg-green-50 text-green-700' : ''}
-                      ${isWrong ? 'border-red-400 bg-red-50 text-red-700' : ''}
-                      ${!isSubmitted ? 'border-stone-300 text-stone-700' : ''}
+                    className={`border rounded-lg px-3 py-1.5 text-body-md bg-surface-variant/20 focus:outline-none focus:ring-2 focus:ring-primary/50 min-w-[200px] transition-colors
+                      ${isCorrect ? 'border-success-green/50 bg-success-green/10 text-success-green font-bold' : ''}
+                      ${isWrong ? 'border-error/50 bg-error/10 text-error font-bold' : ''}
+                      ${!isSubmitted ? 'border-surface-variant/60 text-on-surface focus:bg-surface-variant/40' : ''}
                     `}
                   >
                     <option value="" disabled>...wählen...</option>
-                    {options.map((opt, i) => (
-                      <option key={i} value={opt}>{opt}</option>
-                    ))}
+                    {options.map((opt, i) => {
+                      const isUsed = selectedOptions.has(opt) && selected !== opt;
+                      return (
+                        <option key={i} value={opt} disabled={isUsed} className={isUsed ? 'text-secondary/50' : 'text-on-surface'}>
+                          {opt}
+                        </option>
+                      );
+                    })}
                   </select>
                   {isCorrect && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                   {isWrong && (
                     <div className="flex items-center gap-1">
-                      <XCircle className="w-4 h-4 text-red-400" />
-                      <span className="text-[10px] text-red-500">({cat.label})</span>
+                      <XCircle className="w-4 h-4 text-error" />
+                      <span className="text-xs text-error font-bold">({cat.label})</span>
                     </div>
                   )}
                 </div>

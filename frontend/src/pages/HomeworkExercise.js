@@ -131,10 +131,10 @@ export default function HomeworkExercise(props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center text-on-background">
         <div className="flex flex-col items-center">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin" />
-          <p className="mt-4 text-slate-600 font-medium">Chargement des exercices...</p>
+          <div className="w-8 h-8 border-4 border-surface-variant border-t-primary rounded-full animate-spin" />
+          <p className="mt-4 text-secondary font-medium">Chargement des exercices...</p>
         </div>
       </div>
     );
@@ -142,14 +142,14 @@ export default function HomeworkExercise(props) {
 
   if (error || !homework) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 max-w-md w-full text-center">
-          <span className="material-symbols-outlined text-[48px] text-red-500 mb-4">error</span>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 text-on-background">
+        <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-surface-variant/40 max-w-md w-full text-center">
+          <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
           <h2 className="text-xl font-bold mb-2">Erreur</h2>
-          <p className="text-slate-600 mb-6">{error || 'Exercice introuvable.'}</p>
+          <p className="text-secondary mb-6">{error || 'Exercice introuvable.'}</p>
           <button
             onClick={() => props.onClose ? props.onClose() : navigate(-1)}
-            className="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors"
+            className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold hover:bg-surface-tint transition-colors shadow-md"
           >
             Retour
           </button>
@@ -163,20 +163,20 @@ export default function HomeworkExercise(props) {
   const stickyClass = isWithNavbar ? 'top-14 md:top-[72px]' : 'top-0';
 
   return (
-    <div className="w-full relative bg-slate-50 dark:bg-[#0f0f10] min-h-screen">
+    <div className="w-full relative bg-background min-h-screen text-on-background font-body-md">
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className={`bg-white dark:bg-[#18181B] border-b border-slate-200 dark:border-gray-800 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-40 sticky ${stickyClass}`}>
+      <div className={`bg-surface border-b border-surface-variant/50 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-40 sticky ${stickyClass}`}>
         <div className="flex items-center gap-3">
           <button
             onClick={() => props.onClose ? props.onClose() : navigate(-1)}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-gray-800 text-slate-600 dark:text-gray-400 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-variant text-on-surface transition-colors"
             title="Fermer"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
           <div>
-            <h1 className="text-sm font-bold text-slate-900 dark:text-gray-100 leading-tight line-clamp-1">{homework.title}</h1>
-            <p className="text-xs text-slate-400 font-medium">Par {homework.teacherName.replace(/Admin /g, 'Frau ')}</p>
+            <h1 className="text-sm font-bold text-on-surface leading-tight line-clamp-1">{homework.title}</h1>
+            <p className="text-xs text-secondary font-medium">Par {homework.teacherName.replace(/Admin /g, 'Frau ')}</p>
           </div>
         </div>
 
@@ -204,13 +204,13 @@ export default function HomeworkExercise(props) {
                 </div>
               </div>
               <div className="hidden sm:block text-right">
-                <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-200">{effectiveCheckedCount}/{scorableExercises}</p>
-                <p className="text-[9px] text-gray-400">vérifié</p>
+                <p className="text-[10px] font-semibold text-on-surface">{effectiveCheckedCount}/{scorableExercises}</p>
+                <p className="text-[9px] text-secondary">vérifié</p>
               </div>
             </div>
           )}
 
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-full bg-primary/10 text-primary">
             <span className="material-symbols-outlined text-[13px]">menu_book</span>
             Mode Exercice
           </span>
@@ -230,10 +230,10 @@ export default function HomeworkExercise(props) {
           />
         ) : (
           <div className="max-w-3xl mx-auto px-4">
-            <div className="bg-white dark:bg-[#18181B] rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-gray-100 mb-6">{homework.title}</h2>
+            <div className="bg-surface-container-lowest rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-surface-variant/40 p-6 md:p-8">
+              <h2 className="font-headline-md text-headline-md text-on-surface mb-6">{homework.title}</h2>
               <div 
-                className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-indigo-600 dark:prose-a:text-indigo-400"
+                className="prose prose-slate dark:prose-invert max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-primary"
                 dangerouslySetInnerHTML={{ __html: homework.description }} 
               />
             </div>
@@ -252,11 +252,11 @@ export default function HomeworkExercise(props) {
               disabled={!allChecked}
               className={`flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm shadow-xl transition-all ${
                 allChecked
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:shadow-2xl hover:-translate-y-1 active:scale-95'
-                  : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                  ? 'bg-primary text-on-primary hover:bg-surface-tint hover:shadow-2xl hover:-translate-y-1 active:scale-95'
+                  : 'bg-surface-variant/50 text-secondary cursor-not-allowed'
               }`}
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined icon-filled text-[18px]">
                 {allChecked ? 'send' : 'lock'}
               </span>
               {allChecked
@@ -273,8 +273,8 @@ export default function HomeworkExercise(props) {
               disabled={isSaving}
               className={`flex items-center gap-2 px-8 py-3.5 rounded-full font-bold shadow-lg transition-all ${
                 isSaving
-                  ? 'bg-slate-400 text-white cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-xl hover:-translate-y-1'
+                  ? 'bg-surface-variant/50 text-secondary cursor-not-allowed'
+                  : 'bg-primary text-on-primary hover:bg-surface-tint hover:shadow-xl hover:-translate-y-1'
               }`}
             >
               <span className={`material-symbols-outlined ${isSaving ? 'animate-spin' : ''}`}>

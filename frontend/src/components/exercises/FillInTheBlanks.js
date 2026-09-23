@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, GripHorizontal } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
 /* ─── chip variants ──────────────────────────────────────────────── */
@@ -22,20 +22,21 @@ const DraggableChip = ({ word, onDragStart, onDragEnd, isDragging, disabled }) =
     onDragStart={() => onDragStart(word)}
     onDragEnd={onDragEnd}
     style={{ opacity: isDragging ? 0.3 : 1 }}
-    className="select-none bg-white border border-stone-200 px-2.5 py-1 rounded text-xs font-medium text-stone-700 shadow-sm cursor-grab active:cursor-grabbing hover:border-indigo-300 hover:shadow transition-all duration-150"
+    className="inline-flex items-center gap-1.5 select-none bg-surface border border-surface-variant/40 px-3 py-1.5 rounded-lg text-sm font-medium text-on-surface shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/50 hover:shadow transition-all duration-150"
   >
+    {!disabled && <GripHorizontal className="w-4 h-4 text-secondary/50 shrink-0" />}
     {word}
   </motion.span>
 );
 
 /* ─── BlankSlot ──────────────────────────────────────────────────── */
 const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, isSubmitted, isCorrect, isWrong, correctAnswer }) => {
-  const base = 'inline-flex items-center gap-1 mx-1 align-middle min-w-[80px] px-2.5 py-0.5 rounded border-2 border-dashed text-xs font-medium transition-all duration-150';
+  const base = 'inline-flex items-center justify-center gap-1.5 mx-1 align-middle min-w-[110px] min-h-[36px] px-3 py-1 rounded-lg border-2 border-dashed text-sm font-medium transition-all duration-150';
 
   if (filled) {
     const cls = isSubmitted
-      ? isCorrect ? 'bg-green-50 border-green-400 text-green-800' : 'bg-red-50 border-red-400 text-red-800'
-      : 'bg-indigo-50 border-indigo-300 text-indigo-800';
+      ? isCorrect ? 'bg-success-green/20 border-success-green/50 text-success-green font-bold' : 'bg-error/20 border-error/50 text-error font-bold'
+      : 'bg-primary/20 border-primary text-on-surface font-bold';
     return (
       <motion.span layout animate={{ scale: 1 }} className={`${base} ${cls}`}>
         <span>{filled}</span>
@@ -47,7 +48,7 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
           </>
         )}
         {!isSubmitted && (
-          <button onClick={onClear} className="text-indigo-200 hover:text-red-400 font-bold leading-none ml-auto text-xs transition-colors">×</button>
+          <button onClick={onClear} className="text-secondary hover:text-error font-bold leading-none ml-auto text-sm transition-colors">×</button>
         )}
       </motion.span>
     );
@@ -61,11 +62,11 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      className={`${base} cursor-default ${isOver ? 'border-indigo-400 bg-indigo-50 shadow shadow-indigo-100' : 'border-stone-300 bg-stone-50'}`}
+      className={`${base} cursor-default ${isOver ? 'border-primary bg-primary/20 shadow-inner shadow-primary/20' : 'border-surface-variant/40 bg-surface-variant/20 shadow-inner'}`}
     >
       {isOver
-        ? <span className="text-indigo-400 italic">Ablegen</span>
-        : <span className="text-stone-300 italic">______</span>
+        ? <span className="text-primary text-xs font-bold">Ablegen</span>
+        : <span className="text-secondary/40 text-[10px] uppercase font-bold tracking-wider">Lücke</span>
       }
     </motion.span>
   );
@@ -150,13 +151,13 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
       {/* Word Bank */}
       {hasDnD && (
         <div className="mb-4">
-          <p className="text-[9px] font-extrabold uppercase tracking-widest text-stone-400 mb-1.5">Wortbank</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-2">Wortbank</p>
           <motion.div
             onDragOver={makeDragOver('bank')}
             onDragLeave={handleLeave}
             onDrop={handleDropOnBank}
-            className={`min-h-[44px] flex flex-wrap gap-1.5 p-2 rounded border-2 border-dashed transition-colors duration-150 ${
-              overBlank === 'bank' ? 'border-stone-400 bg-stone-100' : 'border-stone-200 bg-stone-50/50'
+            className={`min-h-[44px] flex flex-wrap gap-2 p-3 rounded-xl border-2 border-dashed transition-colors duration-150 ${
+              overBlank === 'bank' ? 'border-primary bg-primary/10' : 'border-surface-variant/40 bg-surface-variant/20'
             }`}
           >
             <AnimatePresence>
@@ -172,7 +173,7 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
               ))}
             </AnimatePresence>
             {poolWords.length === 0 && (
-              <span className="m-auto text-[10px] italic text-stone-300">
+              <span className="m-auto text-[11px] italic text-secondary/50">
                 {allFilled ? 'Alle Wörter platziert ✓' : '—'}
               </span>
             )}
@@ -181,7 +182,7 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
       )}
 
       {/* Sentence with blanks */}
-      <div className="text-sm text-stone-800 leading-9">
+      <div className="text-base text-on-surface leading-10">
         {parts.map((part, idx) => {
           const match = part.match(/\{(\d+)\}/);
           if (match) {
@@ -208,7 +209,6 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
               );
             }
 
-            /* Free-text mode (no word bank) */
             return (
               <span key={idx} className="inline-flex items-center mx-1 align-middle">
                 <input
@@ -216,10 +216,10 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
                   value={placements[blankIndex] || ''}
                   onChange={e => setPlacements(prev => ({ ...prev, [blankIndex]: e.target.value }))}
                   disabled={isSubmitted}
-                  className={`bg-stone-50 border-b-2 px-2 py-0.5 text-center text-xs font-medium focus:outline-none focus:border-indigo-400 min-w-[90px] transition-colors rounded-t
-                    ${isCorrect ? 'border-green-500 text-green-700 bg-green-50'  : ''}
-                    ${isWrong   ? 'border-red-400 text-red-700 bg-red-50'        : ''}
-                    ${!isSubmitted ? 'border-stone-300' : ''}
+                  className={`bg-surface-variant/20 border-b-2 px-3 py-1.5 text-center text-sm font-bold text-on-surface focus:outline-none focus:border-primary focus:bg-surface-variant/40 min-w-[90px] transition-colors rounded-t-md
+                    ${isCorrect ? 'border-success-green text-success-green bg-success-green/10' : ''}
+                    ${isWrong   ? 'border-error text-error bg-error/10' : ''}
+                    ${!isSubmitted ? 'border-surface-variant/60' : ''}
                   `}
                 />
                 {isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-green-500 ml-1" />}

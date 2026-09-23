@@ -59,29 +59,31 @@ const ExerciseShell = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
-      className="bg-[#FEFDF8] border border-stone-200 rounded-lg shadow-[0_1px_8px_rgba(120,100,60,0.07)] overflow-hidden"
+      className="bg-surface-container-lowest border border-surface-variant/40 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden relative"
     >
+      {/* ── Left Accent Removed ── */}
+
       {/* ── Header ────────────────────────────────────────────────── */}
-      <div className="px-5 pt-4 pb-3 border-b border-stone-100 flex items-start gap-3">
+      <div className="px-5 pt-5 pb-4 border-b border-surface-variant/40 flex items-start gap-4">
         {index != null && (
-          <div className="shrink-0 mt-0.5 w-[22px] h-[22px] rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold font-mono flex items-center justify-center leading-none select-none">
+          <div className="shrink-0 mt-0.5 w-[32px] h-[32px] rounded-full bg-gradient-to-br from-primary to-primary/80 text-on-primary text-base font-black flex items-center justify-center leading-none select-none shadow-md border border-primary/20">
             {index}
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-[9px] font-extrabold uppercase tracking-[0.2em] text-stone-400 mb-0.5 font-sans">
+          <p className="text-[11px] font-black uppercase tracking-widest text-germany-gold mb-1.5 drop-shadow-sm">
             {tag || typeLabel}
           </p>
-          <h3 className="font-serif text-stone-800 text-[15px] font-bold leading-snug">
+          <h3 className="text-xl font-black text-on-surface leading-snug">
             {title}
           </h3>
           {instruction && (
-            <p className="text-stone-500 text-xs italic mt-1 leading-relaxed font-sans">
+            <p className="text-secondary/90 text-sm mt-2 leading-relaxed font-medium">
               {instruction}
             </p>
           )}
           {context && (
-            <div className="mt-3 text-sm text-stone-700 leading-relaxed font-sans bg-stone-50 p-3 rounded border border-stone-100">
+            <div className="mt-3 text-sm text-on-surface leading-relaxed bg-surface-variant/20 p-3 rounded-xl border border-surface-variant/40">
               {context}
             </div>
           )}
@@ -89,18 +91,18 @@ const ExerciseShell = ({
       </div>
 
       {/* ── Content ───────────────────────────────────────────────── */}
-      <div className="px-5 py-4 font-sans">
+      <div className="px-5 py-5 font-body-md text-body-md text-on-surface">
         {children}
       </div>
 
       {/* ── Footer ────────────────────────────────────────────────── */}
-      <div className="px-5 py-3 border-t border-stone-100 flex items-center justify-between bg-stone-50/40">
+      <div className="px-5 py-4 border-t border-surface-variant/40 flex items-center justify-between bg-surface-variant/10">
         <button
           onClick={handleCheck}
           disabled={!canCheck}
-          className="px-4 py-1.5 rounded text-sm font-semibold transition-all duration-150
-            bg-stone-800 text-amber-50 hover:bg-stone-700 active:scale-95
-            disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+          className="px-8 py-3 rounded-full text-base font-bold transition-all duration-150
+            bg-primary text-on-primary hover:bg-surface-tint active:scale-95 hover:-translate-y-0.5 shadow-md
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:shadow-none"
         >
           {checkLabel}
         </button>
@@ -112,19 +114,19 @@ const ExerciseShell = ({
               initial={{ opacity: 0, scale: 0.8, y: 4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold ${
                 !hasScore
-                  ? 'bg-stone-100 text-stone-600'
+                  ? 'bg-surface-variant text-on-surface-variant'
                   : isPerfect
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-amber-100 text-amber-800'
+                  ? 'bg-success-green/20 text-success-green'
+                  : 'bg-germany-gold/20 text-germany-gold'
               }`}
             >
               {!hasScore ? (
-                <span className="text-xs italic font-medium">Lösungen angezeigt</span>
+                <span className="text-xs font-medium">Lösungen angezeigt</span>
               ) : (
                 <>
-                  <span className="text-base leading-none">{isPerfect ? '★' : '◎'}</span>
+                  <span className="text-base leading-none">{isPerfect ? 'check_circle' : 'info'}</span>
                   <span>{score} / {total}</span>
                 </>
               )}

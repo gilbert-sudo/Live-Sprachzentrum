@@ -10,6 +10,7 @@ import Crossword from './Crossword';
 import TextMarking from './TextMarking';
 import { AnimatePresence } from 'framer-motion';
 import LibraryAudioPickerModal from '../Library/LibraryAudioPickerModal';
+import CustomAudioPlayer from './CustomAudioPlayer';
 
 /**
  * onExerciseScored(index, score, total) — called when a student checks
@@ -94,13 +95,7 @@ const ExerciseEngine = ({ exercises, savedAnswers, canEdit, onDeleteBlock, onUpd
                 </div>
               )}
               {exercise.audioUrl && (
-                <div className="mb-3 bg-white dark:bg-[#18181B] border border-stone-200 dark:border-gray-800 rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] p-4 flex flex-col gap-3">
-                  <p className="text-sm font-semibold text-stone-700 dark:text-gray-200 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-indigo-500">headphones</span>
-                    {exercise.audioTitle || 'Piste audio'}
-                  </p>
-                  <audio controls src={exercise.audioUrl} className="w-full h-10 custom-audio-player" />
-                </div>
+                <CustomAudioPlayer src={exercise.audioUrl} title={exercise.audioTitle} />
               )}
               {ExerciseComponent}
             </div>

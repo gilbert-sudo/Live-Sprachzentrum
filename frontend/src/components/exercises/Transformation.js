@@ -28,9 +28,9 @@ const Transformation = ({ index, exercise, savedAnswers, onScoreReport }) => {
     >
       <div className="space-y-4">
         {items.map((item, idx) => (
-          <div key={idx} className="border-l-2 border-stone-100 pl-3">
-            <p className="text-sm italic text-stone-500 mb-1.5 flex items-start gap-1.5">
-              <span className="text-stone-300 tabular-nums text-xs font-medium shrink-0 mt-0.5">{idx + 1}.</span>
+          <div key={idx} className="border-l-2 border-surface-variant/40 pl-4 mb-4">
+            <p className="text-body-md italic text-on-surface mb-2 flex items-start gap-2">
+              <span className="text-secondary tabular-nums text-sm font-bold shrink-0 mt-0.5">{idx + 1}.</span>
               {item.prompt}
             </p>
             <textarea
@@ -38,17 +38,17 @@ const Transformation = ({ index, exercise, savedAnswers, onScoreReport }) => {
               value={answers[idx] || ''}
               onChange={(e) => setAnswers(prev => ({ ...prev, [idx]: e.target.value }))}
               rows={2}
-              className="w-full bg-[#FDFCF8] border border-stone-200 rounded px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-stone-400 resize-none placeholder:text-stone-300 transition-colors"
+              className="w-full bg-surface-variant/20 border border-surface-variant/40 rounded-lg px-4 py-3 text-body-md text-on-surface focus:outline-none focus:border-primary focus:bg-surface-variant/40 resize-none placeholder:text-secondary/50 transition-colors"
               placeholder="Ihre Antwort …"
             />
             {isSubmitted && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="mt-1.5 px-3 py-2 bg-green-50 border border-green-200 rounded text-xs"
+                className="mt-2 px-4 py-3 bg-success-green/10 border border-success-green/50 rounded-lg text-sm"
               >
-                <span className="font-semibold text-green-700 mr-1">Musterlösung:</span>
-                <span className="text-green-800">{item.modelAnswer}</span>
+                <span className="font-bold text-success-green mr-2">Musterlösung:</span>
+                <span className="text-on-surface">{item.modelAnswer}</span>
               </motion.div>
             )}
           </div>
