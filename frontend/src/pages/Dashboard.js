@@ -201,50 +201,16 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Homework Banner */}
-        <section className="mb-8">
-          <div className="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-4">
-                <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
-                  Devoirs / Hausaufgaben
-                </span>
-              </div>
-              
-              <div className="flex gap-4 items-center">
-                {/* Circular Icon Indicator */}
-                <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-germany-red/10 dark:bg-red-900/20 rounded-full"></div>
-                  <span className="material-symbols-outlined text-[32px] text-germany-red relative z-10">assignment</span>
-                </div>
-                
-                <div>
-                  <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">Übungsaufgaben</h3>
-                  <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">
-                    {pinnedHomeworks.length} {pinnedHomeworks.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
-                  </p>
-                  <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight line-clamp-1">
-                    {pinnedHomeworks.length > 0 ? pinnedHomeworks[0].title : "Alle Übungen anzeigen"}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <Link to="/homework" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
-              {isTeacher ? "Aufgaben verwalten" : "Zu den Hausaufgaben"}
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </Link>
-          </div>
-        </section>
 
-        {/* Main Course Card & Weekly Goal */}
-        <section className="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
+
+        {/* Homework Banner (Styled as Lesson Card) */}
+        <section className="mb-8 bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-4">
               <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
-                {isTeacher ? "Aktuelle Klasse" : "Aktueller Kurs"}
+                Devoirs / Hausaufgaben
               </span>
-              <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">{user?.level || 'B1'} Standard</span>
+              <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">Übungsaufgaben</span>
             </div>
             
             <div className="flex gap-4 items-center">
@@ -258,26 +224,30 @@ export default function Dashboard() {
               </div>
               
               <div>
-                <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">{user?.level || 'B1'} Standard</h3>
-                <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">Nächste Lektion</p>
-                <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight">Passiv mit Modalverben</p>
+                <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">Übungsaufgaben</h3>
+                <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">
+                  {pinnedHomeworks.length} {pinnedHomeworks.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
+                </p>
+                <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight">
+                  {pinnedHomeworks.length > 0 ? pinnedHomeworks[0].title : "Alle Übungen anzeigen"}
+                </p>
               </div>
             </div>
             
-            {/* New Feature: Weekly Goal */}
+            {/* Homework Goal */}
             <div className="mt-5 pt-5 border-t border-surface-variant">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-label-sm text-label-sm text-secondary">Wochenziel: 3/5 Lektionen</span>
+                <span className="font-label-sm text-label-sm text-secondary">Ziel: Hausaufgaben erledigen</span>
                 <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
               </div>
               <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
-                <div className="bg-success-green h-full rounded-full" style={{ width: '60%' }}></div>
+                <div className="bg-success-green h-full rounded-full" style={{ width: '65%' }}></div>
               </div>
             </div>
           </div>
           
-          <Link to="/uebung" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
-            {isTeacher ? "Unterricht starten" : "Lektion fortsetzen"}
+          <Link to="/homework" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
+            {isTeacher ? "Aufgaben verwalten" : "Zu den Hausaufgaben"}
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>
         </section>
