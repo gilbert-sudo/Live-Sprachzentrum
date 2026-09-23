@@ -107,6 +107,13 @@ export default function HomeworkExercise(props) {
     setIsEdited(true);
   };
 
+  const handleUpdateBlock = (indexToUpdate, updatedExercise) => {
+    const updatedExercises = [...homework.exercises];
+    updatedExercises[indexToUpdate] = updatedExercise;
+    setHomework({ ...homework, exercises: updatedExercises });
+    setIsEdited(true);
+  };
+
   const handleSaveAllChanges = async () => {
     setIsSaving(true);
     try {
@@ -218,6 +225,7 @@ export default function HomeworkExercise(props) {
             savedAnswers={savedAnswers}
             canEdit={canEdit}
             onDeleteBlock={handleDeleteBlock}
+            onUpdateBlock={handleUpdateBlock}
             onExerciseScored={isStudent && !savedAnswers ? handleExerciseScored : undefined}
           />
         ) : (
