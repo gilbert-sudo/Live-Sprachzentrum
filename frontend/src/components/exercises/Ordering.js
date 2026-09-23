@@ -3,7 +3,7 @@ import { Reorder } from 'framer-motion';
 import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const Ordering = ({ index, exercise }) => {
+const Ordering = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, items, tag, context } = exercise;
   const [order, setOrder] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,6 +17,13 @@ const Ordering = ({ index, exercise }) => {
     order.forEach((item, idx) => { if (item === items[idx]) score++; });
   }
 
+  const handleCheck = () => {
+    let s = 0;
+    order.forEach((item, idx) => { if (item === items[idx]) s++; });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, items.length);
+  };
+
   return (
     <ExerciseShell
       index={index}
@@ -25,7 +32,7 @@ const Ordering = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted}
       checkLabel="Reihenfolge prüfen"
       isSubmitted={isSubmitted}

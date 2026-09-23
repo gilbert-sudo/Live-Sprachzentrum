@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import ExerciseShell from './ExerciseShell';
 
-const Transformation = ({ index, exercise }) => {
+const Transformation = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, items, tag, context } = exercise;
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const TextMarking = ({ index, exercise }) => {
+const TextMarking = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, text, categories, tag, context } = exercise;
 
   const [markedUids, setMarkedUids] = useState(new Set());
@@ -70,7 +70,13 @@ const TextMarking = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={() => {
+        let s = 0;
+        targetUids.forEach(uid => { if (markedUids.has(uid)) s++; });
+        if (categories) categories.forEach(cat => { if (placements[cat.id] === cat.label) s++; });
+        setIsSubmitted(true);
+        if (onScoreReport) onScoreReport(s, total);
+      }}
       canCheck={!isSubmitted && (categories ? allPlaced : true)}
       isSubmitted={isSubmitted}
       score={score}

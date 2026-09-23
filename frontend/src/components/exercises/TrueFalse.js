@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const TrueFalse = ({ index, exercise }) => {
+const TrueFalse = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, questions, tag, context } = exercise;
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,6 +17,13 @@ const TrueFalse = ({ index, exercise }) => {
     questions.forEach((q, idx) => { if (answers[idx] === q.isTrue) score++; });
   }
 
+  const handleCheck = () => {
+    let s = 0;
+    questions.forEach((q, idx) => { if (answers[idx] === q.isTrue) s++; });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, questions.length);
+  };
+
   const allAnswered = questions.every((_, idx) => answers[idx] !== undefined);
 
   return (
@@ -27,7 +34,7 @@ const TrueFalse = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted && allAnswered}
       isSubmitted={isSubmitted}
       score={score}

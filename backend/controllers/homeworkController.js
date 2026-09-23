@@ -136,10 +136,68 @@ const updateHomeworkExercises = async (req, res) => {
   }
 };
 
+
+// @desc    Submit or update a student's score for a homework
+// @route   POST /api/homework/:id/score
+// @access  Private/Student
+const submitScore = async (req, res) => {
+  try {
+    const { score, total, percentage } = req.body;
+    const homework = await Homework.findById(req.params.id);
+
+    if (!homework) {
+      return res.status(404).json({ message: 'Devoir non trouvé' });
+    }
+
+    // Upsert: remove previous entry for this student, then push new one
+    homework.scores = homework.scores.filter(
+      s => s.studentId?.toString() !== req.user._id.toString()
+    );
+
+    homework.scores.push({
+      studentId: req.user._id,
+      studentName: req.user.name,
+      score,
+      total,
+      percentage,
+      completedAt: new Date()
+    });
+
+    await homework.save();
+    res.json({ message: 'Score enregistré', scores: homework.scores });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// @desc    Get all student scores for a specific homework
+// @route   GET /api/homework/:id/scores
+// @access  Private/Teacher
+const getScores = async (req, res) => {
+  try {
+    const homework = await Homework.findById(req.params.id).select('scores title');
+
+    if (!homework) {
+      return res.status(404).json({ message: 'Devoir non trouvé' });
+    }
+
+    // Sort by completedAt desc
+    const sorted = [...homework.scores].sort(
+      (a, b) => new Date(b.completedAt) - new Date(a.completedAt)
+    );
+
+    res.json({ title: homework.title, scores: sorted });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   getHomeworks,
   createHomework,
   deleteHomework,
   togglePinHomework,
-  updateHomeworkExercises
+  updateHomeworkExercises,
+  submitScore,
+  getScores
 };

@@ -6,7 +6,9 @@ const {
   createHomework,
   deleteHomework,
   togglePinHomework,
-  updateHomeworkExercises
+  updateHomeworkExercises,
+  submitScore,
+  getScores
 } = require('../controllers/homeworkController');
 
 // @route   GET /api/homework
@@ -33,5 +35,15 @@ router.route('/:id/pin').patch(protect, teacher, togglePinHomework);
 // @desc    Update exercises in a homework
 // @access  Private/Teacher
 router.route('/:id/exercises').put(protect, teacher, updateHomeworkExercises);
+
+// @route   POST /api/homework/:id/score
+// @desc    Submit student score for a homework
+// @access  Private
+router.route('/:id/score').post(protect, submitScore);
+
+// @route   GET /api/homework/:id/scores
+// @desc    Get all scores for a homework (teacher view)
+// @access  Private/Teacher
+router.route('/:id/scores').get(protect, teacher, getScores);
 
 module.exports = router;

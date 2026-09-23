@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchHomeworks, addHomework, deleteHomework } from '../store/homeworkSlice';
 import HomeworkExercise from '../pages/HomeworkExercise';
+import HomeworkScoresModal from './exercises/HomeworkScoresModal';
 
 export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const { user } = useSelector((state) => state.auth);
@@ -20,6 +21,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const level = roomId ? roomId.split('-')[1] : 'A1';
   const [exercisesData, setExercisesData] = useState(null);
   const [jsonFileName, setJsonFileName] = useState('');
+  const [scoresModalData, setScoresModalData] = useState(null);
 
   useEffect(() => {
     loadHomeworks();
@@ -216,6 +218,15 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
                   {(role === 'teacher' || role === 'admin') && (
                     <div className="flex items-center gap-1">
+                      {hw.exercises && hw.exercises.length > 0 && (
+                        <button 
+                          onClick={() => setScoresModalData({ id: hw._id, title: hw.title })}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition-colors"
+                          title="Résultats des élèves"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">analytics</span>
+                        </button>
+                      )}
                       <button 
                         onClick={() => handleTogglePin(hw._id)}
                         className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${hw.isPinned ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300'}`}
@@ -327,7 +338,14 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
       )}
       </>
       )}
-      
+
+      {/* Teacher Scores Modal */}
+      <HomeworkScoresModal 
+        isOpen={!!scoresModalData} 
+        onClose={() => setScoresModalData(null)}
+        homeworkId={scoresModalData?.id}
+        homeworkTitle={scoresModalData?.title}
+      />
     </div>
   );
 }

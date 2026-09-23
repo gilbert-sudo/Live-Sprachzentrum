@@ -72,7 +72,7 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
 };
 
 /* ─── Main Component ─────────────────────────────────────────────── */
-const FillInTheBlanks = ({ index, exercise }) => {
+const FillInTheBlanks = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, text, wordBank, answers, tag, context } = exercise;
 
   const [placements, setPlacements] = useState({});
@@ -122,6 +122,15 @@ const FillInTheBlanks = ({ index, exercise }) => {
     });
   }
 
+  const handleCheck = () => {
+    let s = 0;
+    Object.keys(answers).forEach(k => {
+      if (placements[k]?.toLowerCase().trim() === answers[k].toLowerCase().trim()) s++;
+    });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, totalBlanks);
+  };
+
   const parts = text.split(/(\{\d+\})/g);
 
   return (
@@ -132,7 +141,7 @@ const FillInTheBlanks = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted && (hasDnD ? allFilled : true)}
       isSubmitted={isSubmitted}
       score={score}

@@ -39,6 +39,19 @@ const homeworkSchema = new mongoose.Schema({
   exercises: {
     type: [mongoose.Schema.Types.Mixed],
     default: []
+  },
+  scores: {
+    type: [
+      {
+        studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        studentName: { type: String },
+        score: { type: Number },          // correct answers
+        total: { type: Number },          // total questions
+        percentage: { type: Number },     // 0-100
+        completedAt: { type: Date, default: Date.now }
+      }
+    ],
+    default: []
   }
 });
 

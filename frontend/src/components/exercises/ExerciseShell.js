@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
    title       string
    instruction string | undefined
    onCheck     fn       – called when the Check button is clicked
+   onScoreReport fn     – optional: called with (score, total) after check
    canCheck    bool     – enables / disables the button
    checkLabel  string   – button text (default "Antworten prüfen")
    isSubmitted bool
@@ -29,6 +30,7 @@ const ExerciseShell = ({
   instruction,
   context,
   onCheck,
+  onScoreReport,
   canCheck,
   checkLabel = 'Antworten prüfen',
   isSubmitted,
@@ -38,6 +40,19 @@ const ExerciseShell = ({
 }) => {
   const hasScore = total != null && score != null;
   const isPerfect = hasScore && score === total;
+
+  const handleCheck = () => {
+    onCheck();
+    // Report score upward after state update (next tick)
+    if (onScoreReport && hasScore !== undefined) {
+      // score/total are computed before the call, but they reflect
+      // the pre-submit state. We use a timeout so the parent receives
+      // the value after the component re-renders with updated score.
+      setTimeout(() => {
+        if (onScoreReport) onScoreReport();
+      }, 50);
+    }
+  };
 
   return (
     <motion.div
@@ -81,7 +96,7 @@ const ExerciseShell = ({
       {/* ── Footer ────────────────────────────────────────────────── */}
       <div className="px-5 py-3 border-t border-stone-100 flex items-center justify-between bg-stone-50/40">
         <button
-          onClick={onCheck}
+          onClick={handleCheck}
           disabled={!canCheck}
           className="px-4 py-1.5 rounded text-sm font-semibold transition-all duration-150
             bg-stone-800 text-amber-50 hover:bg-stone-700 active:scale-95
@@ -122,3 +137,4 @@ const ExerciseShell = ({
 };
 
 export default ExerciseShell;
+

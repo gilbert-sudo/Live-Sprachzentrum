@@ -3,7 +3,7 @@ import { Reorder } from 'framer-motion';
 import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const Matching = ({ index, exercise }) => {
+const Matching = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, pairs, tag, context } = exercise;
 
   const [leftItems]  = useState(pairs.map(p => ({ id: p.id, text: p.left })));
@@ -21,6 +21,15 @@ const Matching = ({ index, exercise }) => {
     });
   }
 
+  const handleCheck = () => {
+    let s = 0;
+    leftItems.forEach((leftItem, idx) => {
+      if (rightItems[idx]?.id === leftItem.id) s++;
+    });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, leftItems.length);
+  };
+
   return (
     <ExerciseShell
       index={index}
@@ -29,7 +38,7 @@ const Matching = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted}
       isSubmitted={isSubmitted}
       score={score}

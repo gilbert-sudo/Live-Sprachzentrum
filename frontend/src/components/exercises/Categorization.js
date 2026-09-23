@@ -85,7 +85,7 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
 );
 
 /* ─── Main Component ─────────────────────────────────────────────── */
-const Categorization = ({ index, exercise }) => {
+const Categorization = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, categories, items, tag, context } = exercise;
 
   const [shuffledItems, setShuffledItems] = useState([]);
@@ -131,6 +131,13 @@ const Categorization = ({ index, exercise }) => {
   let score = 0;
   if (isSubmitted) shuffledItems.forEach(it => { if (placements[it.id] === it.category) score++; });
 
+  const handleCheck = () => {
+    let s = 0;
+    shuffledItems.forEach(it => { if (placements[it.id] === it.category) s++; });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, shuffledItems.length);
+  };
+
   const colClass = categories.length <= 2 ? 'grid-cols-2' : categories.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4';
 
   return (
@@ -141,7 +148,7 @@ const Categorization = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted && allPlaced}
       isSubmitted={isSubmitted}
       score={score}

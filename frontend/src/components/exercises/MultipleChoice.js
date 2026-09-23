@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ExerciseShell from './ExerciseShell';
 
-const MultipleChoice = ({ index, exercise }) => {
+const MultipleChoice = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, questions, tag, context } = exercise;
   const [userAnswers, setUserAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -16,6 +16,13 @@ const MultipleChoice = ({ index, exercise }) => {
     questions.forEach(q => { if (userAnswers[q.id] === q.correctAnswer) score++; });
   }
 
+  const handleCheck = () => {
+    let s = 0;
+    questions.forEach(q => { if (userAnswers[q.id] === q.correctAnswer) s++; });
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(s, questions.length);
+  };
+
   const allAnswered = questions.every(q => userAnswers[q.id] != null);
 
   return (
@@ -26,7 +33,7 @@ const MultipleChoice = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted && allAnswered}
       isSubmitted={isSubmitted}
       score={score}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ExerciseShell from './ExerciseShell';
 
-const Crossword = ({ index, exercise }) => {
+const Crossword = ({ index, exercise, onScoreReport }) => {
   const { title, instruction, clues, tag, context } = exercise;
   const [grid, setGrid]             = useState([]);
   const [userInputs, setUserInputs] = useState({});
@@ -89,6 +89,18 @@ const Crossword = ({ index, exercise }) => {
     }
   }));
 
+  const handleCheck = () => {
+    let c = 0, t = 0;
+    grid.forEach(row => row.forEach(cell => {
+      if (cell) {
+        t++;
+        if (userInputs[`${cell.row}-${cell.col}`] === cell.correctChar) c++;
+      }
+    }));
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(c, t);
+  };
+
   return (
     <ExerciseShell
       index={index}
@@ -97,7 +109,7 @@ const Crossword = ({ index, exercise }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted}
       isSubmitted={isSubmitted}
       score={isSubmitted ? correctCells : undefined}

@@ -10,7 +10,11 @@ import Crossword from './Crossword';
 import TextMarking from './TextMarking';
 import { AnimatePresence } from 'framer-motion';
 
-const ExerciseEngine = ({ exercises, canEdit, onDeleteBlock }) => {
+/**
+ * onExerciseScored(index, score, total) — called when a student checks
+ * an individual exercise. Used by HomeworkExercise to track global score.
+ */
+const ExerciseEngine = ({ exercises, canEdit, onDeleteBlock, onExerciseScored }) => {
   if (!exercises || !Array.isArray(exercises)) {
     return <div className="p-4 text-red-500 bg-red-50 rounded-lg">Invalid exercise data provided. Expected an array of exercises.</div>;
   }
@@ -21,17 +25,23 @@ const ExerciseEngine = ({ exercises, canEdit, onDeleteBlock }) => {
         {exercises.map((exercise, index) => {
           const key = exercise.id || index;
           const idx = index + 1;
+
+          // Each exercise gets a report callback that bubbles its score up
+          const handleScoreReport = onExerciseScored
+            ? (score, total) => onExerciseScored(index, score, total)
+            : undefined;
+
           let ExerciseComponent;
           switch (exercise.type) {
-            case 'fill-in-the-blanks': ExerciseComponent = <FillInTheBlanks index={idx} exercise={exercise} />; break;
-            case 'matching':           ExerciseComponent = <Matching         index={idx} exercise={exercise} />; break;
-            case 'multiple-choice':    ExerciseComponent = <MultipleChoice   index={idx} exercise={exercise} />; break;
-            case 'true-false':         ExerciseComponent = <TrueFalse        index={idx} exercise={exercise} />; break;
-            case 'transformation':     ExerciseComponent = <Transformation   index={idx} exercise={exercise} />; break;
-            case 'categorization':     ExerciseComponent = <Categorization   index={idx} exercise={exercise} />; break;
-            case 'ordering':           ExerciseComponent = <Ordering         index={idx} exercise={exercise} />; break;
-            case 'crossword':          ExerciseComponent = <Crossword        index={idx} exercise={exercise} />; break;
-            case 'text-marking':       ExerciseComponent = <TextMarking      index={idx} exercise={exercise} />; break;
+            case 'fill-in-the-blanks': ExerciseComponent = <FillInTheBlanks index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'matching':           ExerciseComponent = <Matching         index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'multiple-choice':    ExerciseComponent = <MultipleChoice   index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'true-false':         ExerciseComponent = <TrueFalse        index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'transformation':     ExerciseComponent = <Transformation   index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'categorization':     ExerciseComponent = <Categorization   index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'ordering':           ExerciseComponent = <Ordering         index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'crossword':          ExerciseComponent = <Crossword        index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
+            case 'text-marking':       ExerciseComponent = <TextMarking      index={idx} exercise={exercise} onScoreReport={handleScoreReport} />; break;
             default:
               ExerciseComponent = (
                 <div className="p-4 text-orange-600 bg-orange-50 rounded-lg border border-orange-200">
@@ -62,4 +72,3 @@ const ExerciseEngine = ({ exercises, canEdit, onDeleteBlock }) => {
 };
 
 export default ExerciseEngine;
-
