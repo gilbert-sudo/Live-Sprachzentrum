@@ -70,12 +70,13 @@ export default function HomeworkExercise(props) {
   );
 
   // Circular progress: based on how many scoreable exercises have been checked
-  const ringProgress = scorableExercises > 0 ? checkedCount / scorableExercises : 0;
+  const effectiveCheckedCount = savedAnswers ? scorableExercises : checkedCount;
+  const ringProgress = scorableExercises > 0 ? effectiveCheckedCount / scorableExercises : 0;
   const radius = 32;
   const circumference = 2 * Math.PI * radius;
   const ringOffset = circumference - ringProgress * circumference;
   const ringPct = scorableExercises > 0 ? Math.round(ringProgress * 100) : 0;
-  const allChecked = checkedCount >= scorableExercises && scorableExercises > 0;
+  const allChecked = effectiveCheckedCount >= scorableExercises && scorableExercises > 0;
 
   const handleSubmitScore = async () => {
     if (!isStudent) return;
@@ -196,7 +197,7 @@ export default function HomeworkExercise(props) {
                 </div>
               </div>
               <div className="hidden sm:block text-right">
-                <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-200">{checkedCount}/{scorableExercises}</p>
+                <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-200">{effectiveCheckedCount}/{scorableExercises}</p>
                 <p className="text-[9px] text-gray-400">vérifié</p>
               </div>
             </div>
