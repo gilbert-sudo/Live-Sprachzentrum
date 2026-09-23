@@ -60,7 +60,7 @@ export default function HomeworkExercise(props) {
 
   const totalExercises = homework?.exercises?.length || 0;
   const scorableExercises = homework?.exercises?.filter(e =>
-    ['fill-in-the-blanks','matching','multiple-choice','true-false','categorization','ordering','crossword','text-marking'].includes(e.type)
+    ['fill-in-the-blanks','matching','multiple-choice','true-false','categorization','ordering','crossword','text-marking','transformation'].includes(e.type)
   ).length || 0;
 
   // Aggregate total score / total questions from scoreable exercises checked so far
