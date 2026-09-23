@@ -202,25 +202,34 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
                 {hasExercises && (
                   <div className="mb-4 space-y-3">
-                     {isDone && (
-                       <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-100 dark:border-gray-800 max-w-sm">
-                         <div className="flex items-center justify-between mb-1.5">
-                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Votre score ({studentScore.score}/{studentScore.total})</span>
-                           <span className="text-xs font-black" style={{ color: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' }}>
-                             {studentScore.percentage}%
+                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-100 dark:border-gray-800 max-w-sm mb-3">
+                       <div className="relative w-12 h-12 shrink-0 self-center">
+                         <svg width="48" height="48" viewBox="0 0 48 48" className="-rotate-90">
+                           <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-gray-200 dark:text-gray-700" />
+                           <circle 
+                             cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"
+                             className="text-indigo-500 transition-all duration-1000"
+                             strokeDasharray={2 * Math.PI * 20}
+                             strokeDashoffset={(2 * Math.PI * 20) - ((isDone ? 1 : 0) * (2 * Math.PI * 20))}
+                           />
+                         </svg>
+                         <div className="absolute inset-0 flex items-center justify-center">
+                           <span className="text-[11px] font-black text-gray-700 dark:text-gray-300">
+                             {isDone ? hw.exercises.length : 0}/{hw.exercises.length}
                            </span>
                          </div>
-                         <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                           <div 
-                             className="h-full rounded-full transition-all duration-700" 
-                             style={{ 
-                               width: `${studentScore.percentage}%`,
-                               backgroundColor: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' 
-                             }}
-                           ></div>
-                         </div>
                        </div>
-                     )}
+                       <div className="flex-1 text-center sm:text-left">
+                         <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Exercices terminés</p>
+                         {isDone ? (
+                           <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                             Score : <strong style={{ color: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' }}>{studentScore.percentage}%</strong> ({studentScore.score}/{studentScore.total})
+                           </p>
+                         ) : (
+                           <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Non commencé</p>
+                         )}
+                       </div>
+                     </div>
                      <button 
                        onClick={() => setActiveExerciseId(hw._id)}
                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isDone ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
