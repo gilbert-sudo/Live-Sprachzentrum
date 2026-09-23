@@ -178,7 +178,9 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
         ) : (
           <div className="space-y-4">
             {homeworks.map((hw) => {
-              const isDone = role === 'student' && hw.scores?.some(s => s.studentId === user._id);
+              const studentScore = role === 'student' ? hw.scores?.find(s => s.studentId === user._id) : null;
+              const isDone = !!studentScore;
+              const hasExercises = hw.exercises && hw.exercises.length > 0;
               return (
               <div key={hw._id} className="bg-white dark:bg-[#18181B] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
                 
@@ -187,20 +189,44 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                     <span className="material-symbols-outlined icon-filled text-orange-400 text-[14px]" title="Épinglé">push_pin</span>
                   )}
                   {hw.title}
+                  {!hasExercises && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 uppercase tracking-wider">
+                      Leçon
+                    </span>
+                  )}
                 </h4>
                 
                 <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed mb-4">
                   {hw.description}
                 </p>
 
-                {hw.exercises && hw.exercises.length > 0 && (
-                  <div className="mb-4">
+                {hasExercises && (
+                  <div className="mb-4 space-y-3">
+                     {isDone && (
+                       <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-100 dark:border-gray-800 max-w-sm">
+                         <div className="flex items-center justify-between mb-1.5">
+                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Votre score ({studentScore.score}/{studentScore.total})</span>
+                           <span className="text-xs font-black" style={{ color: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' }}>
+                             {studentScore.percentage}%
+                           </span>
+                         </div>
+                         <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                           <div 
+                             className="h-full rounded-full transition-all duration-700" 
+                             style={{ 
+                               width: `${studentScore.percentage}%`,
+                               backgroundColor: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' 
+                             }}
+                           ></div>
+                         </div>
+                       </div>
+                     )}
                      <button 
                        onClick={() => setActiveExerciseId(hw._id)}
-                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isDone ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isDone ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                      >
                        <span className="material-symbols-outlined text-[18px]">{isDone ? 'done_all' : 'menu_book'}</span>
-                       {isDone ? 'Voir les résultats' : "Faire l'exercice"}
+                       {isDone ? 'Revoir mes réponses' : "Faire l'exercice"}
                      </button>
                   </div>
                 )}
@@ -232,7 +258,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
                   {(role === 'teacher' || role === 'admin') && (
                     <div className="flex items-center gap-1">
-                      {hw.exercises && hw.exercises.length > 0 && (
+                      {hasExercises && (
                         <button 
                           onClick={() => setScoresModalData({ id: hw._id, title: hw.title })}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition-colors"
