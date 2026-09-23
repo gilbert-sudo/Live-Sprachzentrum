@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
  * HomeworkScoresModal — Teacher-only modal that shows all student scores
  * for a specific homework. Opens via the 📊 icon on interactive homework cards.
  */
-export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homeworkTitle }) {
+export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homeworkTitle, onViewStudent }) {
   const { user } = useSelector(state => state.auth);
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -157,10 +157,20 @@ export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homew
                         <p className="text-[11px] text-gray-400">{formatDate(s.completedAt)}</p>
                       </div>
 
-                      {/* Score badge */}
-                      <span className={`shrink-0 px-2.5 py-1 rounded-lg text-xs font-bold ${getScoreColor(s.percentage || 0)}`}>
-                        {s.score}/{s.total}
-                      </span>
+                      {/* Score badge & view button */}
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${getScoreColor(s.percentage || 0)}`}>
+                          {s.score}/{s.total}
+                        </span>
+                        {onViewStudent && (
+                          <button
+                            onClick={() => onViewStudent(s)}
+                            className="text-[10px] font-medium text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 px-2 py-0.5 rounded transition-colors"
+                          >
+                            Voir les réponses
+                          </button>
+                        )}
+                      </div>
                     </motion.div>
                   ))}
                 </div>

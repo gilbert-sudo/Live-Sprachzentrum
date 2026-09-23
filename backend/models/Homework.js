@@ -48,6 +48,7 @@ const homeworkSchema = new mongoose.Schema({
         score: { type: Number },          // correct answers
         total: { type: Number },          // total questions
         percentage: { type: Number },     // 0-100
+        answers: { type: [mongoose.Schema.Types.Mixed] },
         completedAt: { type: Date, default: Date.now }
       }
     ],

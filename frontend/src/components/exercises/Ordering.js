@@ -3,14 +3,16 @@ import { Reorder } from 'framer-motion';
 import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const Ordering = ({ index, exercise, onScoreReport }) => {
+const Ordering = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, items, tag, context } = exercise;
-  const [order, setOrder] = useState([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [order, setOrder] = useState(savedAnswers || []);
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
 
   useEffect(() => {
-    setOrder([...items].sort(() => Math.random() - 0.5));
-  }, [items]);
+    if (!savedAnswers) {
+      setOrder([...items].sort(() => Math.random() - 0.5));
+    }
+  }, [items, savedAnswers]);
 
   let score = 0;
   if (isSubmitted) {
@@ -21,7 +23,7 @@ const Ordering = ({ index, exercise, onScoreReport }) => {
     let s = 0;
     order.forEach((item, idx) => { if (item === items[idx]) s++; });
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, items.length);
+    if (onScoreReport) onScoreReport(s, items.length, order);
   };
 
   return (

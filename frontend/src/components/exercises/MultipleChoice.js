@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import ExerciseShell from './ExerciseShell';
 
-const MultipleChoice = ({ index, exercise, onScoreReport }) => {
+const MultipleChoice = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, questions, tag, context } = exercise;
-  const [userAnswers, setUserAnswers] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [userAnswers, setUserAnswers] = useState(savedAnswers || {});
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
 
   const handleSelect = (questionId, option) => {
     if (isSubmitted) return;
@@ -20,7 +20,7 @@ const MultipleChoice = ({ index, exercise, onScoreReport }) => {
     let s = 0;
     questions.forEach(q => { if (userAnswers[q.id] === q.correctAnswer) s++; });
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, questions.length);
+    if (onScoreReport) onScoreReport(s, questions.length, userAnswers);
   };
 
   const allAnswered = questions.every(q => userAnswers[q.id] != null);

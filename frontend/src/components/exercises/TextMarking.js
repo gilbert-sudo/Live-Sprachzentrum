@@ -2,12 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const TextMarking = ({ index, exercise, onScoreReport }) => {
+const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, text, categories, tag, context } = exercise;
 
-  const [markedUids, setMarkedUids] = useState(new Set());
-  const [placements, setPlacements] = useState({}); 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [markedUids, setMarkedUids] = useState(new Set(savedAnswers?.markedUids || []));
+  const [placements, setPlacements] = useState(savedAnswers?.placements || {}); 
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
 
   const parsedContent = useMemo(() => {
     const p = [];
@@ -75,7 +75,9 @@ const TextMarking = ({ index, exercise, onScoreReport }) => {
         targetUids.forEach(uid => { if (markedUids.has(uid)) s++; });
         if (categories) categories.forEach(cat => { if (placements[cat.id] === cat.label) s++; });
         setIsSubmitted(true);
-        if (onScoreReport) onScoreReport(s, total);
+        if (onScoreReport) {
+          onScoreReport(s, total, { markedUids: Array.from(markedUids), placements });
+        }
       }}
       canCheck={!isSubmitted && (categories ? allPlaced : true)}
       isSubmitted={isSubmitted}

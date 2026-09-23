@@ -72,11 +72,11 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
 };
 
 /* ─── Main Component ─────────────────────────────────────────────── */
-const FillInTheBlanks = ({ index, exercise, onScoreReport }) => {
+const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, text, wordBank, answers, tag, context } = exercise;
 
-  const [placements, setPlacements] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [placements, setPlacements] = useState(savedAnswers || {});
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
   const [overBlank, setOverBlank]     = useState(null);
   const draggingWord = useRef(null);
 
@@ -128,7 +128,7 @@ const FillInTheBlanks = ({ index, exercise, onScoreReport }) => {
       if (placements[k]?.toLowerCase().trim() === answers[k].toLowerCase().trim()) s++;
     });
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, totalBlanks);
+    if (onScoreReport) onScoreReport(s, totalBlanks, placements);
   };
 
   const parts = text.split(/(\{\d+\})/g);

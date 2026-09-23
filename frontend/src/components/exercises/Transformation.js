@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import ExerciseShell from './ExerciseShell';
 
-const Transformation = ({ index, exercise, onScoreReport }) => {
+const Transformation = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, items, tag, context } = exercise;
-  const [answers, setAnswers] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [answers, setAnswers] = useState(savedAnswers || {});
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
+
+  const handleCheck = () => {
+    setIsSubmitted(true);
+    if (onScoreReport) onScoreReport(0, 0, answers);
+  };
 
   return (
     <ExerciseShell
@@ -15,7 +20,7 @@ const Transformation = ({ index, exercise, onScoreReport }) => {
       context={context}
       title={title}
       instruction={instruction}
-      onCheck={() => setIsSubmitted(true)}
+      onCheck={handleCheck}
       canCheck={!isSubmitted}
       checkLabel="Lösungen anzeigen"
       isSubmitted={isSubmitted}

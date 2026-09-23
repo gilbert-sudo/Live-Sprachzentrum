@@ -142,7 +142,7 @@ const updateHomeworkExercises = async (req, res) => {
 // @access  Private/Student
 const submitScore = async (req, res) => {
   try {
-    const { score, total, percentage } = req.body;
+    const { score, total, percentage, answers } = req.body;
     const homework = await Homework.findById(req.params.id);
 
     if (!homework) {
@@ -160,6 +160,7 @@ const submitScore = async (req, res) => {
       score,
       total,
       percentage,
+      answers,
       completedAt: new Date()
     });
 

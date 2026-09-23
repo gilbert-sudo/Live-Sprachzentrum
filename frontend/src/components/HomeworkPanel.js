@@ -14,6 +14,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
   // Form states for teachers
   const [activeExerciseId, setActiveExerciseId] = useState(null);
+  const [activeReviewScore, setActiveReviewScore] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
   const [description, setDescription] = useState('');
@@ -135,7 +136,12 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
     <div className="flex flex-col h-full w-full bg-[#FAFAFC] dark:bg-[#121214] text-gray-900 dark:text-gray-100 font-sans relative min-h-0">
       
       {activeExerciseId ? (
-        <HomeworkExercise id={activeExerciseId} onClose={() => setActiveExerciseId(null)} isStandalonePage={isStandalonePage} />
+        <HomeworkExercise 
+          id={activeExerciseId} 
+          reviewScore={activeReviewScore}
+          onClose={() => { setActiveExerciseId(null); setActiveReviewScore(null); }} 
+          isStandalonePage={isStandalonePage} 
+        />
       ) : (
         <>
           {/* Header */}
@@ -171,10 +177,12 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
           </div>
         ) : (
           <div className="space-y-4">
-            {homeworks.map((hw) => (
-              <div key={hw._id} className="bg-white dark:bg-[#18181B] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            {homeworks.map((hw) => {
+              const isDone = role === 'student' && hw.scores?.some(s => s.studentId === user._id);
+              return (
+              <div key={hw._id} className="bg-white dark:bg-[#18181B] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
                 
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2 pr-12">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2 pr-24">
                   {hw.isPinned && (
                     <span className="material-symbols-outlined icon-filled text-orange-400 text-[14px]" title="Épinglé">push_pin</span>
                   )}
@@ -189,10 +197,10 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                   <div className="mb-4">
                      <button 
                        onClick={() => setActiveExerciseId(hw._id)}
-                       className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors hover:shadow-md"
+                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isDone ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                      >
-                       <span className="material-symbols-outlined text-[18px]">menu_book</span>
-                       Faire l'exercice
+                       <span className="material-symbols-outlined text-[18px]">{isDone ? 'done_all' : 'menu_book'}</span>
+                       {isDone ? 'Voir les résultats' : "Faire l'exercice"}
                      </button>
                   </div>
                 )}
@@ -214,6 +222,12 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                       <span className="material-symbols-outlined text-[12px]">group</span>
                       {hw.roomId ? 'Classe' : `Niveau ${hw.level}`}
                     </span>
+                    {isDone && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-50 text-green-700 border border-green-200 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400 absolute top-4 right-4">
+                        <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                        Fait
+                      </span>
+                    )}
                   </div>
 
                   {(role === 'teacher' || role === 'admin') && (
@@ -247,7 +261,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                 </div>
                 
               </div>
-            ))}
+            )})}
           </div>
         )}
       </div>
@@ -345,6 +359,11 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
         onClose={() => setScoresModalData(null)}
         homeworkId={scoresModalData?.id}
         homeworkTitle={scoresModalData?.title}
+        onViewStudent={(scoreEntry) => {
+          setActiveReviewScore(scoreEntry);
+          setActiveExerciseId(scoresModalData.id);
+          setScoresModalData(null);
+        }}
       />
     </div>
   );

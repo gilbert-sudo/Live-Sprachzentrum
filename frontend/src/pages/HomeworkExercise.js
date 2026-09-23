@@ -6,7 +6,7 @@ import ExerciseEngine from '../components/exercises/ExerciseEngine';
 import ScoreResultModal from '../components/exercises/ScoreResultModal';
 
 export default function HomeworkExercise(props) {
-  const { id: paramId } = useParams();
+  const { id: paramId, reviewScore } = props;
   const isWithNavbar = props.isStandalonePage === true;
   const exerciseId = props.id || paramId;
   const navigate = useNavigate();
@@ -27,6 +27,9 @@ export default function HomeworkExercise(props) {
   const [isSubmittingScore, setIsSubmittingScore] = useState(false);
 
   const isStudent = user?.role === 'student';
+
+  const studentSubmission = isStudent ? homework?.scores?.find(s => s.studentId === user._id) : null;
+  const savedAnswers = reviewScore?.answers || studentSubmission?.answers || null;
 
   useEffect(() => {
     const fetchHomework = async () => {
@@ -50,8 +53,8 @@ export default function HomeworkExercise(props) {
   }, [exerciseId, user]);
 
   // Called by each exercise when student clicks "Antworten prüfen"
-  const handleExerciseScored = useCallback((index, score, total) => {
-    scoresRef.current[index] = { score, total };
+  const handleExerciseScored = useCallback((index, score, total, userAnswers) => {
+    scoresRef.current[index] = { score, total, userAnswers };
     setCheckedCount(Object.keys(scoresRef.current).length);
   }, []);
 
@@ -79,6 +82,7 @@ export default function HomeworkExercise(props) {
     const total = aggregatedScore.total;
     const score = aggregatedScore.score;
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+    const answers = homework.exercises.map((_, idx) => scoresRef.current[idx]?.userAnswers || null);
 
     setFinalScore({ score, total });
     setShowResultModal(true);
@@ -86,7 +90,7 @@ export default function HomeworkExercise(props) {
 
     try {
       const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
-      await axios.post(`/api/homework/${exerciseId}/score`, { score, total, percentage }, config);
+      await axios.post(`/api/homework/${exerciseId}/score`, { score, total, percentage, answers }, config);
     } catch (err) {
       console.error('Failed to submit score', err);
     } finally {
@@ -210,9 +214,10 @@ export default function HomeworkExercise(props) {
         {hasExercises ? (
           <ExerciseEngine
             exercises={homework.exercises}
+            savedAnswers={savedAnswers}
             canEdit={canEdit}
             onDeleteBlock={handleDeleteBlock}
-            onExerciseScored={isStudent ? handleExerciseScored : undefined}
+            onExerciseScored={isStudent && !savedAnswers ? handleExerciseScored : undefined}
           />
         ) : (
           <div className="max-w-3xl mx-auto px-4">
@@ -232,7 +237,7 @@ export default function HomeworkExercise(props) {
         <div className="max-w-3xl mx-auto px-4 pb-6 flex items-center justify-center gap-3 pointer-events-auto">
 
           {/* Student: Submit score */}
-          {isStudent && hasExercises && scorableExercises > 0 && (
+          {isStudent && hasExercises && scorableExercises > 0 && !savedAnswers && (
             <button
               onClick={handleSubmitScore}
               disabled={!allChecked}

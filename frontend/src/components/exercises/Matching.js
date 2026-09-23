@@ -3,16 +3,18 @@ import { Reorder } from 'framer-motion';
 import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
 import ExerciseShell from './ExerciseShell';
 
-const Matching = ({ index, exercise, onScoreReport }) => {
+const Matching = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, pairs, tag, context } = exercise;
 
   const [leftItems]  = useState(pairs.map(p => ({ id: p.id, text: p.left })));
-  const [rightItems, setRightItems] = useState([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [rightItems, setRightItems] = useState(savedAnswers || []);
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
 
   useEffect(() => {
-    setRightItems([...pairs.map(p => ({ id: p.id, text: p.right }))].sort(() => Math.random() - 0.5));
-  }, [pairs]);
+    if (!savedAnswers) {
+      setRightItems([...pairs.map(p => ({ id: p.id, text: p.right }))].sort(() => Math.random() - 0.5));
+    }
+  }, [pairs, savedAnswers]);
 
   let score = 0;
   if (isSubmitted) {
@@ -27,7 +29,7 @@ const Matching = ({ index, exercise, onScoreReport }) => {
       if (rightItems[idx]?.id === leftItem.id) s++;
     });
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, leftItems.length);
+    if (onScoreReport) onScoreReport(s, leftItems.length, rightItems);
   };
 
   return (

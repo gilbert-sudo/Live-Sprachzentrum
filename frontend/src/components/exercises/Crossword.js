@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ExerciseShell from './ExerciseShell';
 
-const Crossword = ({ index, exercise, onScoreReport }) => {
+const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, clues, tag, context } = exercise;
   const [grid, setGrid]             = useState([]);
-  const [userInputs, setUserInputs] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [userInputs, setUserInputs] = useState(savedAnswers || {});
+  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
   const [activeKey, setActiveKey]   = useState(null);
   const inputRefs = useRef({});
 
@@ -98,7 +98,7 @@ const Crossword = ({ index, exercise, onScoreReport }) => {
       }
     }));
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(c, t);
+    if (onScoreReport) onScoreReport(c, t, userInputs);
   };
 
   return (

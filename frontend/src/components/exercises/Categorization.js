@@ -85,12 +85,12 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
 );
 
 /* ─── Main Component ─────────────────────────────────────────────── */
-const Categorization = ({ index, exercise, onScoreReport }) => {
+const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const { title, instruction, categories, items, tag, context } = exercise;
 
   const [shuffledItems, setShuffledItems] = useState([]);
-  const [placements, setPlacements]       = useState({});
-  const [isSubmitted, setIsSubmitted]     = useState(false);
+  const [placements, setPlacements]       = useState(savedAnswers || {});
+  const [isSubmitted, setIsSubmitted]     = useState(!!savedAnswers);
   const [overZone, setOverZone]           = useState(null);
   const draggingId = useRef(null);
 
@@ -135,7 +135,7 @@ const Categorization = ({ index, exercise, onScoreReport }) => {
     let s = 0;
     shuffledItems.forEach(it => { if (placements[it.id] === it.category) s++; });
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, shuffledItems.length);
+    if (onScoreReport) onScoreReport(s, shuffledItems.length, placements);
   };
 
   const colClass = categories.length <= 2 ? 'grid-cols-2' : categories.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4';
