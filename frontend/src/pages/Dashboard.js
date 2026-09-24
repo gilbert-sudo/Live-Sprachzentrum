@@ -223,7 +223,36 @@ export default function Dashboard() {
 
 
         {/* Homework Banner */}
-        {pinnedHomeworks.length > 0 ? (
+        {isTeacher ? (
+          <section className="mb-8 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+            {/* Abstract Background Blobs */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+            
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs mb-3 border border-primary/20 backdrop-blur-md">
+                <span className="material-symbols-outlined text-[16px]">school</span>
+                Espace Professeur
+              </div>
+              <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">Gestion des Devoirs</h4>
+              <p className="text-on-surface-variant text-sm md:text-base max-w-lg font-medium leading-relaxed">
+                Créez de nouveaux exercices, suivez la progression de vos élèves et gérez l'ensemble des travaux de vos classes.
+              </p>
+            </div>
+            
+            {/* Action Area */}
+            <div className="relative z-10 shrink-0 w-full md:w-auto flex flex-col items-center">
+              <div className="w-24 h-24 mb-4 flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+                <span className="material-symbols-outlined text-[48px] text-primary drop-shadow-sm" style={{ fontVariationSettings: "'FILL' 1" }}>add_task</span>
+              </div>
+              <Link to="/homework" className="w-full md:w-auto px-6 py-3 rounded-xl text-sm bg-germany-black dark:bg-white text-white dark:text-germany-black font-bold flex items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                <span>Créer / Gérer les devoirs</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </Link>
+            </div>
+          </section>
+        ) : pinnedHomeworks.length > 0 ? (
           <section className="mb-8 bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
             <div className="flex-1">
               <div className="flex items-center justify-between mb-4">
@@ -258,7 +287,7 @@ export default function Dashboard() {
               <div className="mt-5 pt-5 border-t border-surface-variant">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-label-sm text-label-sm text-secondary">
-                    {isTeacher ? "Ziel: Alle Schüler antworten" : "Ziel: Alle Hausaufgaben erledigen"}
+                    Ziel: Alle Hausaufgaben erledigen
                   </span>
                   {homeworkProgress === 100 && totalHomeworks > 0 && (
                     <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
@@ -271,7 +300,7 @@ export default function Dashboard() {
             </div>
             
             <Link to="/homework" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
-              {isTeacher ? "Aufgaben verwalten" : "Zu den Hausaufgaben"}
+              Zu den Hausaufgaben
               <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </Link>
           </section>

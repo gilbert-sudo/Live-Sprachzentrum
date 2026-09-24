@@ -313,7 +313,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
       {/* Modal for New Homework */}
       {isFormOpen && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white dark:bg-[#18181B] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-2xl w-full max-w-sm animate-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Nouveau Devoir</h3>
