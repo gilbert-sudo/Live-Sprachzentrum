@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchHomeworks, addHomework, deleteHomework } from '../store/homeworkSlice';
+import { fetchClassrooms } from '../store/classroomsSlice';
 import HomeworkExercise from '../pages/HomeworkExercise';
 import HomeworkScoresModal from './exercises/HomeworkScoresModal';
 
 export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const { user } = useSelector((state) => state.auth);
   const { homeworks, status } = useSelector((state) => state.homework);
+  const { classrooms } = useSelector((state) => state.classrooms);
   const dispatch = useDispatch();
   const role = user?.role || 'student';
   const isLoading = status === 'loading';
@@ -18,16 +20,20 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState(`Exercice du ${new Date().toLocaleDateString('fr-FR')}`);
   const [description, setDescription] = useState('');
-  const [scope, setScope] = useState('room');
-  const level = roomId ? roomId.split('-')[1] : 'A1';
+  const [scope, setScope] = useState(roomId ? 'room' : 'level');
+  const [selectedRoomId, setSelectedRoomId] = useState(roomId || '');
+  const [selectedLevel, setSelectedLevel] = useState(roomId ? roomId.split('-')[1] : 'A1');
   const [exercisesData, setExercisesData] = useState(null);
   const [jsonFileName, setJsonFileName] = useState('');
   const [scoresModalData, setScoresModalData] = useState(null);
 
   useEffect(() => {
     loadHomeworks();
+    if (role === 'teacher' || role === 'admin') {
+      dispatch(fetchClassrooms());
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId]);
+  }, [roomId, role]);
 
   useEffect(() => {
     if (socket) {
@@ -47,7 +53,8 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   };
 
   const loadHomeworks = () => {
-    dispatch(fetchHomeworks({ roomId, level }));
+    const fetchLevel = roomId ? roomId.split('-')[1] : 'A1';
+    dispatch(fetchHomeworks({ roomId, level: fetchLevel }));
   };
 
   const handleSubmit = async (e) => {
@@ -59,8 +66,8 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
         title,
         description,
         dueDate: new Date().toISOString(), // Automatically set to today
-        roomId: scope === 'room' ? roomId : null,
-        level: scope === 'level' ? level : null,
+        roomId: scope === 'room' ? selectedRoomId : null,
+        level: scope === 'level' ? selectedLevel : null,
         exercises: exercisesData || []
       };
 
@@ -139,7 +146,12 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
         <HomeworkExercise 
           id={activeExerciseId} 
           reviewScore={activeReviewScore}
-          onClose={() => { setActiveExerciseId(null); setActiveReviewScore(null); }} 
+          onClose={() => { 
+            setActiveExerciseId(null); 
+            setActiveReviewScore(null); 
+            loadHomeworks();
+            notifyUpdate();
+          }} 
           isStandalonePage={isStandalonePage} 
         />
       ) : (
@@ -176,24 +188,22 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
             <p className="text-xs text-gray-400 mt-1">Vous êtes à jour.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5 p-2">
             {homeworks.map((hw) => {
               const studentScore = role === 'student' ? hw.scores?.find(s => s.studentId === user._id) : null;
-              const isDone = !!studentScore;
+              const completedExercisesCount = studentScore?.answers ? studentScore.answers.filter(a => a !== null).length : 0;
               const hasExercises = hw.exercises && hw.exercises.length > 0;
+              const scorableCount = hw.exercises?.filter(e => ['fill-in-the-blanks','matching','multiple-choice','true-false','categorization','ordering','crossword','text-marking','transformation'].includes(e.type)).length || 0;
+              const isFullyDone = hasExercises && scorableCount > 0 && completedExercisesCount >= scorableCount;
+              const isStarted = completedExercisesCount > 0;
               return (
-              <div key={hw._id} className="bg-white dark:bg-[#18181B] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+              <div key={hw._id} className="bg-white dark:bg-[#202024] border border-gray-200 dark:border-gray-700/60 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 transition-all relative overflow-hidden">
                 
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2 pr-24">
+                <h4 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-2 pr-24">
                   {hw.isPinned && (
-                    <span className="material-symbols-outlined icon-filled text-orange-400 text-[14px]" title="Épinglé">push_pin</span>
+                    <span className="material-symbols-outlined icon-filled text-orange-400 text-[16px]" title="Épinglé">push_pin</span>
                   )}
                   {hw.title}
-                  {!hasExercises && (
-                    <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 uppercase tracking-wider">
-                      Leçon
-                    </span>
-                  )}
                 </h4>
                 
                 <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed mb-4">
@@ -210,20 +220,20 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                              cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"
                              className="text-indigo-500 transition-all duration-1000"
                              strokeDasharray={2 * Math.PI * 20}
-                             strokeDashoffset={(2 * Math.PI * 20) - ((isDone ? 1 : 0) * (2 * Math.PI * 20))}
+                             strokeDashoffset={(2 * Math.PI * 20) - ((hasExercises ? completedExercisesCount / hw.exercises.length : 0) * (2 * Math.PI * 20))}
                            />
                          </svg>
                          <div className="absolute inset-0 flex items-center justify-center">
                            <span className="text-[11px] font-black text-gray-700 dark:text-gray-300">
-                             {isDone ? hw.exercises.length : 0}/{hw.exercises.length}
+                             {completedExercisesCount}/{hw.exercises.length}
                            </span>
                          </div>
                        </div>
                        <div className="flex-1 text-center sm:text-left">
                          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Exercices terminés</p>
-                         {isDone ? (
+                         {isStarted ? (
                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                             Score : <strong style={{ color: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' }}>{studentScore.percentage}%</strong> ({studentScore.score}/{studentScore.total})
+                             {isFullyDone ? 'Score : ' : 'En cours - Score : '}<strong style={{ color: studentScore.percentage >= 80 ? '#10b981' : studentScore.percentage >= 50 ? '#f59e0b' : '#ef4444' }}>{studentScore.percentage}%</strong> ({studentScore.score}/{studentScore.total})
                            </p>
                          ) : (
                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Non commencé</p>
@@ -232,16 +242,16 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                      </div>
                      <button 
                        onClick={() => setActiveExerciseId(hw._id)}
-                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isDone ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors hover:shadow-md ${isFullyDone ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                      >
-                       <span className="material-symbols-outlined text-[18px]">{isDone ? 'done_all' : 'menu_book'}</span>
-                       {isDone ? 'Revoir mes réponses' : "Faire l'exercice"}
+                       <span className="material-symbols-outlined text-[18px]">{isFullyDone ? 'done_all' : 'menu_book'}</span>
+                       {isFullyDone ? 'Revoir mes réponses' : isStarted ? "Continuer l'exercice" : "Faire l'exercice"}
                      </button>
                   </div>
                 )}
                 
                 {/* Footer with badges and actions on the bottom right */}
-                <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-3">
+                <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-700/60 pt-4 mt-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     {hw.dueDate && (
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400">
@@ -257,8 +267,8 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
                       <span className="material-symbols-outlined text-[12px]">group</span>
                       {hw.roomId ? 'Classe' : `Niveau ${hw.level}`}
                     </span>
-                    {isDone && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-50 text-green-700 border border-green-200 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400 absolute top-4 right-4">
+                    {isFullyDone && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-50 text-green-700 border border-green-200 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400 absolute top-4 right-4">right-4">
                         <span className="material-symbols-outlined text-[12px]">check_circle</span>
                         Fait
                       </span>
@@ -337,14 +347,42 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
 
               <div>
                 <label className="block text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">Audience</label>
-                <select 
-                  value={scope}
-                  onChange={(e) => setScope(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-[#27272A] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all appearance-none"
-                >
-                  <option value="room">Cette classe uniquement</option>
-                  <option value="level">Tout le niveau ({level})</option>
-                </select>
+                <div className="flex gap-2">
+                  <select 
+                    value={scope}
+                    onChange={(e) => setScope(e.target.value)}
+                    className="w-1/3 bg-gray-50 dark:bg-[#27272A] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all appearance-none"
+                  >
+                    <option value="room">Une classe</option>
+                    <option value="level">Un niveau complet</option>
+                  </select>
+                  
+                  {scope === 'room' ? (
+                    <select
+                      value={selectedRoomId}
+                      onChange={(e) => setSelectedRoomId(e.target.value)}
+                      className="w-2/3 bg-gray-50 dark:bg-[#27272A] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all appearance-none"
+                    >
+                      {roomId && !classrooms?.find(c => c.roomId === roomId) && (
+                         <option value={roomId}>Cette classe ({roomId})</option>
+                      )}
+                      {!roomId && <option value="" disabled>Sélectionner une classe</option>}
+                      {classrooms?.map(c => (
+                        <option key={c._id} value={c.roomId}>{c.name} ({c.roomId})</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <select
+                      value={selectedLevel}
+                      onChange={(e) => setSelectedLevel(e.target.value)}
+                      className="w-2/3 bg-gray-50 dark:bg-[#27272A] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all appearance-none"
+                    >
+                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(l => (
+                        <option key={l} value={l}>Niveau {l}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               </div>
 
               <div>

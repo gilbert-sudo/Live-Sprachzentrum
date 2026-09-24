@@ -53,10 +53,45 @@ export default function HomeworkExercise(props) {
   }, [exerciseId, user]);
 
   // Called by each exercise when student clicks "Antworten prüfen"
-  const handleExerciseScored = useCallback((index, score, total, userAnswers) => {
+  const handleExerciseScored = async (index, score, total, userAnswers) => {
     scoresRef.current[index] = { score, total, userAnswers };
-    setCheckedCount(Object.keys(scoresRef.current).length);
-  }, []);
+    const newCheckedCount = Object.keys(scoresRef.current).length;
+    setCheckedCount(newCheckedCount);
+
+    if (!isStudent) return;
+    
+    // Recalculate aggregated score immediately for accurate saving
+    const currentAggregatedScore = Object.values(scoresRef.current).reduce(
+      (acc, val) => ({ score: acc.score + val.score, total: acc.total + val.total }),
+      { score: 0, total: 0 }
+    );
+
+    const prevScore = studentSubmission?.score || 0;
+    const prevTotal = studentSubmission?.total || 0;
+    const combinedTotal = prevTotal + currentAggregatedScore.total;
+    const combinedScore = prevScore + currentAggregatedScore.score;
+    const percentage = combinedTotal > 0 ? Math.round((combinedScore / combinedTotal) * 100) : 0;
+    
+    const answers = homework.exercises.map((_, idx) => {
+      if (scoresRef.current[idx]?.userAnswers) return scoresRef.current[idx].userAnswers;
+      if (studentSubmission?.answers && studentSubmission.answers[idx]) return studentSubmission.answers[idx];
+      return null;
+    });
+
+    try {
+      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
+      await axios.post(`/api/homework/${exerciseId}/score`, { score: combinedScore, total: combinedTotal, percentage, answers }, config);
+      
+      const prevCheckedCount = studentSubmission?.answers ? studentSubmission.answers.filter(a => a !== null).length : 0;
+      const effectiveCount = prevCheckedCount + newCheckedCount;
+      if (effectiveCount >= scorableExercises && scorableExercises > 0) {
+        setFinalScore({ score: combinedScore, total: combinedTotal });
+        setShowResultModal(true);
+      }
+    } catch (err) {
+      console.error('Failed to auto-save score', err);
+    }
+  };
 
   const totalExercises = homework?.exercises?.length || 0;
   const scorableExercises = homework?.exercises?.filter(e =>
@@ -70,34 +105,14 @@ export default function HomeworkExercise(props) {
   );
 
   // Circular progress: based on how many scoreable exercises have been checked
-  const effectiveCheckedCount = savedAnswers ? scorableExercises : checkedCount;
+  const previouslyCheckedCount = studentSubmission?.answers ? studentSubmission.answers.filter(a => a !== null).length : 0;
+  const effectiveCheckedCount = previouslyCheckedCount + checkedCount;
   const ringProgress = scorableExercises > 0 ? effectiveCheckedCount / scorableExercises : 0;
   const radius = 32;
   const circumference = 2 * Math.PI * radius;
   const ringOffset = circumference - ringProgress * circumference;
   const ringPct = scorableExercises > 0 ? Math.round(ringProgress * 100) : 0;
   const allChecked = effectiveCheckedCount >= scorableExercises && scorableExercises > 0;
-
-  const handleSubmitScore = async () => {
-    if (!isStudent) return;
-    const total = aggregatedScore.total;
-    const score = aggregatedScore.score;
-    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-    const answers = homework.exercises.map((_, idx) => scoresRef.current[idx]?.userAnswers || null);
-
-    setFinalScore({ score, total });
-    setShowResultModal(true);
-    setIsSubmittingScore(true);
-
-    try {
-      const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
-      await axios.post(`/api/homework/${exerciseId}/score`, { score, total, percentage, answers }, config);
-    } catch (err) {
-      console.error('Failed to submit score', err);
-    } finally {
-      setIsSubmittingScore(false);
-    }
-  };
 
   // ── Teacher edit handlers ─────────────────────────────────────────
   const handleDeleteBlock = (indexToDelete) => {
@@ -210,8 +225,8 @@ export default function HomeworkExercise(props) {
             </div>
           )}
 
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-full bg-primary/10 text-primary">
-            <span className="material-symbols-outlined text-[13px]">menu_book</span>
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-bold px-4 py-2 rounded-full bg-gradient-to-r from-primary to-indigo-500 text-white shadow-md shadow-primary/30">
+            <span className="material-symbols-outlined text-[16px]">menu_book</span>
             Mode Exercice
           </span>
         </div>
@@ -226,7 +241,7 @@ export default function HomeworkExercise(props) {
             canEdit={canEdit}
             onDeleteBlock={handleDeleteBlock}
             onUpdateBlock={handleUpdateBlock}
-            onExerciseScored={isStudent && !savedAnswers ? handleExerciseScored : undefined}
+            onExerciseScored={isStudent ? handleExerciseScored : undefined}
           />
         ) : (
           <div className="max-w-3xl mx-auto px-4">
@@ -245,26 +260,7 @@ export default function HomeworkExercise(props) {
       <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-3xl mx-auto px-4 pb-6 flex items-center justify-center gap-3 pointer-events-auto">
 
-          {/* Student: Submit score */}
-          {isStudent && hasExercises && scorableExercises > 0 && !savedAnswers && (
-            <button
-              onClick={handleSubmitScore}
-              disabled={!allChecked}
-              className={`flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm shadow-xl transition-all ${
-                allChecked
-                  ? 'bg-primary text-on-primary hover:bg-surface-tint hover:shadow-2xl hover:-translate-y-1 active:scale-95'
-                  : 'bg-surface-variant/50 text-secondary cursor-not-allowed'
-              }`}
-            >
-              <span className="material-symbols-outlined icon-filled text-[18px]">
-                {allChecked ? 'send' : 'lock'}
-              </span>
-              {allChecked
-                ? `Score soumettre · ${aggregatedScore.score}/${aggregatedScore.total}`
-                : `Vérifiez tous les exercices (${checkedCount}/${scorableExercises})`
-              }
-            </button>
-          )}
+          {/* Student auto-saves, no button needed */}
 
           {/* Teacher: Save changes */}
           {canEdit && isEdited && (

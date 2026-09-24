@@ -222,58 +222,99 @@ export default function Dashboard() {
 
 
 
-        {/* Homework Banner (Styled as Lesson Card) */}
-        <section className="mb-8 bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
-                Devoirs / Hausaufgaben
-              </span>
-              <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">Übungsaufgaben</span>
-            </div>
-            
-            <div className="flex gap-4 items-center">
-              {/* Circular Progress Indicator */}
-              <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <path className="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4"></path>
-                  <path className="text-germany-red" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray={`${homeworkProgress}, 100`} strokeLinecap="round" strokeWidth="4"></path>
-                </svg>
-                <span className="absolute font-label-md text-label-md text-on-surface">{homeworkProgress}%</span>
+        {/* Homework Banner */}
+        {pinnedHomeworks.length > 0 ? (
+          <section className="mb-8 bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-0.5 transition-transform duration-200">
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-4">
+                <span className="inline-block px-3 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm rounded-full">
+                  Devoirs / Hausaufgaben
+                </span>
+                <span className="md:hidden font-label-md text-label-md text-on-surface font-bold">Übungsaufgaben</span>
               </div>
               
-              <div>
-                <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">Übungsaufgaben</h3>
-                <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">
-                  {pinnedHomeworks.length} {pinnedHomeworks.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
-                </p>
-                <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight">
-                  {pinnedHomeworks.length > 0 ? pinnedHomeworks[0].title : "Alle Übungen anzeigen"}
-                </p>
+              <div className="flex gap-4 items-center">
+                {/* Circular Progress Indicator */}
+                <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path className="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4"></path>
+                    <path className="text-germany-red" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray={`${homeworkProgress}, 100`} strokeLinecap="round" strokeWidth="4"></path>
+                  </svg>
+                  <span className="absolute font-label-md text-label-md text-on-surface">{homeworkProgress}%</span>
+                </div>
+                
+                <div>
+                  <h3 className="hidden md:block font-title-lg text-title-lg text-on-surface mb-1">Übungsaufgaben</h3>
+                  <p className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-0.5">
+                    {pinnedHomeworks.length} {pinnedHomeworks.length === 1 ? 'Aufgabe' : 'Aufgaben'} verfügbar
+                  </p>
+                  <p className="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-medium leading-tight">
+                    {pinnedHomeworks.length > 0 ? pinnedHomeworks[0].title : "Alle Übungen anzeigen"}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Homework Goal */}
+              <div className="mt-5 pt-5 border-t border-surface-variant">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-label-sm text-label-sm text-secondary">
+                    {isTeacher ? "Ziel: Alle Schüler antworten" : "Ziel: Alle Hausaufgaben erledigen"}
+                  </span>
+                  {homeworkProgress === 100 && totalHomeworks > 0 && (
+                    <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
+                  )}
+                </div>
+                <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+                  <div className="bg-success-green h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${homeworkProgress}%` }}></div>
+                </div>
               </div>
             </div>
             
-            {/* Homework Goal */}
-            <div className="mt-5 pt-5 border-t border-surface-variant">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-label-sm text-label-sm text-secondary">
-                  {isTeacher ? "Ziel: Alle Schüler antworten" : "Ziel: Alle Hausaufgaben erledigen"}
-                </span>
-                {homeworkProgress === 100 && totalHomeworks > 0 && (
-                  <span className="material-symbols-outlined text-success-green text-[18px]">verified</span>
-                )}
+            <Link to="/homework" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
+              {isTeacher ? "Aufgaben verwalten" : "Zu den Hausaufgaben"}
+              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </Link>
+          </section>
+        ) : (
+          <section className="mb-8 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+            {/* Abstract Background Blobs */}
+            <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-germany-gold/20 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 md:w-56 md:h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4 dark:bg-germany-red/20"></div>
+            <div className="absolute top-1/2 left-1/2 w-24 h-24 md:w-32 md:h-32 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl md:blur-3xl opacity-50 animate-pulse -translate-x-1/2 -translate-y-1/2"></div>
+            
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left flex-1 order-2 md:order-1 w-full">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success-green/10 text-success-green font-bold text-[10px] md:text-xs mb-2 md:mb-3 border border-success-green/20 backdrop-blur-md">
+                <span className="material-symbols-outlined text-[14px] md:text-[16px]">celebration</span>
+                Alles erledigt!
               </div>
-              <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
-                <div className="bg-success-green h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${homeworkProgress}%` }}></div>
+              <h4 className="text-xl md:text-3xl font-black text-on-surface mb-1.5 md:mb-2 tracking-tight">Keine Aufgaben</h4>
+              <p className="text-on-surface-variant text-xs md:text-base max-w-md font-medium leading-relaxed mb-4 md:mb-0">
+                Du bist auf dem neuesten Stand! Nutze die Zeit, um in der <span className="text-germany-red font-bold">Bibliothek</span> zu stöbern.
+              </p>
+              
+              <Link to="/bibliothek" className="w-full md:w-auto mt-0 md:mt-5 px-5 py-2.5 rounded-xl text-xs md:text-sm bg-germany-black dark:bg-white text-white dark:text-germany-black font-bold flex items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                <span className="material-symbols-outlined text-[16px] md:text-[18px]">local_library</span>
+                Zur Bibliothek
+              </Link>
+            </div>
+            
+            {/* Graphic / Icon Area */}
+            <div className="relative z-10 shrink-0 w-24 h-24 md:w-48 md:h-48 flex items-center justify-center order-1 md:order-2 mb-2 md:mb-0">
+              <div className="absolute inset-0 bg-gradient-to-tr from-germany-red/20 to-germany-gold/20 rounded-full animate-[spin_15s_linear_infinite]"></div>
+              <div className="absolute inset-2 md:inset-3 bg-surface rounded-full shadow-inner flex items-center justify-center border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+                <span className="material-symbols-outlined text-[40px] md:text-[80px] text-germany-gold drop-shadow-md" style={{ fontVariationSettings: "'FILL' 1" }}>task_alt</span>
+              </div>
+              {/* Floating badges */}
+              <div className="absolute -top-1 -right-1 md:top-2 md:right-2 w-7 h-7 md:w-10 md:h-10 bg-surface rounded-lg md:rounded-xl shadow-lg border border-surface-variant flex items-center justify-center animate-[bounce_3s_infinite]">
+                <span className="material-symbols-outlined text-success-green text-[14px] md:text-[20px]">mood</span>
+              </div>
+              <div className="absolute -bottom-1 -left-1 md:bottom-6 md:left-0 w-6 h-6 md:w-8 md:h-8 bg-surface rounded-full shadow-lg border border-surface-variant flex items-center justify-center animate-[bounce_4s_infinite] delay-1000">
+                <span className="material-symbols-outlined text-germany-red text-[12px] md:text-[16px]">star</span>
               </div>
             </div>
-          </div>
-          
-          <Link to="/homework" className="w-full md:w-auto shrink-0 bg-germany-black dark:bg-white text-white dark:text-germany-black font-label-md text-label-md py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group">
-            {isTeacher ? "Aufgaben verwalten" : "Zu den Hausaufgaben"}
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-          </Link>
-        </section>
+          </section>
+        )}
 
         {/* Action Center & Stats (Horizontal Scroll on Mobile) */}
         <section>
