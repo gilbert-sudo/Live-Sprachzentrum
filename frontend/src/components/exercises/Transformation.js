@@ -37,6 +37,11 @@ const Transformation = ({ index, exercise, savedAnswers, onScoreReport }) => {
               disabled={isSubmitted}
               value={answers[idx] || ''}
               onChange={(e) => setAnswers(prev => ({ ...prev, [idx]: e.target.value }))}
+              onBlur={() => {
+                if (!isSubmitted && onScoreReport) {
+                  onScoreReport(0, 0, answers);
+                }
+              }}
               rows={2}
               className="w-full bg-surface-variant/20 border border-surface-variant/40 rounded-lg px-4 py-3 text-body-md text-on-surface focus:outline-none focus:border-primary focus:bg-surface-variant/40 resize-none placeholder:text-secondary/50 transition-colors"
               placeholder="Ihre Antwort …"

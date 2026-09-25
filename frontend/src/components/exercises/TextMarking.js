@@ -15,15 +15,28 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
     let m;
     const re = /\{([^:]+):([^}]+)\}/g;
     let uId = 0;
+
+    const processText = (str) => {
+      const wordRegex = /([a-zA-ZäöüÄÖÜß0-9-]+)|([^a-zA-ZäöüÄÖÜß0-9-]+)/g;
+      let wm;
+      while ((wm = wordRegex.exec(str)) !== null) {
+        if (wm[1]) {
+          p.push({ type: 'distractor', content: wm[1], uid: `d_${uId++}` });
+        } else {
+          p.push({ type: 'text', content: wm[2] });
+        }
+      }
+    };
+
     while ((m = re.exec(text)) !== null) {
       if (m.index > last) {
-        p.push({ type: 'text', content: text.substring(last, m.index) });
+        processText(text.substring(last, m.index));
       }
-      p.push({ type: 'target', id: m[1], content: m[2], uid: String(uId++) });
+      p.push({ type: 'target', id: m[1], content: m[2], uid: `t_${uId++}` });
       last = re.lastIndex;
     }
     if (last < text.length) {
-      p.push({ type: 'text', content: text.substring(last) });
+      processText(text.substring(last));
     }
     return p;
   }, [text]);
@@ -97,13 +110,17 @@ const TextMarking = ({ index, exercise, savedAnswers, onScoreReport }) => {
             } else {
               const isMarked = markedUids.has(part.uid);
               
-              let cls = "cursor-pointer px-1 py-0.5 rounded transition-colors duration-150 ";
+              let cls = "cursor-pointer px-[2px] rounded transition-colors duration-150 ";
               if (isSubmitted) {
-                if (isMarked) cls += "bg-success-green/20 text-success-green font-bold underline decoration-success-green/50";
-                else cls += "bg-error/20 text-error font-bold underline decoration-error/50";
+                if (part.type === 'target') {
+                  if (isMarked) cls += "bg-success-green/20 text-success-green font-bold underline decoration-success-green/50";
+                  else cls += "bg-error/20 text-error font-bold underline decoration-error/50";
+                } else {
+                  if (isMarked) cls += "bg-error/20 text-error line-through";
+                }
               } else {
-                if (isMarked) cls += "bg-primary/20 text-primary font-bold underline decoration-primary/50";
-                else cls += "hover:bg-surface-variant/30";
+                if (isMarked) cls += "bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold underline decoration-indigo-500/50";
+                else cls += "hover:bg-surface-variant/40";
               }
 
               return (
