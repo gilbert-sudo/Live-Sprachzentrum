@@ -115,12 +115,46 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
       score={isSubmitted ? correctCells : undefined}
       total={isSubmitted ? totalCells : undefined}
     >
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="flex flex-col gap-6 items-start w-full">
+
+        {/* ── Clue List ────────────────────────────────────────────── */}
+        <div className="space-y-4 text-xs min-w-0 w-full">
+          {clues.some(c => c.direction === 'across') && (
+            <div>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
+                Waagerecht
+              </h4>
+              <ul className="space-y-2 text-secondary">
+                {clues.filter(c => c.direction === 'across').sort((a, b) => a.number - b.number).map(c => (
+                  <li key={c.number} className="leading-snug">
+                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
+                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {clues.some(c => c.direction === 'down') && (
+            <div>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
+                Senkrecht
+              </h4>
+              <ul className="space-y-2 text-secondary">
+                {clues.filter(c => c.direction === 'down').sort((a, b) => a.number - b.number).map(c => (
+                  <li key={c.number} className="leading-snug">
+                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
+                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
 
         {/* ── Grid ────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto shrink-0 w-full lg:w-auto">
+        <div className="overflow-x-auto shrink-0 w-full">
           <div
-            className="relative bg-stone-200 dark:bg-stone-800 rounded-xl p-2 sm:p-3 border border-surface-variant/40 inline-block min-w-full lg:min-w-0"
+            className="relative bg-stone-200 dark:bg-stone-800 rounded-xl p-2 sm:p-3 border border-surface-variant/40 inline-block min-w-full"
             style={{ lineHeight: 0 }}
           >
             {grid.map((row, rIdx) => (
@@ -186,40 +220,6 @@ const Crossword = ({ index, exercise, savedAnswers, onScoreReport }) => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* ── Clue List ────────────────────────────────────────────── */}
-        <div className="flex-1 space-y-4 text-xs min-w-0 w-full">
-          {clues.some(c => c.direction === 'across') && (
-            <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
-                Waagerecht
-              </h4>
-              <ul className="space-y-2 text-secondary">
-                {clues.filter(c => c.direction === 'across').sort((a, b) => a.number - b.number).map(c => (
-                  <li key={c.number} className="leading-snug">
-                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
-                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {clues.some(c => c.direction === 'down') && (
-            <div>
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-3 border-b border-surface-variant/40 pb-2">
-                Senkrecht
-              </h4>
-              <ul className="space-y-2 text-secondary">
-                {clues.filter(c => c.direction === 'down').sort((a, b) => a.number - b.number).map(c => (
-                  <li key={c.number} className="leading-snug">
-                    <strong className="text-on-surface">{c.number}.</strong> {c.clue}
-                    <span className="ml-1 text-secondary/50 text-[10px]">({c.answer.length})</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
 
       </div>

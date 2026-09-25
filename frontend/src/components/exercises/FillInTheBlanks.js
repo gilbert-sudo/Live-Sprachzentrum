@@ -11,7 +11,7 @@ const chipV = {
 };
 
 /* ─── DraggableChip ──────────────────────────────────────────────── */
-const DraggableChip = ({ word, onDragStart, onDragEnd, isDragging, disabled }) => (
+const DraggableChip = ({ word, onDragStart, onDragEnd, isDragging, isSelected, onClick, disabled }) => (
   <motion.span
     layout
     variants={chipV}
@@ -19,10 +19,11 @@ const DraggableChip = ({ word, onDragStart, onDragEnd, isDragging, disabled }) =
     animate="visible"
     exit="exit"
     draggable={!disabled}
+    onClick={() => onClick && onClick(word)}
     onDragStart={() => onDragStart(word)}
     onDragEnd={onDragEnd}
     style={{ opacity: isDragging ? 0.3 : 1 }}
-    className="inline-flex items-center gap-1.5 select-none bg-surface border border-surface-variant/40 px-3 py-1.5 rounded-lg text-sm font-medium text-on-surface shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/50 hover:shadow transition-all duration-150"
+    className={`inline-flex items-center gap-1.5 select-none touch-none bg-surface border px-3 py-1.5 rounded-lg text-sm font-medium text-on-surface shadow-sm cursor-grab active:cursor-grabbing transition-all duration-150 ${isSelected ? 'border-indigo-500 bg-indigo-500/10 ring-2 ring-indigo-500/30' : 'border-surface-variant/40 hover:border-primary/50 hover:shadow'}`}
   >
     {!disabled && <GripHorizontal className="w-4 h-4 text-secondary/50 shrink-0" />}
     {word}
@@ -30,15 +31,15 @@ const DraggableChip = ({ word, onDragStart, onDragEnd, isDragging, disabled }) =
 );
 
 /* ─── BlankSlot ──────────────────────────────────────────────────── */
-const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, isSubmitted, isCorrect, isWrong, correctAnswer }) => {
+const BlankSlot = ({ filled, isOver, isSelectedTarget, onDragOver, onDragLeave, onDrop, onClear, onClick, isSubmitted, isCorrect, isWrong, correctAnswer }) => {
   const base = 'inline-flex items-center justify-center gap-1.5 mx-1 align-middle min-w-[110px] min-h-[36px] px-3 py-1 rounded-lg border-2 border-dashed text-sm font-medium transition-all duration-150';
 
   if (filled) {
     const cls = isSubmitted
       ? isCorrect ? 'bg-success-green/20 border-success-green/50 text-success-green font-bold' : 'bg-error/20 border-error/50 text-error font-bold'
-      : 'bg-primary/20 border-primary text-on-surface font-bold';
+      : 'bg-primary/20 border-primary text-on-surface font-bold cursor-pointer hover:bg-primary/30';
     return (
-      <motion.span layout animate={{ scale: 1 }} className={`${base} ${cls}`}>
+      <motion.span layout animate={{ scale: 1 }} className={`${base} ${cls}`} onClick={onClick}>
         <span>{filled}</span>
         {isSubmitted && isCorrect && <CheckCircle2 className="w-3 h-3 text-green-500 shrink-0" />}
         {isSubmitted && isWrong  && (
@@ -48,7 +49,7 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
           </>
         )}
         {!isSubmitted && (
-          <button onClick={onClear} className="text-secondary hover:text-error font-bold leading-none ml-auto text-sm transition-colors">×</button>
+          <button onClick={(e) => { e.stopPropagation(); onClear(); }} className="text-secondary hover:text-error font-bold leading-none ml-auto text-sm transition-colors">×</button>
         )}
       </motion.span>
     );
@@ -57,15 +58,16 @@ const BlankSlot = ({ filled, isOver, onDragOver, onDragLeave, onDrop, onClear, i
   return (
     <motion.span
       layout
-      animate={isOver ? { scale: 1.06 } : { scale: 1 }}
+      animate={isOver || isSelectedTarget ? { scale: 1.06 } : { scale: 1 }}
       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      className={`${base} cursor-default ${isOver ? 'border-primary bg-primary/20 shadow-inner shadow-primary/20' : 'border-surface-variant/40 bg-surface-variant/20 shadow-inner'}`}
+      onClick={onClick}
+      className={`${base} ${isSubmitted ? 'cursor-default' : 'cursor-pointer hover:border-indigo-500/50'} ${(isOver || isSelectedTarget) ? 'border-indigo-500 bg-indigo-500/10 shadow-inner shadow-indigo-500/20' : 'border-surface-variant/40 bg-surface-variant/20 shadow-inner'}`}
     >
-      {isOver
-        ? <span className="text-primary text-xs font-bold">Ablegen</span>
+      {(isOver || isSelectedTarget)
+        ? <span className="text-indigo-600 dark:text-indigo-400 text-xs font-bold">Ablegen</span>
         : <span className="text-secondary/40 text-[10px] uppercase font-bold tracking-wider">Lücke</span>
       }
     </motion.span>
@@ -79,10 +81,11 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const [placements, setPlacements] = useState(savedAnswers || {});
   const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
   const [overBlank, setOverBlank]     = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
   const draggingWord = useRef(null);
 
   /* drag handlers */
-  const handleDragStart = (word) => { draggingWord.current = word; };
+  const handleDragStart = (word) => { draggingWord.current = word; setSelectedWord(null); };
   const handleDragEnd   = ()    => { draggingWord.current = null; setOverBlank(null); };
   const makeDragOver    = (id)  => (e) => { e.preventDefault(); setOverBlank(id); };
   const handleLeave     = ()    => setOverBlank(null);
@@ -103,6 +106,20 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
       return next;
     });
     setOverBlank(null); draggingWord.current = null;
+  };
+
+  /* click handlers */
+  const handleChipClick = (word) => {
+    if (isSubmitted) return;
+    setSelectedWord(prev => prev === word ? null : word);
+  };
+
+  const handleBlankClick = (blankIndex) => {
+    if (isSubmitted) return;
+    if (selectedWord) {
+      setPlacements(prev => ({ ...prev, [blankIndex]: selectedWord }));
+      setSelectedWord(null);
+    }
   };
 
   const clearBlank = (blankIndex) => {
@@ -157,7 +174,7 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
             onDragLeave={handleLeave}
             onDrop={handleDropOnBank}
             className={`min-h-[44px] flex flex-wrap gap-2 p-3 rounded-xl border-2 border-dashed transition-colors duration-150 ${
-              overBlank === 'bank' ? 'border-primary bg-primary/10' : 'border-surface-variant/40 bg-surface-variant/20'
+              overBlank === 'bank' ? 'border-indigo-500 bg-indigo-500/10' : 'border-surface-variant/40 bg-surface-variant/20'
             }`}
           >
             <AnimatePresence>
@@ -166,6 +183,8 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
                   key={word + idx}
                   word={word}
                   isDragging={draggingWord.current === word}
+                  isSelected={selectedWord === word}
+                  onClick={handleChipClick}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   disabled={isSubmitted}
@@ -197,10 +216,12 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
                   key={idx}
                   filled={filled}
                   isOver={overBlank === blankIndex}
+                  isSelectedTarget={!!selectedWord && !filled}
                   onDragOver={makeDragOver(blankIndex)}
                   onDragLeave={handleLeave}
                   onDrop={handleDropOnBlank(blankIndex)}
                   onClear={() => clearBlank(blankIndex)}
+                  onClick={() => handleBlankClick(blankIndex)}
                   isSubmitted={isSubmitted}
                   isCorrect={isCorrect}
                   isWrong={isWrong}

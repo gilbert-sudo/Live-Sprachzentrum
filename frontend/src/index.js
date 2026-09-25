@@ -6,6 +6,15 @@ import reportWebVitals from './reportWebVitals';
 import './i18n';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { polyfill } from "mobile-drag-drop";
+import { scrollBehaviourDragImageTranslateOverride } from "mobile-drag-drop/scroll-behaviour";
+import "mobile-drag-drop/default.css";
+
+polyfill({
+  dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride
+});
+
+window.addEventListener('touchmove', function() {}, {passive: false});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

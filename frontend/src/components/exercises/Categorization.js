@@ -10,7 +10,7 @@ const chipV = {
 };
 
 /* ─── WordChip ───────────────────────────────────────────────────── */
-const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }) => {
+const WordChip = ({ item, isDragging, isSelected, onClick, onDragStart, onDragEnd, disabled, status }) => {
   const colorMap = {
     correct: 'bg-success-green/20 border-success-green/50 text-success-green font-bold',
     wrong:   'bg-error/20 border-error/50 text-error font-bold',
@@ -24,10 +24,16 @@ const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }
       animate="visible"
       exit="exit"
       draggable={!disabled && status === 'default'}
+      onClick={(e) => {
+        if (onClick) {
+          e.stopPropagation();
+          onClick(item.id);
+        }
+      }}
       onDragStart={() => onDragStart(item.id)}
       onDragEnd={onDragEnd}
       style={{ opacity: isDragging ? 0.35 : 1 }}
-      className={`select-none px-3 py-1.5 rounded-lg border text-sm font-medium shadow-sm transition-colors duration-150 ${colorMap[status] ?? colorMap.default}`}
+      className={`select-none touch-none px-3 py-1.5 rounded-lg border text-sm font-medium shadow-sm transition-colors duration-150 ${isSelected ? 'border-indigo-500 bg-indigo-500/10 ring-2 ring-indigo-500/30' : (colorMap[status] ?? colorMap.default)}`}
     >
       {item.word}
       {status === 'wrong' && (
@@ -38,20 +44,21 @@ const WordChip = ({ item, isDragging, onDragStart, onDragEnd, disabled, status }
 };
 
 /* ─── DropBucket ─────────────────────────────────────────────────── */
-const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onReturn, isSubmitted }) => (
+const DropBucket = ({ cat, items, isOver, isSelectedTarget, onDragOver, onDragLeave, onDrop, onReturn, onClick, onChipClick, selectedId, isSubmitted }) => (
   <motion.div
-    animate={isOver ? { scale: 1.02 } : { scale: 1 }}
+    animate={isOver || isSelectedTarget ? { scale: 1.02 } : { scale: 1 }}
     transition={{ type: 'spring', stiffness: 400, damping: 20 }}
     onDragOver={onDragOver}
     onDragLeave={onDragLeave}
     onDrop={onDrop}
-    className={`rounded-xl border-2 border-dashed flex flex-col overflow-hidden transition-colors duration-150 ${
-      isOver ? 'border-primary bg-primary/20 shadow shadow-primary/30' : 'border-surface-variant/40 bg-surface-variant/10'
+    onClick={onClick}
+    className={`rounded-xl border-2 border-dashed flex flex-col overflow-hidden transition-colors duration-150 ${isSubmitted ? 'cursor-default' : 'cursor-pointer hover:border-indigo-500/50'} ${
+      (isOver || isSelectedTarget) ? 'border-indigo-500 bg-indigo-500/10 shadow shadow-indigo-500/20' : 'border-surface-variant/40 bg-surface-variant/10'
     }`}
   >
     {/* bucket header */}
     <div className={`px-3 py-2 text-sm font-bold tracking-wide text-center border-b transition-colors ${
-      isOver ? 'bg-primary/20 text-primary border-primary/30' : 'bg-surface-variant/20 text-secondary border-surface-variant/40'
+      (isOver || isSelectedTarget) ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30' : 'bg-surface-variant/20 text-secondary border-surface-variant/40'
     }`}>
       {cat}
       <span className="ml-1 font-normal opacity-70 text-xs">({items.length})</span>
@@ -63,10 +70,10 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
           const isCorrect = isSubmitted && item.category === cat;
           return (
             <div key={item.id} className="flex items-center gap-1">
-              <WordChip item={item} isDragging={false} onDragStart={() => {}} onDragEnd={() => {}}
+              <WordChip item={item} isDragging={false} isSelected={selectedId === item.id} onClick={onChipClick} onDragStart={() => {}} onDragEnd={() => {}}
                 disabled={isSubmitted} status={isSubmitted ? (isCorrect ? 'correct' : 'wrong') : 'default'} />
               {!isSubmitted && (
-                <button onClick={() => onReturn(item.id)}
+                <button onClick={(e) => { e.stopPropagation(); onReturn(item.id); }}
                   className="text-secondary hover:text-error transition-colors text-base leading-none font-bold ml-auto">
                   ×
                 </button>
@@ -76,8 +83,8 @@ const DropBucket = ({ cat, items, isOver, onDragOver, onDragLeave, onDrop, onRet
         })}
       </AnimatePresence>
       {items.length === 0 && (
-        <p className={`m-auto text-xs italic ${isOver ? 'text-primary' : 'text-secondary/50'}`}>
-          {isOver ? 'Hier ablegen' : 'Wörter hierher ziehen'}
+        <p className={`m-auto text-xs italic ${(isOver || isSelectedTarget) ? 'text-indigo-600 dark:text-indigo-400' : 'text-secondary/50'}`}>
+          {(isOver || isSelectedTarget) ? 'Hier ablegen' : 'Wörter hierher ziehen'}
         </p>
       )}
     </div>
@@ -92,6 +99,7 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
   const [placements, setPlacements]       = useState(savedAnswers || {});
   const [isSubmitted, setIsSubmitted]     = useState(!!savedAnswers);
   const [overZone, setOverZone]           = useState(null);
+  const [selectedId, setSelectedId]       = useState(null);
   const draggingId = useRef(null);
 
   useEffect(() => {
@@ -101,7 +109,7 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
   }, [items]);
 
   /* drag handlers */
-  const handleDragStart = (id) => { draggingId.current = id; };
+  const handleDragStart = (id) => { draggingId.current = id; setSelectedId(null); };
   const handleDragEnd   = ()   => { draggingId.current = null; setOverZone(null); };
   const makeDragOver    = (zone) => (e) => { e.preventDefault(); setOverZone(zone); };
   const handleDragLeave = () => setOverZone(null);
@@ -118,6 +126,20 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
     if (draggingId.current == null || isSubmitted) return;
     setPlacements(prev => { const n = { ...prev }; delete n[draggingId.current]; return n; });
     setOverZone(null); draggingId.current = null;
+  };
+
+  /* click handlers */
+  const handleChipClick = (id) => {
+    if (isSubmitted) return;
+    setSelectedId(prev => prev === id ? null : id);
+  };
+
+  const handleBucketClick = (cat) => {
+    if (isSubmitted) return;
+    if (selectedId != null) {
+      setPlacements(prev => ({ ...prev, [selectedId]: cat }));
+      setSelectedId(null);
+    }
   };
 
   const returnToPool = (id) => {
@@ -162,12 +184,13 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
           onDragLeave={handleDragLeave}
           onDrop={handleDropOnPool}
           className={`min-h-[48px] p-3 rounded-xl border-2 border-dashed flex flex-wrap gap-2 transition-colors duration-150 ${
-            overZone === 'pool' ? 'border-primary bg-primary/10' : 'border-surface-variant/40 bg-surface-variant/20'
+            overZone === 'pool' ? 'border-indigo-500 bg-indigo-500/10' : 'border-surface-variant/40 bg-surface-variant/20'
           }`}
         >
           <AnimatePresence>
             {unplaced.map(item => (
               <WordChip key={item.id} item={item} isDragging={draggingId.current === item.id}
+                isSelected={selectedId === item.id} onClick={handleChipClick}
                 onDragStart={handleDragStart} onDragEnd={handleDragEnd} disabled={isSubmitted} status="default" />
             ))}
           </AnimatePresence>
@@ -187,10 +210,14 @@ const Categorization = ({ index, exercise, savedAnswers, onScoreReport }) => {
             cat={cat}
             items={shuffledItems.filter(it => placements[it.id] === cat)}
             isOver={overZone === cat}
+            isSelectedTarget={selectedId != null}
             onDragOver={makeDragOver(cat)}
             onDragLeave={handleDragLeave}
             onDrop={handleDropOnCategory(cat)}
             onReturn={returnToPool}
+            onClick={() => handleBucketClick(cat)}
+            onChipClick={handleChipClick}
+            selectedId={selectedId}
             isSubmitted={isSubmitted}
           />
         ))}
