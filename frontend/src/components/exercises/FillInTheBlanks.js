@@ -99,13 +99,8 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
 
   const handleDropOnBank = (e) => {
     e.preventDefault();
-    if (!draggingWord.current || isSubmitted) return;
-    setPlacements(prev => {
-      const next = { ...prev };
-      Object.keys(next).forEach(k => { if (next[k] === draggingWord.current) delete next[k]; });
-      return next;
-    });
-    setOverBlank(null); draggingWord.current = null;
+    setOverBlank(null);
+    draggingWord.current = null;
   };
 
   /* click handlers */
@@ -128,8 +123,22 @@ const FillInTheBlanks = ({ index, exercise, savedAnswers, onScoreReport }) => {
   };
 
   const hasDnD      = wordBank && wordBank.length > 0;
-  const usedWords   = new Set(Object.values(placements));
-  const poolWords   = hasDnD ? wordBank.filter(w => !usedWords.has(w)) : [];
+  
+  const poolWords = [];
+  if (hasDnD) {
+    const usedCounts = {};
+    Object.values(placements).forEach(w => {
+      usedCounts[w] = (usedCounts[w] || 0) + 1;
+    });
+
+    wordBank.forEach(w => {
+      if (usedCounts[w] > 0) {
+        usedCounts[w]--;
+      } else {
+        poolWords.push(w);
+      }
+    });
+  }
   const totalBlanks = Object.keys(answers).length;
   const allFilled   = Object.keys(placements).length === totalBlanks;
 
