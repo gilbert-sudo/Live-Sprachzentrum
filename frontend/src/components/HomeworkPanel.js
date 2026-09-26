@@ -22,7 +22,7 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState(roomId ? 'room' : 'level');
   const [selectedRoomId, setSelectedRoomId] = useState(roomId || '');
-  const [selectedLevel, setSelectedLevel] = useState(roomId ? roomId.split('-')[1] : 'A1');
+  const [selectedLevel, setSelectedLevel] = useState((roomId && roomId.includes('-')) ? roomId.split('-')[1] : 'A1');
   const [exercisesData, setExercisesData] = useState(null);
   const [jsonFileName, setJsonFileName] = useState('');
   const [scoresModalData, setScoresModalData] = useState(null);
@@ -53,7 +53,14 @@ export default function HomeworkPanel({ roomId, socket, isStandalonePage }) {
   };
 
   const loadHomeworks = () => {
-    const fetchLevel = roomId ? roomId.split('-')[1] : 'A1';
+    let fetchLevel;
+    if (roomId) {
+      fetchLevel = roomId.split('-')[1];
+    } else if (role === 'student' && user?.level) {
+      fetchLevel = user.level;
+    } else {
+      fetchLevel = null;
+    }
     dispatch(fetchHomeworks({ roomId, level: fetchLevel }));
   };
 

@@ -27,6 +27,10 @@ const getHomeworks = async (req, res) => {
       query.isPinned = true;
     }
 
+    if (req.user && (req.user.role === 'teacher' || req.user.role === 'admin')) {
+      query.teacherId = req.user._id;
+    }
+
     const homeworks = await Homework.find(query).sort({ createdAt: -1 });
     res.json(homeworks);
   } catch (err) {
