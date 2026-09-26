@@ -41,6 +41,15 @@ export const deleteHomework = createAsyncThunk('homework/delete', async (id, { g
   }
 });
 
+export const updateHomework = createAsyncThunk('homework/update', async ({ id, payload }, { getState, rejectWithValue }) => {
+  try {
+    const { data } = await axios.put(`${API_URL}/${id}/details`, payload, getAuthHeaders(getState));
+    return data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to update homework');
+  }
+});
+
 const homeworkSlice = createSlice({
   name: 'homework',
   initialState: {
@@ -64,6 +73,12 @@ const homeworkSlice = createSlice({
       })
       .addCase(addHomework.fulfilled, (state, action) => {
         state.homeworks.push(action.payload);
+      })
+      .addCase(updateHomework.fulfilled, (state, action) => {
+        const index = state.homeworks.findIndex(h => h._id === action.payload._id);
+        if (index !== -1) {
+          state.homeworks[index] = action.payload;
+        }
       })
       .addCase(deleteHomework.fulfilled, (state, action) => {
         state.homeworks = state.homeworks.filter(h => h._id !== action.payload);
