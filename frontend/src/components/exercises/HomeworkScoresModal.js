@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homeworkTitle, onViewStudent }) {
   const { user } = useSelector(state => state.auth);
   const [scores, setScores] = useState([]);
+  const [totalExercises, setTotalExercises] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,6 +23,7 @@ export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homew
         const config = user?.token ? { headers: { Authorization: `Bearer ${user.token}` } } : {};
         const res = await axios.get(`/api/homework/${homeworkId}/scores`, config);
         setScores(res.data.scores || []);
+        setTotalExercises(res.data.totalExercises || 0);
       } catch (err) {
         setError('Impossible de charger les scores.');
       } finally {
@@ -44,17 +46,30 @@ export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homew
   };
 
   // Mini circular ring for each student
-  const MiniRing = ({ pct }) => {
+  const MiniRing = ({ s, totalExercises }) => {
+    const completedExercisesCount = s.answers ? s.answers.filter(a => a !== null).length : 0;
+    const isFullyDone = totalExercises > 0 && completedExercisesCount >= totalExercises;
+    const hasExercises = totalExercises > 0;
+
     const r = 16;
     const circ = 2 * Math.PI * r;
-    const off = circ - (pct / 100) * circ;
-    const color = pct >= 90 ? '#10b981' : pct >= 70 ? '#3b82f6' : pct >= 50 ? '#f59e0b' : '#ef4444';
+    const ratio = hasExercises ? (completedExercisesCount / totalExercises) : 0;
+    const off = circ - ratio * circ;
+
     return (
-      <svg width="40" height="40" viewBox="0 0 40 40" className="-rotate-90">
-        <circle cx="20" cy="20" r={r} fill="none" stroke="#e5e7eb" strokeWidth="4" />
-        <circle cx="20" cy="20" r={r} fill="none" stroke={color} strokeWidth="4"
-          strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={off} />
-      </svg>
+      <div className="relative shrink-0 w-10 h-10">
+        <svg width="40" height="40" viewBox="0 0 40 40" className="-rotate-90">
+          <circle cx="20" cy="20" r={r} fill="none" stroke="currentColor" strokeWidth="4" className="text-gray-200 dark:text-white/10" />
+          <circle cx="20" cy="20" r={r} fill="none" stroke="currentColor" strokeWidth="4"
+            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={off} 
+            className={`${isFullyDone ? 'text-green-500' : 'text-gray-900 dark:text-white'} transition-all duration-1000`} />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-[10px] font-black text-gray-800 dark:text-gray-200">
+            {completedExercisesCount}/{totalExercises}
+          </span>
+        </div>
+      </div>
     );
   };
 
@@ -94,7 +109,7 @@ export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homew
             </div>
 
             {/* Body */}
-            <div className="p-4 max-h-[60vh] overflow-y-auto">
+            <div className="p-4 max-h-[60vh] overflow-y-auto hide-scrollbar" data-lenis-prevent>
               {loading && (
                 <div className="flex justify-center py-10">
                   <div className="w-6 h-6 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin" />
@@ -144,12 +159,7 @@ export default function HomeworkScoresModal({ isOpen, onClose, homeworkId, homew
                       className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/60 rounded-2xl px-4 py-3"
                     >
                       {/* Mini ring */}
-                      <div className="relative shrink-0">
-                        <MiniRing pct={s.percentage || 0} />
-                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-black rotate-90" style={{ color: '#6b7280' }}>
-                          {s.percentage || 0}
-                        </span>
-                      </div>
+                      <MiniRing s={s} totalExercises={totalExercises} />
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">

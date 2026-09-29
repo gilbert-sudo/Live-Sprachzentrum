@@ -211,7 +211,7 @@ const submitScore = async (req, res) => {
 // @access  Private/Teacher
 const getScores = async (req, res) => {
   try {
-    const homework = await Homework.findById(req.params.id).select('scores title');
+    const homework = await Homework.findById(req.params.id).select('scores title exercises');
 
     if (!homework) {
       return res.status(404).json({ message: 'Devoir non trouvé' });
@@ -222,7 +222,9 @@ const getScores = async (req, res) => {
       (a, b) => new Date(b.completedAt) - new Date(a.completedAt)
     );
 
-    res.json({ title: homework.title, scores: sorted });
+    const totalExercises = homework.exercises ? homework.exercises.length : 0;
+
+    res.json({ title: homework.title, scores: sorted, totalExercises });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
