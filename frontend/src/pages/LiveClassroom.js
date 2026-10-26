@@ -53,6 +53,193 @@ function LiveClassroom() {
   // Live Classroom UI state
   const [activePanel, setActivePanel] = useState('none');
 
+  // Helper to compute initial position: left-center of the screen
+  const getInitialToolbarPos = () => {
+    if (typeof window === 'undefined') return { x: 16, y: 220 };
+    const estimatedHeight = 420;
+    const centerY = Math.max(20, Math.round((window.innerHeight - estimatedHeight) / 2));
+    return { x: 16, y: centerY };
+  };
+
+  // Draggable and Minimizable Toolbar State
+  const [toolbarPos, setToolbarPos] = useState(() => {
+    try {
+      const saved = localStorage.getItem('lsz_classroom_toolbar_pos');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return getInitialToolbarPos();
+  });
+
+  const [isToolbarMinimized, setIsToolbarMinimized] = useState(() => {
+    try {
+      return localStorage.getItem('lsz_classroom_toolbar_minimized') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const [isDraggingToolbar, setIsDraggingToolbar] = useState(false);
+  const toolbarRef = useRef(null);
+  const dragDataRef = useRef({
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    initialPosX: 0,
+    initialPosY: 0,
+    hasMoved: false,
+  });
+
+  // Default initial position on mount (left-center of screen)
+  useEffect(() => {
+    if (!toolbarPos && typeof window !== 'undefined') {
+      setToolbarPos(getInitialToolbarPos());
+    }
+  }, [toolbarPos]);
+
+  // Keep toolbar inside screen bounds on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setToolbarPos((prev) => {
+        if (!prev) return prev;
+        const rect = toolbarRef.current?.getBoundingClientRect();
+        const width = rect?.width || 60;
+        const height = rect?.height || 360;
+        const maxX = Math.max(8, window.innerWidth - width - 8);
+        const maxY = Math.max(8, window.innerHeight - height - 8);
+        const clampedX = Math.min(Math.max(8, prev.x), maxX);
+        const clampedY = Math.min(Math.max(8, prev.y), maxY);
+        if (clampedX !== prev.x || clampedY !== prev.y) {
+          return { x: clampedX, y: clampedY };
+        }
+        return prev;
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handlePointerDown = (e) => {
+    // If clicking an interactive button inside toolbar, do not initiate drag
+    if (e.target.closest('button[data-no-drag="true"]')) {
+      return;
+    }
+    // Only primary button
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+    const rect = toolbarRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    dragDataRef.current = {
+      isDragging: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      initialPosX: rect.left,
+      initialPosY: rect.top,
+      hasMoved: false,
+    };
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
+
+    setIsDraggingToolbar(true);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragDataRef.current.isDragging) return;
+
+    const dx = e.clientX - dragDataRef.current.startX;
+    const dy = e.clientY - dragDataRef.current.startY;
+
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      dragDataRef.current.hasMoved = true;
+    }
+
+    const rect = toolbarRef.current?.getBoundingClientRect();
+    const width = rect?.width || 60;
+    const height = rect?.height || 360;
+
+    const maxX = Math.max(8, window.innerWidth - width - 8);
+    const maxY = Math.max(8, window.innerHeight - height - 8);
+
+    const newX = Math.min(Math.max(8, dragDataRef.current.initialPosX + dx), maxX);
+    const newY = Math.min(Math.max(8, dragDataRef.current.initialPosY + dy), maxY);
+
+    setToolbarPos({ x: newX, y: newY });
+  };
+
+  const handlePointerUp = (e) => {
+    if (!dragDataRef.current.isDragging) return;
+
+    dragDataRef.current.isDragging = false;
+    setIsDraggingToolbar(false);
+
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
+    setToolbarPos((current) => {
+      if (current) {
+        try {
+          localStorage.setItem('lsz_classroom_toolbar_pos', JSON.stringify(current));
+        } catch (err) {}
+      }
+      return current;
+    });
+  };
+
+  const toggleMinimize = () => {
+    setIsToolbarMinimized((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('lsz_classroom_toolbar_minimized', String(next));
+      } catch (err) {}
+
+      // If opening back up, ensure it fits vertically within viewport
+      if (!next) {
+        setToolbarPos((pos) => {
+          if (!pos) return pos;
+          const expandedHeight = 440;
+          const expandedWidth = 70;
+          const maxX = Math.max(8, window.innerWidth - expandedWidth - 8);
+          const maxY = Math.max(8, window.innerHeight - expandedHeight - 8);
+          return {
+            x: Math.min(Math.max(8, pos.x), maxX),
+            y: Math.min(Math.max(8, pos.y), maxY),
+          };
+        });
+      }
+      return next;
+    });
+  };
+
+  const handleMinimizedPointerUp = (e) => {
+    const moved = dragDataRef.current.hasMoved;
+    handlePointerUp(e);
+    if (!moved) {
+      toggleMinimize();
+    }
+  };
+
+  const handleResetToolbar = () => {
+    try {
+      localStorage.removeItem('lsz_classroom_toolbar_pos');
+      localStorage.removeItem('lsz_classroom_toolbar_minimized');
+    } catch (e) {}
+
+    setToolbarPos(getInitialToolbarPos());
+    setIsToolbarMinimized(false);
+  };
+
+  const isRightSide = (toolbarPos?.x || 0) > ((typeof window !== 'undefined' ? window.innerWidth : 1000) / 2);
+  const tooltipPositionClass = isRightSide ? 'right-full mr-3' : 'left-full ml-3';
+
   // eBook state removed, using Bibliothek directly
 
   // Fetch JaaS token/session configuration on mount
@@ -230,6 +417,9 @@ function LiveClassroom() {
               disableModeratorIndicator: false,
               enableEmailInStats: false,
               prejoinPageEnabled: false,
+              fileSharing: {
+                enabled: true
+              },
               toolbarButtons: (role === 'teacher' || role === 'admin') ? [
                 'camera',
                 'chat',
@@ -313,143 +503,269 @@ function LiveClassroom() {
         </div>
       )}
 
-      {/* Floating Toolbar Menu (Bottom Left) */}
-      {/* Floating Toolbar Menu (Bottom Left) */}
+      {/* Draggable & Minimizable Floating Classroom Toolbar */}
       {isJoined && (
-        <div className="absolute left-2 lg:left-4 bottom-[80px] lg:bottom-28 z-20 flex flex-row lg:flex-col gap-2 lg:gap-3 pointer-events-auto transition-all duration-300">
-          <div className="bg-gray-900/85 backdrop-blur-xl border border-gray-700/80 p-1.5 lg:p-2 rounded-2xl shadow-2xl flex flex-row lg:flex-col items-center gap-1.5 lg:gap-2">
+        <>
+          {/* Transparent full-screen overlay during drag to prevent iframe from capturing pointer events */}
+          {isDraggingToolbar && (
+            <div className="fixed inset-0 z-[190] cursor-grabbing select-none bg-transparent" />
+          )}
 
-          {/* Invite Student Toggle (Teacher/Admin only) */}
-          {(role === 'teacher' || role === 'admin') && (
-            <button
-              onClick={() => {
-                const link = `${window.location.origin}/room/${roomId}`;
-                navigator.clipboard.writeText(link);
-                setLinkCopied(true);
-                setTimeout(() => setLinkCopied(false), 3000);
+          {isToolbarMinimized ? (
+            /* ================= MINIMIZED STATE ================= */
+            <div
+              ref={toolbarRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handleMinimizedPointerUp}
+              onPointerCancel={handlePointerUp}
+              style={{
+                position: 'fixed',
+                left: `${toolbarPos?.x ?? 16}px`,
+                top: `${toolbarPos?.y ?? 180}px`,
+                touchAction: 'none',
+                userSelect: 'none',
               }}
-              className="group relative p-2 lg:p-3 rounded-xl text-emerald-400 hover:text-white hover:bg-emerald-600/80 transition-all duration-200 flex items-center justify-center"
-              aria-label="Inviter un étudiant"
-            >
-              <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'person_add'}</span>
-              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-                {linkCopied ? "Lien copié!" : "Copier le lien d'invitation"}
-              </span>
-            </button>
-          )}
-
-          {/* Whiteboard Toggle (Teacher/Admin only) */}
-          {(role === 'teacher' || role === 'admin') && (
-            <button
-              onClick={toggleWhiteboard}
-              className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${
-                isWhiteboardActive
-                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+              className={`fixed z-[200] group cursor-grab active:cursor-grabbing select-none transition-transform duration-200 ${
+                isDraggingToolbar ? 'scale-105 opacity-95' : 'hover:scale-105 active:scale-95'
               }`}
-              aria-label="Basculer le tableau blanc"
+              title="Barre d'outils réduite • Cliquer pour agrandir • Glisser pour déplacer"
+              role="button"
+              aria-label="Agrandir la barre d'outils"
             >
-              <span className="material-symbols-outlined text-xl">
-                draw
-              </span>
-              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-                Basculer le tableau blanc
-              </span>
-            </button>
-          )}
+              {/* High-visibility glowing container */}
+              <div className="relative flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-gray-950/95 backdrop-blur-2xl border-2 border-primary/90 shadow-[0_0_25px_rgba(235,0,0,0.55),0_10px_30px_rgba(0,0,0,0.85)] text-white ring-1 ring-white/20">
+                {/* Glowing beacon dot */}
+                <div className="relative flex items-center justify-center">
+                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-yellow-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-400"></span>
+                </div>
 
-          {/* Screen Share Toggle (Teacher/Admin only) */}
-          {(role === 'teacher' || role === 'admin') && (
-            <button
-              onClick={toggleShareScreen}
-              className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
-              aria-label="Partager l'écran"
-            >
-              <span className="material-symbols-outlined text-xl">present_to_all</span>
-              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-                Partager l'écran
-              </span>
-            </button>
-          )}
+                {/* Themed Icon */}
+                <div className="w-7 h-7 rounded-lg bg-primary/25 border border-primary/40 flex items-center justify-center text-primary-light group-hover:bg-primary group-hover:text-white transition-colors duration-200 shadow-sm">
+                  <span className="material-symbols-outlined text-[18px]">widgets</span>
+                </div>
 
-          {(role === 'teacher' || role === 'admin') && (
-            <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
-          )}
+                {/* Text and Expand arrow */}
+                <div className="flex flex-col text-left pr-1">
+                  <span className="text-[11px] font-bold text-white tracking-wide flex items-center gap-1 leading-tight">
+                    Outils
+                    <span className="material-symbols-outlined text-[14px] text-yellow-400 group-hover:translate-x-0.5 transition-transform">unfold_more</span>
+                  </span>
+                  <span className="text-[9px] text-gray-400 font-medium leading-none">Déplaçable</span>
+                </div>
 
-          {/* Homework Toggle Button */}
-          <button
-            onClick={() => setActivePanel(activePanel === 'homework' ? 'none' : 'homework')}
-            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${activePanel === 'homework'
-                ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+                {/* Drag Handle Grip Icon */}
+                <div className="pl-0.5 text-gray-500 group-hover:text-gray-300 transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">drag_indicator</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* ================= EXPANDED STATE ================= */
+            <div
+              ref={toolbarRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              style={{
+                position: 'fixed',
+                left: `${toolbarPos?.x ?? 16}px`,
+                top: `${toolbarPos?.y ?? 120}px`,
+                touchAction: 'none',
+                userSelect: 'none',
+              }}
+              className={`fixed z-[200] flex flex-col gap-1 pointer-events-auto transition-shadow duration-200 ${
+                isDraggingToolbar ? 'shadow-[0_0_35px_rgba(0,0,0,0.85)] opacity-95 scale-[1.02]' : ''
               }`}
-            aria-label="Devoirs"
-          >
-            <span className="material-symbols-outlined text-xl">
-              {activePanel === 'homework' ? 'close' : 'assignment'}
-            </span>
-            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {activePanel === 'homework' ? 'Fermer les devoirs' : 'Ouvrir les devoirs'}
-            </span>
-          </button>
-
-          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
-
-          {/* Bibliothek Toggle Button */}
-          <button
-            onClick={() => setActivePanel(activePanel === 'bibliothek' ? 'none' : 'bibliothek')}
-            className={`group relative p-2 lg:p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${activePanel === 'bibliothek'
-                ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
-              }`}
-            aria-label="Bibliothèque"
-          >
-            <span className="material-symbols-outlined text-xl">
-              {activePanel === 'bibliothek' ? 'close' : 'local_library'}
-            </span>
-            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              {activePanel === 'bibliothek' ? 'Fermer la bibliothèque' : 'Ouvrir la bibliothèque'}
-            </span>
-          </button>
-
-          <div className="w-[1px] h-5 lg:w-6 lg:h-[1px] bg-gray-700/60 mx-1 lg:mx-0 lg:my-0.5" />
-
-          {/* Leave Call Button */}
-          <button
-            onClick={() => {
-              isSneakLeaveRef.current = true;
-              if (socket) {
-                socket.emit('sneak_leave');
-              }
-              if (jitsiApiRef.current) {
-                jitsiApiRef.current.executeCommand('hangup');
-              }
-              navigate('/campus');
-            }}
-            className="group relative p-2 lg:p-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
-            aria-label="Quitter"
-          >
-            <span className="material-symbols-outlined text-xl">logout</span>
-            <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700">
-              Quitter la salle (En cachette)
-            </span>
-          </button>
-
-          {/* End Class Button (Teacher/Admin only) */}
-          {(role === 'teacher' || role === 'admin') && (
-            <button
-              onClick={handleEndClass}
-              className="group relative p-2 lg:p-3 rounded-xl text-red-400 hover:text-white hover:bg-red-600/90 transition-all duration-200 flex items-center justify-center"
-              aria-label="Terminer"
             >
-              <span className="material-symbols-outlined text-xl">power_settings_new</span>
-              <span className="hidden lg:block absolute left-full ml-3 px-2.5 py-1 bg-red-950/95 text-red-200 text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-red-800">
-                Terminer le cours
-              </span>
-            </button>
+              <div className="bg-gray-900/90 backdrop-blur-2xl border border-gray-700/80 p-1.5 lg:p-2 rounded-2xl shadow-2xl flex flex-col items-center gap-1.5 ring-1 ring-white/10">
+                {/* Dock Control Island (Distinctive recessed capsule for window controls) */}
+                <div 
+                  className="w-full bg-gray-950/75 border border-gray-700/70 rounded-xl p-1 flex flex-col items-center gap-1 shadow-inner"
+                >
+                  {/* Modern tactile drag grip handle */}
+                  <div
+                    className="w-full flex flex-col items-center justify-center py-1 cursor-grab active:cursor-grabbing gap-[3px] group/grip"
+                    title="Glisser pour déplacer la barre"
+                  >
+                    <span className="w-4 h-[2px] rounded-full bg-gray-400/80 group-hover/grip:bg-white transition-colors" />
+                    <span className="w-2.5 h-[2px] rounded-full bg-gray-500/80 group-hover/grip:bg-white/70 transition-colors" />
+                  </div>
+
+                  {/* Compact Minimize Button (Distinct Amber Accent) */}
+                  <button
+                    data-no-drag="true"
+                    onClick={toggleMinimize}
+                    className="group/btn relative w-full h-6 rounded-lg text-amber-400/90 hover:text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/25 transition-all duration-150 flex items-center justify-center active:scale-95"
+                    aria-label="Réduire"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">close_fullscreen</span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover/btn:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                      Réduire la barre
+                    </span>
+                  </button>
+
+                  {/* Compact Reset Button (Distinct Sky Accent) */}
+                  <button
+                    data-no-drag="true"
+                    onClick={handleResetToolbar}
+                    className="group/btn relative w-full h-6 rounded-lg text-sky-400/90 hover:text-sky-300 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/25 transition-all duration-150 flex items-center justify-center active:scale-95"
+                    aria-label="Réinitialiser"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">restart_alt</span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover/btn:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                      Réinitialiser la position
+                    </span>
+                  </button>
+                </div>
+
+                {/* Refined gradient separator line */}
+                <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-gray-600/60 to-transparent my-0.5" />
+
+                {/* Invite Student Toggle (Teacher/Admin only) */}
+                {(role === 'teacher' || role === 'admin') && (
+                  <button
+                    data-no-drag="true"
+                    onClick={() => {
+                      const link = `${window.location.origin}/room/${roomId}`;
+                      navigator.clipboard.writeText(link);
+                      setLinkCopied(true);
+                      setTimeout(() => setLinkCopied(false), 3000);
+                    }}
+                    className="group relative p-2 lg:p-2.5 rounded-xl text-emerald-400 hover:text-white hover:bg-emerald-600/80 transition-all duration-200 flex items-center justify-center"
+                    aria-label="Inviter un étudiant"
+                  >
+                    <span className="material-symbols-outlined text-xl">{linkCopied ? 'check' : 'person_add'}</span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                      {linkCopied ? "Lien copié!" : "Copier le lien d'invitation"}
+                    </span>
+                  </button>
+                )}
+
+                {/* Whiteboard Toggle (Teacher/Admin only) */}
+                {(role === 'teacher' || role === 'admin') && (
+                  <button
+                    data-no-drag="true"
+                    onClick={toggleWhiteboard}
+                    className={`group relative p-2 lg:p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center ${
+                      isWhiteboardActive
+                        ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                        : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+                    }`}
+                    aria-label="Basculer le tableau blanc"
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      draw
+                    </span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                      Basculer le tableau blanc
+                    </span>
+                  </button>
+                )}
+
+                {/* Screen Share Toggle (Teacher/Admin only) */}
+                {(role === 'teacher' || role === 'admin') && (
+                  <button
+                    data-no-drag="true"
+                    onClick={toggleShareScreen}
+                    className="group relative p-2 lg:p-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+                    aria-label="Partager l'écran"
+                  >
+                    <span className="material-symbols-outlined text-xl">present_to_all</span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                      Partager l'écran
+                    </span>
+                  </button>
+                )}
+
+                {(role === 'teacher' || role === 'admin') && (
+                  <div className="w-6 h-[1px] bg-gray-700/60 my-0.5" />
+                )}
+
+                {/* Homework Toggle Button */}
+                <button
+                  data-no-drag="true"
+                  onClick={() => setActivePanel(activePanel === 'homework' ? 'none' : 'homework')}
+                  className={`group relative p-2 lg:p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center ${
+                    activePanel === 'homework'
+                      ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+                  }`}
+                  aria-label="Devoirs"
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    {activePanel === 'homework' ? 'close' : 'assignment'}
+                  </span>
+                  <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                    {activePanel === 'homework' ? 'Fermer les devoirs' : 'Ouvrir les devoirs'}
+                  </span>
+                </button>
+
+                <div className="w-6 h-[1px] bg-gray-700/60 my-0.5" />
+
+                {/* Bibliothek Toggle Button */}
+                <button
+                  data-no-drag="true"
+                  onClick={() => setActivePanel(activePanel === 'bibliothek' ? 'none' : 'bibliothek')}
+                  className={`group relative p-2 lg:p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center ${
+                    activePanel === 'bibliothek'
+                      ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
+                  }`}
+                  aria-label="Bibliothèque"
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    {activePanel === 'bibliothek' ? 'close' : 'local_library'}
+                  </span>
+                  <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                    {activePanel === 'bibliothek' ? 'Fermer la bibliothèque' : 'Ouvrir la bibliothèque'}
+                  </span>
+                </button>
+
+                <div className="w-6 h-[1px] bg-gray-700/60 my-0.5" />
+
+                {/* Leave Call Button */}
+                <button
+                  data-no-drag="true"
+                  onClick={() => {
+                    isSneakLeaveRef.current = true;
+                    if (socket) {
+                      socket.emit('sneak_leave');
+                    }
+                    if (jitsiApiRef.current) {
+                      jitsiApiRef.current.executeCommand('hangup');
+                    }
+                    navigate('/campus');
+                  }}
+                  className="group relative p-2 lg:p-2.5 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/80 transition-all duration-200 flex items-center justify-center"
+                  aria-label="Quitter"
+                >
+                  <span className="material-symbols-outlined text-xl">logout</span>
+                  <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-gray-900/95 text-white text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-gray-700 z-50`}>
+                    Quitter la salle (En cachette)
+                  </span>
+                </button>
+
+                {/* End Class Button (Teacher/Admin only) */}
+                {(role === 'teacher' || role === 'admin') && (
+                  <button
+                    data-no-drag="true"
+                    onClick={handleEndClass}
+                    className="group relative p-2 lg:p-2.5 rounded-xl text-red-400 hover:text-white hover:bg-red-600/90 transition-all duration-200 flex items-center justify-center"
+                    aria-label="Terminer"
+                  >
+                    <span className="material-symbols-outlined text-xl">power_settings_new</span>
+                    <span className={`hidden lg:block absolute ${tooltipPositionClass} px-2.5 py-1 bg-red-950/95 text-red-200 text-xs font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-lg border border-red-800 z-50`}>
+                      Terminer le cours
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
           )}
-        </div>
-      </div>
+        </>
       )}
 
       {/* Sliding Control Panel for eBook / Homework */}

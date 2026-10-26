@@ -47,6 +47,8 @@ router.post('/token', (req, res) => {
     if (jaasApiKey && privateKey) {
       const now = Math.floor(Date.now() / 1000);
 
+      const isModerator = role === 'admin' || role === 'teacher' || role === 'moderator';
+
       const payload = {
         aud: 'jitsi',
         iss: 'chat',
@@ -60,12 +62,17 @@ router.post('/token', (req, res) => {
             name: username,
             email: email || `${username.toLowerCase().replace(/\s+/g, '')}@live-sprachzentrum.de`,
             avatar: '',
-            moderator: true
+            moderator: isModerator ? 'true' : 'false'
           },
           features: {
-            recording: true,
-            livestreaming: true,
-            'screen-sharing': true
+            recording: isModerator ? 'true' : 'false',
+            livestreaming: isModerator ? 'true' : 'false',
+            transcription: isModerator ? 'true' : 'false',
+            'screen-sharing': 'true',
+            'file-upload': 'true',
+            whiteboard: 'true',
+            'create-polls': 'true',
+            'send-groupchat': 'true'
           }
         }
       };
