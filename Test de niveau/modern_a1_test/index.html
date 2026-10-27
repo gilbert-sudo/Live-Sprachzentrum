@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cornelsen DaF Einstufungstest – Niveau A1</title>
+  <meta name="description" content="Online-Einstufungstest für Deutsch als Fremdsprache (Niveau A1). 30 interaktive Aufgaben mit Lese-, Hörverstehen, Grammatik und sofortiger Auswertung.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header" id="appHeader">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-badge">DaF A1</div>
+        <div class="brand-titles">
+          <h1 class="brand-title">Einstufungstest DaF</h1>
+          <span class="brand-subtitle">Niveau A1 • Gemeinsamer Europäischer Referenzrahmen</span>
+        </div>
+      </div>
+
+      <!-- Live Test Progress Bar & Info (Visible during test) -->
+      <div class="header-test-info" id="headerTestInfo" style="display: none;">
+        <div class="test-meta-chips">
+          <span class="chip chip-counter" id="questionCounterChip">
+            <svg class="chip-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+            </svg>
+            <span id="questionCounterText">Frage 1 von 30</span>
+          </span>
+          <span class="chip chip-timer" id="testTimerChip">
+            <svg class="chip-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+            </svg>
+            <span id="timerText">00:00</span>
+          </span>
+        </div>
+
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressBarFill" style="width: 3.33%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Action Controls -->
+      <div class="header-actions">
+        <!-- Overview Grid Toggle (during test) -->
+        <button class="icon-btn" id="btnToggleDrawer" title="Fragenübersicht" style="display: none;" aria-label="Fragenübersicht">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+          <span class="btn-label-desktop">Übersicht</span>
+        </button>
+
+        <!-- Quellen / Sources Modal -->
+        <button class="icon-btn" id="btnQuellen" title="Quellen & Bildnachweise" aria-label="Quellen & Bildnachweise">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span class="btn-label-desktop">Quellen</span>
+        </button>
+
+        <!-- Dark / Light Mode Toggle -->
+        <button class="icon-btn theme-toggle" id="btnThemeToggle" title="Design wechseln (Hell/Dunkel)" aria-label="Design wechseln">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Question Drawer (Matrix of 1 to 30) -->
+  <aside class="question-drawer" id="questionDrawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Fragenübersicht (1–30)</h3>
+      <button class="icon-btn-sm" id="btnCloseDrawer" aria-label="Schließen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="drawer-legend">
+      <span class="legend-item"><span class="legend-dot dot-current"></span> Aktuell</span>
+      <span class="legend-item"><span class="legend-dot dot-answered"></span> Beantwortet</span>
+      <span class="legend-item"><span class="legend-dot dot-flagged"></span> Gemerkt</span>
+      <span class="legend-item"><span class="legend-dot dot-empty"></span> Offen</span>
+    </div>
+
+    <div class="drawer-grid" id="drawerGrid">
+      <!-- 30 items dynamically injected -->
+    </div>
+  </aside>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <!-- Main View Container -->
+  <main class="main-content" id="mainContent">
+
+    <!-- VIEW 1: WELCOME SCREEN -->
+    <section class="view-panel view-welcome active" id="viewWelcome">
+      <div class="welcome-card card-glow">
+        <div class="welcome-hero-badge">Offizieller Cornelsen Einstufungstest</div>
+        <h2 class="welcome-heading">Deutsch als Fremdsprache<br><span class="text-gradient">Niveau A1</span></h2>
+        <p class="welcome-desc">
+          Testen Sie Ihre Deutschkenntnisse auf dem Niveau A1 des Gemeinsamen Europäischen Referenzrahmens (GER). 
+          In 30 praxisnahen Aufgaben überprüfen Sie Ihr Hörverstehen, Leseverstehen, Wortschatz und Grammatik.
+        </p>
+
+        <div class="welcome-features-grid">
+          <div class="feature-item">
+            <div class="feature-icon icon-tasks">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>30 Aufgaben</strong>
+              <span>Vielfältige Aufgabentypen mit Audio & Bildern</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon icon-audio">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>Hörverstehen</strong>
+              <span>Echte Audios mit anpassbarer Geschwindigkeit</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon icon-report">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>Zertifikat & Feedback</strong>
+              <span>Persönliche Auswertung & Kursempfehlung</span>
+            </div>
+          </div>
+        </div>
+
+        <form class="welcome-form" id="welcomeForm" onsubmit="event.preventDefault(); window.startTest();">
+          <div class="form-title">Bitte geben Sie Ihren Namen ein (für Ihr Zertifikat):</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputVorname">Vorname</label>
+              <input type="text" id="inputVorname" class="form-input" placeholder="z. B. Anna" autocomplete="given-name">
+            </div>
+            <div class="form-group">
+              <label for="inputNachname">Nachname</label>
+              <input type="text" id="inputNachname" class="form-input" placeholder="z. B. Schmidt" autocomplete="family-name">
+            </div>
+          </div>
+
+          <!-- Quick Audio Check -->
+          <div class="audio-check-box">
+            <span class="audio-check-text">
+              <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              Ton-Test: Stellen Sie sicher, dass Ihre Lautsprecher oder Kopfhörer aktiv sind.
+            </span>
+            <button type="button" class="btn-secondary-sm" id="btnSoundCheck">
+              <span>Hörprobe abspielen</span>
+            </button>
+          </div>
+
+          <div class="form-action-row">
+            <button type="submit" class="btn-primary-large" id="btnStartTest">
+              <span>Einstufungstest starten</span>
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 2: ACTIVE TEST QUESTION VIEW -->
+    <section class="view-panel view-test" id="viewTest" style="display: none;">
+      <div class="test-layout-grid">
+        
+        <!-- LEFT COLUMN: MEDIA & QUESTION CONTEXT -->
+        <div class="test-col test-col-media">
+          <div class="card card-media">
+            <div class="media-card-header">
+              <div class="question-badge-group">
+                <span class="question-number-badge" id="qBadgeNumber">Frage 1</span>
+                <span class="question-category-tag" id="qBadgeCategory">Leseverstehen</span>
+              </div>
+              <div class="media-header-tools">
+                <button class="btn-tool" id="btnFlagQuestion" title="Für später merken" aria-label="Frage markieren">
+                  <svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                  </svg>
+                  <span class="tool-text">Merken</span>
+                </button>
+                <button class="btn-tool btn-tool-help" id="btnQuestionHelp" title="Hilfe zur Aufgabe" aria-label="Hilfe">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  <span class="tool-text">Hilfe</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Rubric / Instructions -->
+            <div class="rubric-box" id="qRubric">
+              <!-- Injected dynamically -->
+            </div>
+
+            <!-- Audio Player Component (if audio exists) -->
+            <div class="custom-audio-player" id="qAudioContainer" style="display: none;">
+              <div class="audio-top-row">
+                <div class="audio-info">
+                  <span class="audio-label">Audiodatei zur Aufgabe:</span>
+                  <span class="audio-name" id="audioTrackName">Hörbeispiel</span>
+                </div>
+                <div class="audio-speed-selector">
+                  <span class="speed-label">Tempo:</span>
+                  <button type="button" class="speed-btn" data-speed="0.8">0.8x</button>
+                  <button type="button" class="speed-btn active" data-speed="1.0">1.0x</button>
+                  <button type="button" class="speed-btn" data-speed="1.2">1.2x</button>
+                </div>
+              </div>
+
+              <div class="audio-controls-row">
+                <button type="button" class="audio-play-btn" id="audioPlayBtn" aria-label="Audio abspielen / pausieren">
+                  <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <svg class="pause-svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                </button>
+
+                <div class="audio-track-timeline">
+                  <input type="range" class="audio-slider" id="audioProgressSlider" min="0" max="100" value="0">
+                  <div class="audio-time-row">
+                    <span id="audioCurrentTime">0:00</span>
+                    <span id="audioDuration">0:00</span>
+                  </div>
+                </div>
+
+                <button type="button" class="audio-repeat-btn" id="audioRestartBtn" title="Von Anfang abspielen">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                </button>
+              </div>
+              <audio id="globalAudioPlayer" preload="auto"></audio>
+            </div>
+
+            <!-- Image Viewer Component -->
+            <div class="images-gallery" id="qImagesContainer">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: INTERACTIVE TASK & INPUTS -->
+        <div class="test-col test-col-task">
+          <div class="card card-task">
+            <div class="task-card-header">
+              <span class="task-header-title">Ihre Antwort:</span>
+              <span class="task-hint-chip" id="taskHintChip">Wählen Sie die passende Option</span>
+            </div>
+
+            <div class="task-interactive-area" id="qInteractiveArea">
+              <!-- Dynamically populated based on question type -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM NAVIGATION BAR -->
+      <nav class="test-bottom-nav">
+        <div class="nav-container">
+          <button type="button" class="btn-nav btn-prev" id="btnPrevQuestion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Zurück</span>
+          </button>
+
+          <div class="nav-center-info">
+            <button type="button" class="btn-matrix-quick" id="btnMatrixQuick" title="Frage wechseln">
+              <span id="navQuestionText">Frage 1 von 30</span>
+              <svg class="mini-chevron" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+
+          <button type="button" class="btn-nav btn-next" id="btnNextQuestion">
+            <span id="btnNextText">Weiter</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </section>
+
+    <!-- VIEW 3: RESULTS & CERTIFICATE SCREEN -->
+    <section class="view-panel view-result" id="viewResult" style="display: none;">
+      <div class="result-container">
+        
+        <!-- Printable Certificate Card -->
+        <div class="certificate-card card-glow" id="printableCertificate">
+          
+          <div class="cert-header">
+            <div class="cert-logo-box">
+              <div class="cert-brand-badge">Cornelsen Einstufungstest</div>
+              <h2 class="cert-main-title">Offizielles Testergebnis</h2>
+              <p class="cert-sub-title">Deutsch als Fremdsprache • Niveau A1 (GER)</p>
+            </div>
+            <div class="cert-date-box">
+              <span class="cert-date-label">Datum der Durchführung</span>
+              <span class="cert-date-value" id="certDateDisplay">27.10.2026</span>
+            </div>
+          </div>
+
+          <div class="cert-greeting-box">
+            <h3 class="cert-greeting">Sehr geehrte/r <span id="certUserName" class="highlight-name">Lerner/in</span>,</h3>
+            <p class="cert-summary-text">
+              Sie haben den Test <strong>Deutsch als Fremdsprache im Niveau A1</strong> am <strong id="certDateInline">27.10.2026</strong> durchgeführt und auf diesem Niveau ein Gesamtergebnis von <strong class="highlight-score" id="certScoreDisplay">0 %</strong> erreicht.
+            </p>
+          </div>
+
+          <!-- Score Radial & Metrics Row -->
+          <div class="cert-metrics-row">
+            <div class="radial-score-wrapper">
+              <div class="radial-score-circle">
+                <svg viewBox="0 0 120 120" class="radial-svg">
+                  <circle class="radial-bg" cx="60" cy="60" r="52"></circle>
+                  <circle class="radial-progress" id="radialScoreBar" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"></circle>
+                </svg>
+                <div class="radial-text-box">
+                  <span class="radial-number" id="radialScoreNumber">0</span>
+                  <span class="radial-percent">%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="metrics-cards-grid">
+              <div class="metric-card">
+                <span class="metric-label">Anzahl der Fragen</span>
+                <span class="metric-value">30</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Richtig gelöst</span>
+                <span class="metric-value text-success" id="metricCorrectAnswers">0 / 30</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Bearbeitungszeit</span>
+                <span class="metric-value" id="metricTimeTaken">0 min.</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Ermitteltes Niveau</span>
+                <span class="metric-value text-accent" id="metricLevelBadge">A1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Level Recommendation Banner -->
+          <div class="level-recommendation-card" id="levelRecommendationCard">
+            <div class="rec-icon-badge" id="recIconBadge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+            </div>
+            <div class="rec-content">
+              <div class="rec-headline" id="recHeadline">Empfehlung für Ihren Deutschkurs:</div>
+              <p class="rec-body-text" id="recDescription">
+                Ausgezeichnete Kenntnisse im Bereich A1.
+              </p>
+            </div>
+          </div>
+
+          <!-- Official Evaluation Table from Cornelsen -->
+          <div class="interpretation-table-wrapper">
+            <h4 class="table-title">Tabelle zur Interpretation Ihres Gesamtergebnisses (Cornelsen-Standard):</h4>
+            <table class="cert-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Prozent</th>
+                  <th style="width: 25%;">Niveau</th>
+                  <th style="width: 50%;">Empfehlung der Bildungseinrichtung</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="rowBand1">
+                  <td><strong>90 – 100 %</strong></td>
+                  <td><span class="table-badge badge-a2">A2 oder höher</span></td>
+                  <td>Ausgezeichnet! Sie haben hervorragende Kenntnisse im Bereich A1 und darüber hinausgehend. Machen Sie auf keinen Fall einen Kurs unterhalb A2. Wir empfehlen Ihnen auch noch den A2-Einstufungstest durchzuführen.</td>
+                </tr>
+                <tr id="rowBand2">
+                  <td><strong>70 – 89 %</strong></td>
+                  <td><span class="table-badge badge-a1-2">A1.2 (Aufbau)</span></td>
+                  <td>Sie haben gute bis sehr gute Kenntnisse im Bereich A1 und können einen Kurs besuchen, der vom Lernniveau A1 zum Lernniveau A2 hinführt.</td>
+                </tr>
+                <tr id="rowBand3">
+                  <td><strong>50 – 69 %</strong></td>
+                  <td><span class="table-badge badge-a1-1">A1.1 (2. Hälfte)</span></td>
+                  <td>Ihre Kenntnisse im Bereich A1 weisen ein paar Lücken auf. Wir empfehlen Ihnen den Besuch eines Kurses, der mit der zweiten Hälfte A1 beginnt.</td>
+                </tr>
+                <tr id="rowBand4">
+                  <td><strong>0 – 49 %</strong></td>
+                  <td><span class="table-badge badge-a1-start">A1 Anfänger</span></td>
+                  <td>Wir empfehlen Ihnen einen Anfängerkurs A1.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cert-footer-notes">
+            <p>Diese Empfehlung ermöglicht Ihnen, genau den Kurs zu finden, der Ihren Vorkenntnissen entspricht.</p>
+            <p><strong>Viel Erfolg beim weiteren Deutschlernen!</strong></p>
+          </div>
+        </div>
+
+        <!-- Result Screen Action Buttons -->
+        <div class="result-action-bar">
+          <button type="button" class="btn-primary" id="btnPrintCert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>Zertifikat drucken / PDF speichern</span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="btnToggleReview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="toggleReviewText">Antworten ansehen (Detailauswertung)</span>
+          </button>
+
+          <button type="button" class="btn-outline" id="btnRestartTest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span>Test wiederholen</span>
+          </button>
+        </div>
+
+        <!-- DETAILED QUESTION-BY-QUESTION REVIEW SECTION -->
+        <div class="review-section" id="reviewSection" style="display: none;">
+          <div class="review-header">
+            <h3 class="review-title">Detaillierte Aufgaben-Auswertung</h3>
+            <p class="review-subtitle">Hier können Sie jede einzelne Frage nochmals betrachten und mit der Musterlösung vergleichen.</p>
+          </div>
+          <div class="review-list" id="reviewList">
+            <!-- 30 review cards dynamically generated -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Confirmation to Finish Test -->
+  <div class="modal-backdrop" id="modalConfirmSubmit" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Test auswerten?</h3>
+        <button class="modal-close-btn" data-close-modal="modalConfirmSubmit">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="unansweredWarningBox" class="alert-box alert-warning" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <div>
+            <strong>Hinweis:</strong> Sie haben <span id="unansweredCount">0</span> von 30 Fragen noch nicht beantwortet:
+            <div class="unanswered-chips-list" id="unansweredChips"></div>
+          </div>
+        </div>
+        <p class="modal-text">
+          Sie sind am Ende des Tests angelangt. Über den Zurück-Button können Sie die Fragen nochmals betrachten bzw. Ihre Antworten bearbeiten. Klicken Sie auf <strong>Jetzt auswerten</strong>, wird Ihr Test abgeschlossen.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" data-close-modal="modalConfirmSubmit">Zurück zum Test</button>
+        <button type="button" class="btn-primary" id="btnConfirmSubmitFinal">Jetzt auswerten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Question Help -->
+  <div class="modal-backdrop" id="modalHelp" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Hilfe zur Aufgabe</h3>
+        <button class="modal-close-btn" data-close-modal="modalHelp">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="help-content-box" id="modalHelpBody">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" data-close-modal="modalHelp">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Quellenverzeichnis (Sources / Credits) -->
+  <div class="modal-backdrop" id="modalQuellen" style="display: none;">
+    <div class="modal-dialog modal-dialog-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Quellen & Bildnachweise</h3>
+        <button class="modal-close-btn" data-close-modal="modalQuellen">×</button>
+      </div>
+      <div class="modal-body">
+        <pre class="quellen-pre" id="quellenTextDisplay"></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" data-close-modal="modalQuellen">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Image Lightbox Zoom -->
+  <div class="lightbox-backdrop" id="imageLightbox" style="display: none;">
+    <button class="lightbox-close" id="btnCloseLightbox">×</button>
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="Großansicht">
+    </div>
+  </div>
+
+  <!-- Sound check audio element -->
+  <audio id="soundCheckAudio" src="media/audio_q03.mp3" preload="none"></audio>
+
+  <!-- Load Data and App Scripts -->
+  <script src="test_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
