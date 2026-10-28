@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -32,26 +32,14 @@ import LevelTestTaskRenderer, {
   evaluateLevelTest,
   getInitialSequenceOrder
 } from '../components/exercises/LevelTestTaskRenderer';
-
-const STORAGE_KEY = 'lsz_level_test_results_v1';
+import {
+  fetchMyLevelTestResults,
+  submitLevelTestResult,
+  readCachedLevelTestResults
+} from '../store/levelTestSlice';
 
 export function loadSavedLevelTestResults() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveTestResult(testId, summary) {
-  try {
-    const existing = loadSavedLevelTestResults();
-    existing[testId] = summary;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-  } catch {
-    // ignore storage quota errors
-  }
+  return readCachedLevelTestResults();
 }
 
 function formatDuration(seconds) {
@@ -95,10 +83,20 @@ const questionSlideVariants = {
 };
 
 const LevelTestPage = () => {
+  const dispatch = useDispatch();
   const { levelId: paramLevelId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { savedResults: backendSavedResults, submitting: isSubmittingTest } = useSelector(
+    (state) => state.levelTest
+  );
+
+  useEffect(() => {
+    dispatch(fetchMyLevelTestResults());
+  }, [dispatch, user]);
+
+  const savedResults = backendSavedResults || {};
 
   const queryLevel = searchParams.get('level')?.toLowerCase();
   const initialTestId =
@@ -154,7 +152,6 @@ const LevelTestPage = () => {
   const [isTimedOut, setIsTimedOut] = useState(false);
   const [timeReminderBanner, setTimeReminderBanner] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
-  const [savedResults, setSavedResults] = useState(() => loadSavedLevelTestResults());
 
   // Modals & Drawers
   const [isMatrixOpen, setIsMatrixOpen] = useState(false);
@@ -314,7 +311,7 @@ const LevelTestPage = () => {
     setReviewFilter('all');
     setStage('results');
 
-    const summary = {
+    const payload = {
       testId: currentTest.id,
       targetLevel: currentTest.targetLevel,
       prerequisiteLevel: currentTest.prerequisiteLevel,
@@ -324,10 +321,17 @@ const LevelTestPage = () => {
       recommendedLevel: result.scaleMatch?.level || '',
       badge: result.scaleMatch?.badge || '',
       timedOut: Boolean(timedOut),
+      durationSeconds: finalDuration,
+      correctCount: result.correctCount,
+      partialCount: result.partialCount,
+      wrongCount: result.wrongCount,
+      answers,
+      firstName,
+      lastName,
+      email: user?.email || '',
       completedAt: new Date().toISOString()
     };
-    saveTestResult(currentTest.id, summary);
-    setSavedResults(loadSavedLevelTestResults());
+    dispatch(submitLevelTestResult(payload));
   };
 
   // Countdown reminders & automatic test end on timeout
@@ -1436,16 +1440,456 @@ const LevelTestPage = () => {
       ? getLevelColor(LEVEL_TESTS[nextLevelTestId].targetLevel)
       : null;
 
+    // Deterministic Certificate Serial Number
+    const nameHash = fullName
+      .split('')
+      .reduce((acc, ch) => ((acc * 31 + ch.charCodeAt(0)) % 9000) + 1000, 1427);
+    const certificateId = `LSZ-${new Date().getFullYear()}-${currentTest.targetLevel.toUpperCase()}-${String(
+      nameHash
+    ).padStart(4, '0')}-${String(percentage).padStart(2, '0')}`;
+
+    // Competency Breakdown across the 3 core DaF pillars
+    const listeningItems = details.filter((d) =>
+      Boolean(
+        d.question.audio ||
+          (d.question.audios && d.question.audios.length > 0) ||
+          (d.question.audioCards && d.question.audioCards.length > 0)
+      )
+    );
+    const grammarItems = details.filter(
+      (d) =>
+        !listeningItems.includes(d) &&
+        ['inline-dropdown', 'text-gap', 'gap-match'].includes(d.question.type)
+    );
+    const readingItems = details.filter(
+      (d) => !listeningItems.includes(d) && !grammarItems.includes(d)
+    );
+
+    const buildSkillStat = (label, subtitle, items) => {
+      const total = items.length;
+      const pts = Math.round(items.reduce((sum, i) => sum + i.score, 0) * 10) / 10;
+      const pct = total > 0 ? Math.round((pts / total) * 100) : 0;
+      return { label, subtitle, total, points: pts, pct };
+    };
+
+    const skillBreakdown = [
+      buildSkillStat(
+        'Hörverstehen',
+        'Auditive Text- & Dialoganalyse',
+        listeningItems
+      ),
+      buildSkillStat(
+        'Leseverstehen & Pragmatik',
+        'Textarbeit, Kontext & Dialoge',
+        readingItems
+      ),
+      buildSkillStat(
+        'Wortschatz & Strukturen',
+        'Grammatik, Lexik & Satzbau',
+        grammarItems
+      )
+    ].filter((s) => s.total > 0);
+
+    const scaleCount = (currentTest.evaluationScale || []).length;
+
     return (
-      <div className="min-h-[calc(100vh-4rem)] pb-20">
+      <div className="min-h-[calc(100vh-4rem)] pb-20 print:min-h-0 print:pb-0 print:bg-white">
+        {/* ════════════════════════════════════════════════════════════════
+            DEDICATED A4 OFFICIAL PRINT CERTIFICATE (Only visible in Print/PDF)
+           ════════════════════════════════════════════════════════════════ */}
+        <div className="hidden print:block print-certificate-sheet bg-white text-slate-900">
+          <div className="rounded-md border border-slate-200 bg-white px-7 py-6 relative overflow-hidden space-y-4">
+            {/* Subtle Centered Watermark Emblem */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+              <svg className="w-[340px] h-[340px]" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="100" r="90" stroke="#0f172a" strokeWidth="4" strokeDasharray="6 4" />
+                <circle cx="100" cy="100" r="76" stroke="#0f172a" strokeWidth="2" />
+                <path d="M100 28 L116 74 L164 74 L125 102 L140 148 L100 120 L60 148 L75 102 L36 74 L84 74 Z" fill="#0f172a" />
+              </svg>
+            </div>
+
+            {/* 1. Official Institution Header (Sharp Document Corners) */}
+            <div className="relative z-10 flex items-center justify-between gap-4 p-4 rounded bg-slate-50">
+              <div className="flex items-center gap-3.5">
+                <img
+                  src="/logo.png"
+                  alt="Live-Sprachzentrum Logo"
+                  className="w-12 h-12 shrink-0 object-contain rounded-full bg-white p-1 shadow-sm"
+                />
+                <div>
+                  <div className="text-xl font-black tracking-tight leading-none">
+                    <span className="text-slate-950">Live</span>
+                    <span className="text-slate-400">-</span>
+                    <span style={{ color: '#D51F26' }}>Sprach</span>
+                    <span style={{ color: '#D97706' }}>zentrum</span>
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600 mt-1">
+                    Institut für Deutsch als Fremdsprache (DaF) • Online-Prüfungszentrum
+                  </p>
+                  <p className="text-[9.5px] text-slate-500 mt-0.5">
+                    Sprachstandsfeststellung nach dem Gemeinsamen Europäischen Referenzrahmen (GER / CEFR)
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-sm px-3.5 py-2.5 text-right space-y-0.5 shrink-0 shadow-sm">
+                <div className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">
+                  Zertifikats-Nr. <span className="font-mono text-slate-900 ml-1">{certificateId}</span>
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                  Ausstellungsdatum: <span className="text-slate-900 font-extrabold">{dateStr}</span>
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                  Prüfungsstufe: <span className="text-slate-900 font-extrabold">Zielkurs {currentTest.targetLevel} (Test {currentTest.prerequisiteLevel})</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Certificate Title & Candidate Attestation */}
+            <div className="relative z-10 text-center space-y-1.5 py-2.5 px-4 rounded bg-slate-50/60">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-slate-900 text-white text-[9px] font-extrabold uppercase tracking-[0.2em]">
+                <span>Offizieller Einstufungsnachweis • Deutsch als Fremdsprache</span>
+              </div>
+              <h1 className="text-2xl font-black tracking-[0.16em] uppercase text-slate-900 pt-0.5">
+                Einstufungszertifikat
+              </h1>
+              <p className="text-[11px] text-slate-600">
+                Hiermit wird offiziell bestätigt, dass
+              </p>
+              <div className="py-1">
+                <span className="inline-block text-2xl font-extrabold text-slate-950 tracking-wide px-6 py-1 rounded-sm bg-white shadow-sm capitalize">
+                  {fullName}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                am <strong className="text-slate-900">{dateStr}</strong> den standardisierten Einstufungstest{' '}
+                <strong className="text-slate-900">„{currentTest.title}“</strong> ({currentTest.subtitle}) ordnungsgemäß absolviert hat.
+              </p>
+            </div>
+
+            {/* 3. Primary Score Summary & Official Course Recommendation (2-Column Document Grid) */}
+            <div className="relative z-10 grid grid-cols-12 gap-3.5 items-stretch">
+              {/* Left: Score Gauge & Key Metrics */}
+              <div className="col-span-5 rounded bg-slate-50 p-4 flex items-center gap-3.5">
+                <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke="#e2e8f0"
+                      strokeWidth="12"
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      stroke={recommendedColor.hex || '#2563eb'}
+                      strokeWidth="12"
+                      fill="transparent"
+                      strokeDasharray={314.16}
+                      strokeDashoffset={314.16 - (314.16 * percentage) / 100}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-lg font-black text-slate-950 leading-none">
+                      {percentage}%
+                    </span>
+                    <span className="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">
+                      Gesamt
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 text-[11px] min-w-0 flex-1">
+                  <div className="text-[9px] font-black uppercase tracking-wider text-slate-500">
+                    Prüfungsergebnis
+                  </div>
+                  <div className="flex items-center justify-between px-2.5 py-1 rounded-sm bg-white">
+                    <span className="text-slate-600 font-medium">Punkte:</span>
+                    <span className="font-black text-slate-900">
+                      {totalPoints} / {maxPoints} Pkt.
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between px-2.5 py-1 rounded-sm bg-white">
+                    <span className="text-slate-600 font-medium">Dauer:</span>
+                    <span className="font-mono font-bold text-slate-900">
+                      {formatDuration(elapsedSeconds)} Min.
+                    </span>
+                  </div>
+                  <div className="text-[10px] font-semibold text-slate-600 pt-0.5">
+                    <span className="text-emerald-700 font-bold">{correctCount} richtig</span>
+                    {' • '}
+                    <span className="text-amber-700 font-bold">{partialCount} teilw.</span>
+                    {' • '}
+                    <span className="text-rose-700 font-bold">{wrongCount} falsch</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Official Course Recommendation */}
+              <div className="col-span-7 rounded bg-slate-50 p-4 flex flex-col justify-center">
+                {scaleMatch ? (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[9.5px] font-black uppercase tracking-wider text-slate-500">
+                        Offizielle Kursempfehlung (GER-Einstufung)
+                      </span>
+                      <span
+                        className="px-2.5 py-0.5 rounded-sm text-white text-[9.5px] font-extrabold whitespace-nowrap shrink-0"
+                        style={{ backgroundColor: recommendedColor.hex || '#2563eb' }}
+                      >
+                        {scaleMatch.badge} ({scaleMatch.min}–{scaleMatch.max}%)
+                      </span>
+                    </div>
+                    <h2 className="text-base font-black text-slate-950">
+                      Empfohlenes Kursniveau: {scaleMatch.level}
+                    </h2>
+                    <p className="text-[10.5px] text-slate-700 leading-relaxed">
+                      {scaleMatch.description}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {/* 4. Competency Profile by Skill Area */}
+            <div className="relative z-10 space-y-1.5">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[9.5px] font-black uppercase tracking-wider text-slate-500">
+                  Leistungsprofil nach Sprachkompetenzen
+                </span>
+                <span className="text-[9px] font-semibold text-slate-400">
+                  Aufschlüsselung der {maxPoints} Prüfungsaufgaben
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2.5">
+                {skillBreakdown.map((sk) => (
+                  <div
+                    key={sk.label}
+                    className="rounded bg-slate-50 p-3 space-y-1.5"
+                  >
+                    <div className="flex items-start justify-between gap-1">
+                      <div>
+                        <p className="text-[10.5px] font-extrabold text-slate-900 leading-tight">
+                          {sk.label}
+                        </p>
+                        <p className="text-[8.5px] text-slate-500">
+                          {sk.subtitle} ({sk.total} Aufg.)
+                        </p>
+                      </div>
+                      <span className="text-xs font-black text-slate-900 shrink-0">
+                        {sk.pct}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-sm bg-slate-200 overflow-hidden">
+                      <div
+                        className="h-full rounded-sm"
+                        style={{
+                          width: `${sk.pct}%`,
+                          backgroundColor: lvlColor.hex || '#2563eb'
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-slate-500 font-semibold">
+                      <span>Erreichte Punkte</span>
+                      <span className="font-bold text-slate-800">
+                        {sk.points} / {sk.total} Pkt.
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 5. Official GER Evaluation Scale (Sharp Document Cards & Badges) */}
+            <div className="relative z-10 space-y-1.5">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[9.5px] font-black uppercase tracking-wider text-slate-500">
+                  GER-Bewertungsskala & Einstufungsmatrix
+                </span>
+                <span className="text-[9px] font-semibold text-slate-400">
+                  Markierte Stufe entspricht Ihrem Testergebnis
+                </span>
+              </div>
+              <div
+                className={`grid gap-2 ${
+                  scaleCount === 5 ? 'grid-cols-5' : 'grid-cols-4'
+                }`}
+              >
+                {(currentTest.evaluationScale || []).map((row) => {
+                  const isActive =
+                    scaleMatch &&
+                    row.min === scaleMatch.min &&
+                    row.max === scaleMatch.max;
+                  const bandColor = getLevelColor(row.level);
+                  return (
+                    <div
+                      key={`${row.min}-${row.max}`}
+                      className={`rounded p-2.5 transition-all ${
+                        isActive
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span
+                          className={`text-[9px] font-extrabold ${
+                            isActive ? 'text-amber-300' : 'text-slate-500'
+                          }`}
+                        >
+                          {row.min}%–{row.max}%
+                        </span>
+                        {isActive && (
+                          <span
+                            className="px-1.5 py-0.5 rounded-sm text-[7.5px] font-black uppercase tracking-wider text-white whitespace-nowrap"
+                            style={{ backgroundColor: bandColor.hex || '#10b981' }}
+                          >
+                            Ihr Wert
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={`text-[10px] font-extrabold leading-tight ${
+                          isActive ? 'text-white' : 'text-slate-900'
+                        }`}
+                      >
+                        {row.level}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 6. Official Seal, Signature & Authenticity Footer */}
+            <div className="relative z-10 p-4 rounded bg-slate-50 grid grid-cols-3 items-center gap-4">
+              {/* Left: Verification Info */}
+              <div className="space-y-1 text-[9px] text-slate-600">
+                <p className="font-extrabold uppercase tracking-wider text-slate-800">
+                  Authentizität & Verifizierung
+                </p>
+                <p>
+                  Zertifikats-ID: <span className="font-mono font-bold text-slate-900">{certificateId}</span>
+                </p>
+                <p>Ausgestellt am {dateStr} • Live-Sprachzentrum</p>
+                <p className="text-[8.5px] text-slate-400">
+                  Dieses digitale Zertifikat wurde automatisch ausgewertet und ist ohne physische Unterschrift gültig.
+                </p>
+              </div>
+
+              {/* Center: Official Academic Stamp / Seal SVG */}
+              <div className="flex flex-col items-center justify-center">
+                <svg className="w-20 h-20" viewBox="0 0 140 140" fill="none">
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r="64"
+                    stroke="#b45309"
+                    strokeWidth="2.5"
+                    strokeDasharray="4 2"
+                  />
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r="56"
+                    stroke="#0f172a"
+                    strokeWidth="1.5"
+                  />
+                  <circle
+                    cx="70"
+                    cy="70"
+                    r="38"
+                    stroke="#b45309"
+                    strokeWidth="1"
+                    fill="#fef3c7"
+                    fillOpacity="0.35"
+                  />
+                  <text
+                    x="70"
+                    y="30"
+                    textAnchor="middle"
+                    fill="#0f172a"
+                    fontSize="7.5"
+                    fontWeight="800"
+                    letterSpacing="1.2"
+                  >
+                    LIVE-SPRACHZENTRUM
+                  </text>
+                  <text
+                    x="70"
+                    y="66"
+                    textAnchor="middle"
+                    fill="#b45309"
+                    fontSize="11"
+                    fontWeight="900"
+                    letterSpacing="1"
+                  >
+                    GEPRÜFT
+                  </text>
+                  <text
+                    x="70"
+                    y="79"
+                    textAnchor="middle"
+                    fill="#0f172a"
+                    fontSize="8.5"
+                    fontWeight="800"
+                  >
+                    GER • {currentTest.targetLevel}
+                  </text>
+                  <text
+                    x="70"
+                    y="115"
+                    textAnchor="middle"
+                    fill="#475569"
+                    fontSize="6.8"
+                    fontWeight="700"
+                    letterSpacing="1"
+                  >
+                    DAF EINSTUFUNGSTEST
+                  </text>
+                </svg>
+              </div>
+
+              {/* Right: Examination Board Signature */}
+              <div className="text-right space-y-1">
+                <div className="inline-block text-center bg-white px-4 py-2 rounded-sm shadow-sm">
+                  <svg className="w-32 h-8 mx-auto" viewBox="0 0 180 42" fill="none">
+                    <path
+                      d="M14 30 C28 10, 42 34, 58 18 C70 6, 78 29, 94 20 C110 11, 124 27, 146 15 C154 11, 162 19, 170 16"
+                      stroke="#1e293b"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <p className="text-[9.5px] font-extrabold text-slate-900">
+                    Prüfungskommission • Live-Sprachzentrum
+                  </p>
+                  <p className="text-[8.5px] text-slate-500">
+                    Fachbereich Deutsch als Fremdsprache (DaF)
+                  </p>
+                  <p className="text-[8px] text-slate-400 mt-0.5">
+                    Testlizenz: © Cornelsen Verlag GmbH, Berlin
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ════════════════════════════════════════════════════════════════
+            INTERACTIVE ON-SCREEN RESULTS & CERTIFICATE VIEW (Hidden in Print)
+           ════════════════════════════════════════════════════════════════ */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="max-w-5xl mx-auto px-3 sm:px-6 pt-1 sm:pt-3 space-y-5"
+          className="max-w-5xl mx-auto px-3 sm:px-6 pt-1 sm:pt-3 space-y-5 print:hidden"
         >
           {/* Top Action Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-2.5 print:hidden">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
             <button
               type="button"
               onClick={handleBackToHub}
@@ -1459,10 +1903,10 @@ const LevelTestPage = () => {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-low dark:bg-[#1E1F22] hover:bg-surface-container dark:hover:bg-[#26282E] text-on-surface text-sm font-light tracking-wide whitespace-nowrap shadow-sm transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-lowest dark:bg-[#1E1F22] hover:bg-surface-container dark:hover:bg-[#26282E] text-on-surface text-sm font-bold tracking-wide whitespace-nowrap shadow-sm transition-all"
               >
                 <Printer className={`w-4 h-4 ${lvlColor.accentText}`} />
-                <span>Drucken</span>
+                <span>Zertifikat drucken / PDF</span>
               </button>
               <button
                 type="button"
@@ -1498,19 +1942,64 @@ const LevelTestPage = () => {
             </motion.div>
           )}
 
-          {/* Borderless Certificate + Recommendation Card */}
+          {/* On-Screen Official Certificate Card (Borderless Tonal Design) */}
           <div className="relative overflow-hidden rounded-3xl bg-surface-container-lowest dark:bg-[#1E1F22] p-5 sm:p-7 shadow-[0_14px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_18px_44px_-10px_rgba(0,0,0,0.45)] space-y-5">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl bg-surface-container-low/70 dark:bg-[#26282E]">
-              <div className="space-y-1">
+            {/* Institutional Certificate Header (Tonal Pod) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-surface-container-low/65 dark:bg-[#26282E]">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo.png"
+                  alt="Live-Sprachzentrum"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-contain bg-white p-0.5 shadow-sm"
+                />
+                <div>
+                  <div className="text-sm sm:text-base font-black tracking-tight text-on-surface">
+                    <span>Live</span>-
+                    <span className="text-germany-red">Sprach</span>
+                    <span className="text-germany-gold">zentrum</span>
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                    Offizielles DaF-Prüfungszentrum • GER-Einstufungsnachweis
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                <span className="px-3 py-1 rounded-sm bg-surface-container-lowest dark:bg-[#1E1F22] font-mono font-bold text-on-surface shadow-sm">
+                  Nr. {certificateId}
+                </span>
+                <span className="px-3 py-1 rounded-sm bg-surface-container-lowest dark:bg-[#1E1F22] font-bold text-on-surface-variant shadow-sm">
+                  {dateStr}
+                </span>
+                {isSubmittingTest ? (
+                  <span className="px-3 py-1 rounded-sm bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[10px] inline-flex items-center gap-1.5 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    Wird im Backend gespeichert...
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 rounded-sm bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] inline-flex items-center gap-1.5 shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                    Im Backend synchronisiert
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Candidate & Score Showcase */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 dark:bg-[#26282E]">
+              <div className="space-y-1.5">
                 <div className={`inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider ${lvlColor.accentText}`}>
                   <Award className="w-3.5 h-3.5" />
                   <span>Auswertung & Einstufungszertifikat</span>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-extrabold font-headline text-on-surface">
+                <p className="text-[11px] text-on-surface-variant">
+                  Hiermit wird offiziell bescheinigt, dass
+                </p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold font-headline text-on-surface capitalize">
                   {fullName}
                 </h1>
                 <p className="text-xs text-on-surface-variant font-medium">
-                  {currentTest.title} ({currentTest.subtitle}) • {dateStr}
+                  den {currentTest.title} ({currentTest.subtitle}) erfolgreich absolviert hat.
                 </p>
               </div>
 
@@ -1572,13 +2061,49 @@ const LevelTestPage = () => {
               </div>
             </div>
 
+            {/* 3-Pillar Competency Breakdown */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {skillBreakdown.map((sk) => (
+                <div
+                  key={sk.label}
+                  className="p-3.5 rounded-2xl bg-surface-container-low/65 dark:bg-[#26282E]/80 space-y-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-extrabold text-on-surface">
+                        {sk.label}
+                      </p>
+                      <p className="text-[10px] text-on-surface-variant">
+                        {sk.subtitle}
+                      </p>
+                    </div>
+                    <span className={`text-xs font-black ${lvlColor.accentText}`}>
+                      {sk.pct}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-surface-container dark:bg-white/10 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${lvlColor.barGradient}`}
+                      style={{ width: `${sk.pct}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-bold text-on-surface-variant">
+                    <span>{sk.total} Aufgaben</span>
+                    <span>
+                      {sk.points} / {sk.total} Pkt.
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {scaleMatch && (
-              <div className={`p-5 rounded-2xl ${recommendedColor.softBg} space-y-2.5`}>
+              <div className={`p-5 rounded-xl ${recommendedColor.softBg} space-y-2.5`}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className={`text-[11px] font-black uppercase tracking-wider ${recommendedColor.text}`}>
-                    Kursempfehlung
+                    Offizielle Kursempfehlung (GER)
                   </span>
-                  <span className={`px-3 py-1 rounded-full ${recommendedColor.badge} text-[11px] font-extrabold`}>
+                  <span className={`px-3 py-1 rounded-sm ${recommendedColor.badge} text-[11px] font-extrabold whitespace-nowrap`}>
                     {scaleMatch.badge} ({scaleMatch.min}–{scaleMatch.max}%)
                   </span>
                 </div>
@@ -1590,7 +2115,7 @@ const LevelTestPage = () => {
                 </p>
 
                 {percentage >= 80 && nextLevelTestId && nextLvlColor && (
-                  <div className="pt-1 print:hidden">
+                  <div className="pt-1">
                     <button
                       type="button"
                       onClick={() => handleSelectTest(nextLevelTestId)}
@@ -1606,8 +2131,12 @@ const LevelTestPage = () => {
               </div>
             )}
 
-            {/* Compact 4-Band Scale with Level Color Rules */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {/* Compact Scale with Level Color Rules */}
+            <div
+              className={`grid grid-cols-2 gap-2.5 ${
+                scaleCount === 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+              }`}
+            >
               {(currentTest.evaluationScale || []).map((row) => {
                 const isActive =
                   scaleMatch &&
@@ -1617,7 +2146,7 @@ const LevelTestPage = () => {
                 return (
                   <div
                     key={`${row.min}-${row.max}`}
-                    className={`p-3.5 rounded-2xl transition-all ${
+                    className={`p-3.5 rounded-md transition-all ${
                       isActive
                         ? `${bandColor.softBg} ${bandColor.ringGlow} shadow-sm`
                         : 'bg-surface-container-low/65 dark:bg-[#26282E]/70 opacity-75'
@@ -1628,7 +2157,7 @@ const LevelTestPage = () => {
                         {row.min}%–{row.max}%
                       </span>
                       {isActive && (
-                        <span className={`px-2 py-0.5 rounded-full ${bandColor.badge} text-[9px] font-black`}>
+                        <span className={`px-2 py-0.5 rounded-sm ${bandColor.badge} text-[9px] font-black whitespace-nowrap`}>
                           Ihr Wert
                         </span>
                       )}
@@ -1639,6 +2168,24 @@ const LevelTestPage = () => {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Certificate Authenticity Footer Pod (Tonal Pod, No Top Border) */}
+            <div className="p-3.5 rounded-2xl bg-surface-container-low/65 dark:bg-[#26282E] flex flex-wrap items-center justify-between gap-3 text-[11px] text-on-surface-variant">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className={`w-4 h-4 ${lvlColor.accentText}`} />
+                <span>
+                  Verifiziertes Einstufungszertifikat • Prüfungskommission Live-Sprachzentrum
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className={`inline-flex items-center gap-1.5 font-extrabold ${lvlColor.accentText} hover:underline`}
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Als offizielles A4-Zertifikat (PDF) speichern</span>
+              </button>
             </div>
           </div>
 

@@ -7,6 +7,7 @@ import { fetchHomeworks } from '../store/homeworkSlice';
 import AdminDashboard from './AdminDashboard';
 import { getLevelColor } from '../utils/levelColors';
 import { loadSavedLevelTestResults } from './LevelTestPage';
+import { fetchMyLevelTestResults } from '../store/levelTestSlice';
 
 const LEVEL_SHOWCASE_STEPS = [
   {
@@ -39,13 +40,15 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { homeworks: pinnedHomeworks } = useSelector((state) => state.homework);
+  const { savedResults: reduxSavedLevelTests } = useSelector((state) => state.levelTest);
   const isTeacher = user?.role === 'teacher';
   const [courses, setCourses] = useState([]);
-  const [savedLevelTests, setSavedLevelTests] = useState({});
 
   useEffect(() => {
-    setSavedLevelTests(loadSavedLevelTestResults());
-  }, []);
+    dispatch(fetchMyLevelTestResults());
+  }, [dispatch, user]);
+
+  const savedLevelTests = reduxSavedLevelTests || loadSavedLevelTestResults();
 
   useEffect(() => {
     // Replaced Live Classes with Mock "My Courses" for the new UI

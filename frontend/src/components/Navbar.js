@@ -73,10 +73,10 @@ export default function Navbar({ children }) {
   ];
 
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <div className="bg-background text-on-background font-body-md min-h-screen print:min-h-0 print:bg-white print:text-slate-900 flex flex-col">
       
       {/* Top AppBar */}
-      <header className="bg-surface shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-14 md:h-[72px] flex justify-between items-center px-4 md:px-8">
+      <header className="print:hidden bg-surface shadow-sm border-b border-surface-variant sticky top-0 z-40 w-full h-14 md:h-[72px] flex justify-between items-center px-4 md:px-8">
         <Link to="/" className="flex items-center gap-2 md:gap-4">
           <img alt="Live-Sprachzentrum Logo" className="h-8 w-8 md:h-10 md:w-10 object-contain rounded-full bg-surface-container-lowest shadow-sm border border-surface-variant/50" src="/logo.png"/>
           <h1 className="font-title-md md:font-headline-md text-title-md md:text-headline-md font-bold truncate"><span className="text-germany-black dark:text-white">Live</span>-<span className="text-germany-red">Sprach</span><span className="text-germany-gold">zentrum</span></h1>
@@ -102,7 +102,7 @@ export default function Navbar({ children }) {
       </header>
 
       {/* Floating Nav (Mobile & Desktop) */}
-      <nav className="fixed z-50 bg-surface shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[1.5rem] transition-all duration-300
+      <nav className="print:hidden fixed z-50 bg-surface shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-surface-variant rounded-[1.5rem] transition-all duration-300
         bottom-1 left-1/2 -translate-x-1/2 w-[98%] max-w-[400px] px-2 py-1 flex flex-row justify-between items-center
         md:top-1/2 md:-translate-y-1/2 md:left-4 md:bottom-auto md:translate-x-0 md:w-auto md:h-auto md:flex-col md:px-2 md:py-4 md:gap-2">
         {navItems.map(item => {
@@ -117,7 +117,7 @@ export default function Navbar({ children }) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32 flex flex-col">
+      <main className="flex-1 w-full pb-16 md:pb-8 pt-4 md:pt-8 md:pl-24 lg:pl-32 print:p-0 print:m-0 flex flex-col">
         {children}
       </main>
 

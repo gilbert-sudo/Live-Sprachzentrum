@@ -277,3 +277,40 @@ code {
   50% { opacity: 1; transform: rotateX(60deg) scale(1.05); }
   100% { opacity: 0.6; transform: rotateX(60deg) scale(1); }
 }
+
+/* Official Level-Test Certificate Print Styles */
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-certificate-sheet {
+    width: 100% !important;
+    max-width: 194mm !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    box-shadow: none !important;
+  }
+}

@@ -4,10 +4,12 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAdminStudents, createAdminStudent, updateAdminStudent, deleteAdminStudent } from '../store/adminStudentsSlice';
 import { getLevelColor } from '../utils/levelColors';
+import { fetchStudentLevelTests } from '../store/levelTestSlice';
 
 export default function StudentManagement() {
   const { user } = useSelector((state) => state.auth);
   const { students: users, status } = useSelector((state) => state.adminStudents);
+  const { studentResults } = useSelector((state) => state.levelTest);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLoading = status === 'loading';
@@ -32,6 +34,12 @@ export default function StudentManagement() {
   const [editingUser, setEditingUser] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (viewingUser?._id) {
+      dispatch(fetchStudentLevelTests(viewingUser._id));
+    }
+  }, [viewingUser, dispatch]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -663,6 +671,24 @@ export default function StudentManagement() {
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-secondary text-[20px] mt-0.5">assignment_turned_in</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-secondary font-semibold uppercase mb-1">Einstufungstest</p>
+                    {studentResults[viewingUser._id]?.latest && Object.keys(studentResults[viewingUser._id].latest).length > 0 ? (
+                      <div className="space-y-1.5">
+                        {Object.values(studentResults[viewingUser._id].latest).map((test) => (
+                          <div key={test._id || test.testId} className="flex items-center justify-between text-xs bg-surface-variant/40 p-2 rounded-lg border border-surface-subtle">
+                            <span className="font-bold">Test {test.targetLevel}: {test.percentage}% ({test.totalPoints}/{test.maxPoints} P.)</span>
+                            <span className="text-[11px] font-semibold text-germany-gold">{test.recommendedLevel || test.badge}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-on-surface-variant italic">Noch kein Test abgelegt</p>
+                    )}
                   </div>
                 </div>
                 {viewingUser.plainPassword && (

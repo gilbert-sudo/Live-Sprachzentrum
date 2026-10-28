@@ -6,6 +6,7 @@ import adminStudentsReducer from './adminStudentsSlice';
 import libraryReducer from './librarySlice';
 import homeworkReducer from './homeworkSlice';
 import classroomsReducer from './classroomsSlice';
+import levelTestReducer from './levelTestSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     library: libraryReducer,
     homework: homeworkReducer,
     classrooms: classroomsReducer,
+    levelTest: levelTestReducer,
   },
 });

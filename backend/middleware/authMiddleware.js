@@ -55,4 +55,25 @@ const admin = (req, res, next) => {
   }
 };
 
-module.exports = { protect, teacher, admin };
+const optionalProtect = async (req, res, next) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret', { ignoreExpiration: true });
+      req.user = await User.findById(decoded.id).select('-password');
+      if (!req.user) {
+        req.user = await Student.findById(decoded.id).select('-password');
+      }
+    } catch (error) {
+      req.user = null;
+    }
+  } else {
+    req.user = null;
+  }
+  next();
+};
+
+module.exports = { protect, teacher, admin, optionalProtect };
