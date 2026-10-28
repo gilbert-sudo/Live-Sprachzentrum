@@ -13,6 +13,7 @@ import {
   Volume2,
   RotateCcw
 } from 'lucide-react';
+import { getLevelColor } from '../../utils/levelColors';
 
 /**
  * Helper to deterministic-shuffle an array of IDs based on question ID
@@ -368,7 +369,7 @@ function parseTemplateBlocks(templateHtml) {
   return blocks;
 }
 
-const MiniAudioCardButton = ({ src, label }) => {
+const MiniAudioCardButton = ({ src, label, lvlColor }) => {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -407,16 +408,18 @@ const MiniAudioCardButton = ({ src, label }) => {
       whileTap={{ scale: 0.96 }}
       type="button"
       onClick={toggle}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold text-xs transition-all border ${
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
         playing
-          ? 'bg-primary text-white border-primary shadow-sm shadow-primary/20'
-          : 'bg-surface-container-low dark:bg-[#252528] text-on-surface border-surface-variant/50 hover:border-primary/50'
+          ? `${lvlColor.buttonBg} shadow-sm ${lvlColor.shadowGlow}`
+          : 'bg-surface-container-low dark:bg-[#2B2D33] text-on-surface hover:bg-surface-container dark:hover:bg-[#32353C] shadow-sm'
       }`}
     >
       <audio ref={audioRef} src={src} preload="metadata" />
       <span
         className={`w-5 h-5 rounded-full flex items-center justify-center ${
-          playing ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+          playing
+            ? 'bg-white/20 text-white'
+            : `${lvlColor.softBg} ${lvlColor.accentText}`
         }`}
       >
         {playing ? (
@@ -434,18 +437,20 @@ const MiniAudioCardButton = ({ src, label }) => {
 };
 
 const PAIR_BADGE_COLORS = [
-  'bg-primary text-white border-primary',
-  'bg-amber-500 text-white border-amber-500',
-  'bg-emerald-600 text-white border-emerald-600',
-  'bg-indigo-600 text-white border-indigo-600',
-  'bg-rose-600 text-white border-rose-600'
+  'bg-blue-600 text-white shadow-sm',
+  'bg-emerald-600 text-white shadow-sm',
+  'bg-amber-500 text-white shadow-sm',
+  'bg-orange-600 text-white shadow-sm',
+  'bg-purple-600 text-white shadow-sm'
 ];
 
-const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
+const LevelTestTaskRenderer = ({ question, answer, onChange, level = 'A2' }) => {
   const [activeGapKey, setActiveGapKey] = useState(null);
   const [selectedTokenId, setSelectedTokenId] = useState(null);
   const [selectedLeftPairId, setSelectedLeftPairId] = useState(null);
   const [draggedIdx, setDraggedIdx] = useState(null);
+
+  const lvlColor = getLevelColor(level);
 
   useEffect(() => {
     setActiveGapKey(null);
@@ -468,7 +473,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }, [question, answer, onChange]);
 
   // ───────────────────────────────────────────────────────────────
-  // 1. SINGLE-CHOICE & MULTIPLE-CHOICE (Compact + Staggered Animation)
+  // 1. SINGLE-CHOICE & MULTIPLE-CHOICE (Borderless Tonal + Level Colors)
   // ───────────────────────────────────────────────────────────────
   if (question.type === 'single-choice' || question.type === 'multiple-choice') {
     const isMulti = question.type === 'multiple-choice';
@@ -500,15 +505,15 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
     return (
       <div className="space-y-2.5">
         {isMulti && question.maxChoices && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] font-bold">
-            <Sparkles className="w-3 h-3 shrink-0" />
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${lvlColor.softBg} ${lvlColor.text} text-[11px] font-bold`}>
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
             <span>
               Mehrfachauswahl: Bitte {question.maxChoices} Antworten wählen ({selectedList.length}/{question.maxChoices})
             </span>
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           {(question.options || []).map((opt, idx) => {
             const isSelected = selectedList.includes(opt.id);
             const letter = String.fromCharCode(65 + idx);
@@ -517,23 +522,23 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03, duration: 0.18 }}
-                whileHover={{ scale: 1.005 }}
+                whileHover={{ scale: 1.005, y: -1 }}
                 whileTap={{ scale: 0.99 }}
                 key={opt.id}
                 type="button"
                 onClick={() => handleToggleOption(opt.id)}
-                className={`group w-full text-left px-3.5 py-2.5 sm:py-3 rounded-xl border-2 transition-colors duration-150 flex items-center justify-between gap-3 ${
+                className={`group w-full text-left px-4 py-3 sm:py-3.5 rounded-2xl transition-all duration-200 flex items-center justify-between gap-3 ${
                   isSelected
-                    ? 'border-primary bg-primary/[0.07] dark:bg-primary/15 text-on-surface shadow-sm'
-                    : 'border-surface-variant/40 bg-surface-container-lowest hover:border-primary/40 hover:bg-surface-container-low text-on-surface'
+                    ? `${lvlColor.softBg} ${lvlColor.ringGlow} text-on-surface shadow-md ${lvlColor.shadowGlow}`
+                    : 'bg-surface-container-low/85 dark:bg-[#26282E] hover:bg-surface-container dark:hover:bg-[#2E3138] text-on-surface shadow-[0_2px_10px_rgba(0,0,0,0.03)]'
                 }`}
               >
-                <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center gap-3 min-w-0">
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 transition-colors ${
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-all ${
                       isSelected
-                        ? 'bg-primary text-white shadow-sm'
-                        : 'bg-surface-container text-on-surface-variant group-hover:bg-primary/10 group-hover:text-primary'
+                        ? `${lvlColor.badge} scale-105`
+                        : `bg-surface-container-lowest dark:bg-white/10 text-on-surface-variant dark:text-slate-300 group-hover:${lvlColor.accentText}`
                     }`}
                   >
                     {letter}
@@ -545,14 +550,14 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
 
                 <div
                   className={`w-5 h-5 ${
-                    isMulti ? 'rounded-md' : 'rounded-full'
-                  } border-2 flex items-center justify-center shrink-0 transition-all ${
+                    isMulti ? 'rounded-lg' : 'rounded-full'
+                  } flex items-center justify-center shrink-0 transition-all ${
                     isSelected
-                      ? 'border-primary bg-primary text-white scale-105'
-                      : 'border-surface-variant group-hover:border-primary/50'
+                      ? `${lvlColor.solidBg} shadow-sm scale-110`
+                      : 'bg-surface-container-lowest dark:bg-white/10 text-transparent'
                   }`}
                 >
-                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  {isSelected && <Check className="w-3 h-3 stroke-[3] text-white" />}
                 </div>
               </motion.button>
             );
@@ -563,7 +568,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }
 
   // ───────────────────────────────────────────────────────────────
-  // 2. INLINE-DROPDOWN, TEXT-GAP & GROUPED-CHOICE (Compact)
+  // 2. INLINE-DROPDOWN, TEXT-GAP & GROUPED-CHOICE
   // ───────────────────────────────────────────────────────────────
   if (
     question.type === 'inline-dropdown' ||
@@ -613,18 +618,20 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
               aria-label={`Auswahl ${rId}`}
               value={val}
               onChange={(e) => handleFieldChange(rId, e.target.value)}
-              className={`max-w-full text-xs sm:text-sm font-bold rounded-lg px-2.5 py-1 pr-7 border-2 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25 ${
+              className={`max-w-full text-xs sm:text-sm font-bold rounded-xl px-3 py-1.5 pr-7 transition-all cursor-pointer focus:outline-none ${lvlColor.ringGlow} ${
                 isFilled
-                  ? 'border-primary bg-primary/10 text-primary dark:text-red-300 shadow-sm'
-                  : 'border-surface-variant bg-surface-container-low text-on-surface hover:border-primary/40'
+                  ? `${lvlColor.softBg} ${lvlColor.text} shadow-sm`
+                  : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface shadow-sm hover:bg-surface-container-high/60'
               }`}
             >
-              <option value="">— Bitte wählen —</option>
+              <option value="" className="bg-surface dark:bg-[#1E1F22] text-on-surface">
+                — Bitte wählen —
+              </option>
               {(d.options || []).map((opt) => (
                 <option
                   key={opt.id}
                   value={opt.id}
-                  className="bg-surface text-on-surface font-medium"
+                  className="bg-surface dark:bg-[#1E1F22] text-on-surface font-medium"
                 >
                   {opt.text}
                 </option>
@@ -657,12 +664,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
               autoCorrect="off"
               spellCheck="false"
               style={{ width: `${Math.max(105, expectedLen * 9)}px` }}
-              className={`max-w-full text-xs sm:text-sm font-bold rounded-lg px-2.5 py-1 border-2 transition-all focus:outline-none ${
+              className={`max-w-full text-xs sm:text-sm font-bold rounded-xl px-3 py-1.5 transition-all focus:outline-none ${
                 isFocused
-                  ? 'border-primary bg-surface-container-lowest ring-2 ring-primary/20 text-on-surface'
+                  ? `bg-surface-container-lowest dark:bg-[#18191C] ${lvlColor.ringGlow} text-on-surface shadow-md`
                   : isFilled
-                  ? 'border-primary/70 bg-primary/[0.06] text-on-surface'
-                  : 'border-dashed border-surface-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 hover:border-primary/40'
+                  ? `${lvlColor.softBg} ${lvlColor.text} shadow-sm`
+                  : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface placeholder:text-on-surface-variant/50 dark:placeholder:text-slate-400/60 shadow-inner'
               }`}
             />
           </span>
@@ -688,10 +695,10 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   key={opt.id}
                   type="button"
                   onClick={() => handleFieldChange(rId, opt.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold border-2 transition-all ${
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                     isSelected
-                      ? 'bg-primary text-white border-primary shadow-sm'
-                      : 'bg-surface-container-lowest text-on-surface border-surface-variant/60 hover:border-primary/50 hover:bg-surface-container-low'
+                      ? `${lvlColor.buttonBg} shadow-sm ${lvlColor.shadowGlow}`
+                      : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface hover:bg-surface-container-high/70 dark:hover:bg-[#2B2D33] shadow-sm'
                   }`}
                 >
                   {opt.text}
@@ -734,9 +741,9 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
     return (
       <div className="space-y-3">
         {question.wordBank && question.wordBank.length > 0 && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3" />
+          <div className={`p-3.5 rounded-2xl ${lvlColor.softBg} space-y-2`}>
+            <span className={`text-[11px] font-extrabold uppercase tracking-wider ${lvlColor.text} flex items-center gap-1.5`}>
+              <Sparkles className="w-3.5 h-3.5" />
               Wortbank (Antippen zum Einfügen):
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -752,10 +759,10 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     key={word}
                     type="button"
                     onClick={() => handleWordBankInsert(word)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       isUsed
-                        ? 'bg-surface-container text-on-surface-variant border-surface-variant/40 opacity-55'
-                        : 'bg-surface-container-lowest text-on-surface border-amber-500/40 hover:border-primary hover:text-primary shadow-sm'
+                        ? 'bg-surface-container/60 dark:bg-white/5 text-on-surface-variant opacity-45'
+                        : `bg-surface-container-lowest dark:bg-[#26282E] text-on-surface hover:${lvlColor.accentText} shadow-sm`
                     }`}
                   >
                     {word}
@@ -771,11 +778,14 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
-            className="p-3.5 sm:p-4 rounded-xl bg-surface-container-low/60 dark:bg-surface-container-low/30 border border-surface-variant/40 space-y-2 text-xs sm:text-sm leading-relaxed text-on-surface"
+            className="p-4 sm:p-5 rounded-2xl bg-surface-container-low/80 dark:bg-[#26282E] space-y-2.5 text-xs sm:text-sm leading-relaxed text-on-surface shadow-inner"
           >
             {blocks.map((b, idx) =>
               b.type === 'hr' ? (
-                <hr key={idx} className="my-2.5 border-surface-variant/40" />
+                <div
+                  key={idx}
+                  className="my-3 h-1 w-12 rounded-full bg-surface-container-high dark:bg-white/10 mx-auto"
+                />
               ) : (
                 <div key={idx} className="leading-7 break-words">
                   {renderParagraphContent(b.content, idx)}
@@ -795,11 +805,11 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: gIdx * 0.04, duration: 0.18 }}
                   key={grp.id}
-                  className="p-3 sm:p-3.5 rounded-xl bg-surface-container-lowest border border-surface-variant/40 shadow-sm space-y-2"
+                  className="p-3.5 sm:p-4 rounded-2xl bg-surface-container-low/80 dark:bg-[#26282E] shadow-sm space-y-2.5"
                 >
                   {grp.title && (
-                    <div className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-md bg-primary/10 text-primary text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="flex items-start gap-2.5">
+                      <span className={`w-6 h-6 rounded-lg ${lvlColor.softBg} ${lvlColor.accentText} text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5`}>
                         {gIdx + 1}
                       </span>
                       <p className="text-xs sm:text-sm font-bold text-on-surface leading-snug">
@@ -808,7 +818,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     </div>
                   )}
 
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {(grp.options || []).map((opt) => {
                       const isSelected = val === opt.id;
                       return (
@@ -817,13 +827,13 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                           key={opt.id}
                           type="button"
                           onClick={() => handleFieldChange(grp.id, opt.id)}
-                          className={`flex-1 min-w-[95px] sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold border-2 transition-all flex items-center justify-center gap-1.5 ${
+                          className={`flex-1 min-w-[95px] sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                             isSelected
-                              ? 'bg-primary text-white border-primary shadow-sm'
-                              : 'bg-surface-container-low/70 text-on-surface border-surface-variant/50 hover:border-primary/40 hover:bg-surface-container'
+                              ? `${lvlColor.buttonBg} shadow-md ${lvlColor.shadowGlow}`
+                              : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface hover:bg-surface-container dark:hover:bg-[#2E3038] shadow-sm'
                           }`}
                         >
-                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                           <span>{opt.text}</span>
                         </motion.button>
                       );
@@ -839,7 +849,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }
 
   // ───────────────────────────────────────────────────────────────
-  // 3. ORDER-SEQUENCE & DIALOGUE-ORDER (Compact + Spring Layout Animation)
+  // 3. ORDER-SEQUENCE & DIALOGUE-ORDER (Spring Layout Animation)
   // ───────────────────────────────────────────────────────────────
   if (question.type === 'order-sequence' || question.type === 'dialogue-order') {
     const isDialogue = question.type === 'dialogue-order';
@@ -863,7 +873,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
 
     return (
       <div className="space-y-2.5">
-        <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-surface-container-low border border-surface-variant/40 text-[11px] sm:text-xs font-medium text-on-surface-variant">
+        <div className="flex items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-surface-container-low/80 dark:bg-[#26282E] text-[11px] sm:text-xs font-medium text-on-surface-variant">
           <span>
             <strong className="text-on-surface font-extrabold">Aufgabe:</strong>{' '}
             {isDialogue ? 'Dialogteile' : 'Sätze'} mit (▲/▼) oder per Ziehen ordnen.
@@ -871,7 +881,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
           <button
             type="button"
             onClick={handleResetOrder}
-            className="text-[11px] font-bold text-primary hover:underline inline-flex items-center gap-1 shrink-0"
+            className={`text-[11px] font-bold ${lvlColor.accentText} hover:underline inline-flex items-center gap-1 shrink-0`}
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset</span>
@@ -908,29 +918,29 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     setDraggedIdx(null);
                   }}
                   onDragEnd={() => setDraggedIdx(null)}
-                  className={`px-3 py-2.5 rounded-xl border-2 transition-colors flex items-center justify-between gap-2.5 bg-surface-container-lowest ${
+                  className={`px-3.5 py-3 rounded-2xl transition-all flex items-center justify-between gap-3 ${
                     draggedIdx === idx
-                      ? 'border-primary bg-primary/5 opacity-60'
-                      : 'border-surface-variant/40 hover:border-primary/30 shadow-sm'
+                      ? `${lvlColor.softBg} ${lvlColor.ringGlow} opacity-65`
+                      : 'bg-surface-container-low/85 dark:bg-[#26282E] hover:bg-surface-container dark:hover:bg-[#2E3138] shadow-sm'
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
                     {slotSpeaker ? (
                       <span
-                        className={`inline-flex items-center justify-center sm:min-w-[130px] px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider border shrink-0 self-start sm:self-center ${
+                        className={`inline-flex items-center justify-center sm:min-w-[130px] px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider shrink-0 self-start sm:self-center ${
                           isSie
-                            ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/25'
-                            : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/25'
+                            ? 'bg-blue-500/15 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                            : 'bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
                         }`}
                       >
                         {slotSpeaker}
                       </span>
                     ) : (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="w-6 h-6 rounded-md bg-primary/10 text-primary font-black text-xs flex items-center justify-center">
+                        <span className={`w-6 h-6 rounded-lg ${lvlColor.softBg} ${lvlColor.accentText} font-black text-xs flex items-center justify-center`}>
                           {idx + 1}
                         </span>
-                        <GripVertical className="w-3.5 h-3.5 text-on-surface-variant/40 hidden sm:block cursor-grab" />
+                        <GripVertical className="w-3.5 h-3.5 text-on-surface-variant/40 dark:text-white/30 hidden sm:block cursor-grab" />
                       </div>
                     )}
 
@@ -939,8 +949,8 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     </p>
                   </div>
 
-                  {/* Side-by-side Up/Down Buttons for Compact Height */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  {/* Side-by-side Up/Down Buttons */}
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <motion.button
                       whileTap={{ scale: 0.88 }}
                       type="button"
@@ -948,7 +958,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                       disabled={idx === 0}
                       aria-label="Nach oben verschieben"
                       title="Nach oben"
-                      className="w-7 h-7 rounded-lg border border-surface-variant/60 bg-surface-container-low flex items-center justify-center text-on-surface hover:border-primary hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                      className={`w-7 h-7 rounded-xl bg-surface-container-lowest dark:bg-[#1E1F22] flex items-center justify-center text-on-surface hover:${lvlColor.accentText} disabled:opacity-30 disabled:pointer-events-none shadow-sm transition-colors`}
                     >
                       <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" />
                     </motion.button>
@@ -959,7 +969,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                       disabled={idx === currentOrder.length - 1}
                       aria-label="Nach unten verschieben"
                       title="Nach unten"
-                      className="w-7 h-7 rounded-lg border border-surface-variant/60 bg-surface-container-low flex items-center justify-center text-on-surface hover:border-primary hover:text-primary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                      className={`w-7 h-7 rounded-xl bg-surface-container-lowest dark:bg-[#1E1F22] flex items-center justify-center text-on-surface hover:${lvlColor.accentText} disabled:opacity-30 disabled:pointer-events-none shadow-sm transition-colors`}
                     >
                       <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
                     </motion.button>
@@ -974,7 +984,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }
 
   // ───────────────────────────────────────────────────────────────
-  // 4. GAP-MATCH (B1 Q14 — Compact)
+  // 4. GAP-MATCH (B1 Q14)
   // ───────────────────────────────────────────────────────────────
   if (question.type === 'gap-match') {
     const currentSlots = typeof answer === 'object' && answer !== null ? answer : {};
@@ -1000,7 +1010,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
 
     return (
       <div className="space-y-3">
-        <div className="p-3 rounded-xl bg-surface-container-low border border-surface-variant/50 space-y-2">
+        <div className="p-3.5 rounded-2xl bg-surface-container-low/80 dark:bg-[#26282E] space-y-2">
           <p className="text-[11px] font-extrabold uppercase tracking-wider text-on-surface-variant">
             1. Kategorie wählen (Antippen):
           </p>
@@ -1016,12 +1026,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   onClick={() =>
                     setSelectedTokenId(isSelected ? null : tok.id)
                   }
-                  className={`text-left px-2.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all ${
+                  className={`text-left px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     isSelected
-                      ? 'bg-primary text-white border-primary shadow-sm'
+                      ? `${lvlColor.buttonBg} shadow-md ${lvlColor.shadowGlow}`
                       : isPlaced
-                      ? 'bg-surface-container text-on-surface-variant border-surface-variant/40 opacity-50'
-                      : 'bg-surface-container-lowest text-on-surface border-surface-variant/60 hover:border-primary/50'
+                      ? 'bg-surface-container/60 dark:bg-white/5 text-on-surface-variant opacity-45'
+                      : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface hover:bg-surface-container-high/60 shadow-sm'
                   }`}
                 >
                   {tok.text}
@@ -1050,12 +1060,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     assignTokenToSlot(sKey, selectedTokenId);
                   }
                 }}
-                className={`p-3 rounded-xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
+                className={`p-3.5 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
                   selectedTokenId
-                    ? 'cursor-pointer border-dashed border-primary bg-primary/[0.04] hover:bg-primary/10'
+                    ? `cursor-pointer ${lvlColor.softBg} ${lvlColor.ringGlow}`
                     : assignedTok
-                    ? 'border-primary/60 bg-surface-container-lowest shadow-sm'
-                    : 'border-surface-variant/50 bg-surface-container-lowest'
+                    ? `${lvlColor.softBg} shadow-sm`
+                    : 'bg-surface-container-low/85 dark:bg-[#26282E] shadow-sm'
                 }`}
               >
                 <div className="flex-1 min-w-0">
@@ -1064,7 +1074,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                       {slot.description}
                     </p>
                   ) : (
-                    <span className="text-xs font-black text-primary">
+                    <span className={`text-xs font-black ${lvlColor.accentText}`}>
                       {slot.label}
                     </span>
                   )}
@@ -1083,17 +1093,21 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                       }
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full text-xs font-bold rounded-lg px-2.5 py-1.5 border transition-colors focus:outline-none ${
+                    className={`w-full text-xs font-bold rounded-xl px-3 py-2 transition-colors focus:outline-none ${
                       assignedTok
-                        ? 'border-primary bg-primary/10 text-primary dark:text-red-300'
-                        : 'border-surface-variant/60 bg-surface-container-low text-on-surface'
+                        ? `bg-surface-container-lowest dark:bg-[#1E1F22] ${lvlColor.text} shadow-sm`
+                        : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface shadow-sm'
                     }`}
                   >
-                    <option value="">
+                    <option value="" className="bg-surface dark:bg-[#1E1F22] text-on-surface">
                       {selectedTokenId ? '— Hier tippen / wählen —' : '— Kategorie wählen —'}
                     </option>
                     {(question.tokens || []).map((t) => (
-                      <option key={t.id} value={t.id}>
+                      <option
+                        key={t.id}
+                        value={t.id}
+                        className="bg-surface dark:bg-[#1E1F22] text-on-surface"
+                      >
                         {t.text}
                       </option>
                     ))}
@@ -1102,7 +1116,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     <button
                       type="button"
                       onClick={(e) => clearSlot(sKey, e)}
-                      className="p-1 rounded-md hover:bg-error/15 text-on-surface-variant hover:text-error shrink-0"
+                      className="p-1.5 rounded-lg bg-surface-container-lowest dark:bg-[#1E1F22] hover:bg-error/15 dark:hover:bg-rose-500/20 text-on-surface-variant hover:text-error dark:hover:text-rose-400 shrink-0 shadow-sm"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -1117,7 +1131,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }
 
   // ───────────────────────────────────────────────────────────────
-  // 5. ASSOCIATE-PAIRS (B1 Q16 — Compact Two-Column Tap-to-Pair)
+  // 5. ASSOCIATE-PAIRS (B1 Q16 — Two-Column Tap-to-Pair)
   // ───────────────────────────────────────────────────────────────
   if (question.type === 'associate-pairs') {
     const pairs = Array.isArray(answer) ? answer : [];
@@ -1154,9 +1168,9 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
 
     return (
       <div className="space-y-3">
-        <div className="px-3 py-2 rounded-xl bg-surface-container-low border border-surface-variant/40 text-xs font-bold text-on-surface-variant flex items-center justify-between gap-2">
+        <div className="px-3.5 py-2.5 rounded-2xl bg-surface-container-low/80 dark:bg-[#26282E] text-xs font-bold text-on-surface-variant flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <Link2 className="w-3.5 h-3.5 text-primary shrink-0" />
+            <Link2 className={`w-3.5 h-3.5 ${lvlColor.accentText} shrink-0`} />
             <span>Links (Spalte A) antippen, dann rechts (Spalte B) zuordnen.</span>
           </div>
           {pairs.length > 0 && (
@@ -1166,7 +1180,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                 onChange([]);
                 setSelectedLeftPairId(null);
               }}
-              className="text-[11px] font-extrabold text-primary hover:underline shrink-0"
+              className={`text-[11px] font-extrabold ${lvlColor.accentText} hover:underline shrink-0`}
             >
               Reset
             </button>
@@ -1174,7 +1188,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <h4 className="text-[11px] font-black uppercase tracking-wider text-on-surface-variant px-1">
               Spalte A
             </h4>
@@ -1195,12 +1209,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   key={lItem.id}
                   type="button"
                   onClick={() => handleLeftClick(lItem.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl border-2 transition-all flex items-center justify-between gap-2 ${
+                  className={`w-full text-left px-3.5 py-3 rounded-2xl transition-all flex items-center justify-between gap-2 ${
                     isSelected
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20 shadow-sm'
+                      ? `${lvlColor.softBg} ${lvlColor.ringGlow} shadow-md`
                       : pairIdx !== -1
-                      ? 'border-primary/50 bg-surface-container-lowest shadow-sm'
-                      : 'border-surface-variant/50 bg-surface-container-lowest hover:border-primary/40'
+                      ? `${lvlColor.softBg} shadow-sm`
+                      : 'bg-surface-container-low/85 dark:bg-[#26282E] hover:bg-surface-container dark:hover:bg-[#2E3138] shadow-sm'
                   }`}
                 >
                   <span className="text-xs sm:text-sm font-bold text-on-surface leading-snug">
@@ -1208,12 +1222,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   </span>
                   {pairIdx !== -1 ? (
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-black border shrink-0 ${badgeColor}`}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-black shrink-0 ${badgeColor}`}
                     >
                       #{pairIdx + 1}
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-on-surface-variant shrink-0">
+                    <span className={`text-[10px] font-bold shrink-0 ${isSelected ? lvlColor.accentText : 'text-on-surface-variant'}`}>
                       {isSelected ? 'Aktiv' : 'Wählen'}
                     </span>
                   )}
@@ -1222,7 +1236,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
             })}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <h4 className="text-[11px] font-black uppercase tracking-wider text-on-surface-variant px-1">
               Spalte B
             </h4>
@@ -1242,12 +1256,12 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   key={rItem.id}
                   type="button"
                   onClick={() => handleRightClick(rItem.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl border-2 transition-all flex items-center justify-between gap-2 ${
+                  className={`w-full text-left px-3.5 py-3 rounded-2xl transition-all flex items-center justify-between gap-2 ${
                     selectedLeftPairId
-                      ? 'border-dashed border-primary bg-primary/[0.04] hover:bg-primary/10 cursor-pointer'
+                      ? `${lvlColor.softBg} ${lvlColor.ringGlow} cursor-pointer`
                       : pairIdx !== -1
-                      ? 'border-primary/50 bg-surface-container-lowest shadow-sm'
-                      : 'border-surface-variant/50 bg-surface-container-lowest hover:border-primary/40'
+                      ? `${lvlColor.softBg} shadow-sm`
+                      : 'bg-surface-container-low/85 dark:bg-[#26282E] hover:bg-surface-container dark:hover:bg-[#2E3138] shadow-sm'
                   }`}
                 >
                   <span className="text-xs sm:text-sm font-bold text-on-surface leading-snug">
@@ -1255,7 +1269,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                   </span>
                   {pairIdx !== -1 && (
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-black border shrink-0 ${badgeColor}`}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-black shrink-0 ${badgeColor}`}
                     >
                       #{pairIdx + 1}
                     </span>
@@ -1270,7 +1284,7 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
   }
 
   // ───────────────────────────────────────────────────────────────
-  // 6. AUDIO-GAP-MATCH (B2 Q3 — Compact Audio Cards + Advice Rows)
+  // 6. AUDIO-GAP-MATCH (B2 Q3 — Audio Cards + Advice Rows)
   // ───────────────────────────────────────────────────────────────
   if (question.type === 'audio-gap-match') {
     const currentSlots = typeof answer === 'object' && answer !== null ? answer : {};
@@ -1291,9 +1305,9 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
 
     return (
       <div className="space-y-3">
-        <div className="p-3 rounded-xl bg-surface-container-low border border-surface-variant/50 space-y-2">
+        <div className="p-3.5 rounded-2xl bg-surface-container-low/80 dark:bg-[#26282E] space-y-2.5">
           <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-on-surface-variant">
-            <Volume2 className="w-3.5 h-3.5 text-primary" />
+            <Volume2 className={`w-3.5 h-3.5 ${lvlColor.accentText}`} />
             <span>1. Aussagen anhören:</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1307,11 +1321,15 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
               return (
                 <div
                   key={card.id}
-                  className="inline-flex items-center gap-2 p-1.5 rounded-xl bg-surface-container-lowest border border-surface-variant/40"
+                  className="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-surface-container-lowest dark:bg-[#1E1F22] shadow-sm"
                 >
-                  <MiniAudioCardButton src={card.audio} label={card.label} />
+                  <MiniAudioCardButton
+                    src={card.audio}
+                    label={card.label}
+                    lvlColor={lvlColor}
+                  />
                   {assignedSlot && (
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-lg ${lvlColor.softBg} ${lvlColor.text}`}>
                       {assignedSlot.label}
                     </span>
                   )}
@@ -1331,14 +1349,14 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
                 key={sKey}
-                className={`p-3 rounded-xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
+                className={`p-3.5 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
                   assignedCardId
-                    ? 'border-primary bg-primary/[0.04] dark:bg-primary/10'
-                    : 'border-surface-variant/50 bg-surface-container-lowest'
+                    ? `${lvlColor.softBg} shadow-sm`
+                    : 'bg-surface-container-low/85 dark:bg-[#26282E] shadow-sm'
                 }`}
               >
                 <div className="flex-1 min-w-0">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-primary mr-1.5">
+                  <span className={`text-[11px] font-black uppercase tracking-wider ${lvlColor.accentText} mr-1.5`}>
                     {slot.label}:
                   </span>
                   {slot.text && (
@@ -1353,11 +1371,21 @@ const LevelTestTaskRenderer = ({ question, answer, onChange }) => {
                     aria-label={slot.label}
                     value={assignedCardId}
                     onChange={(e) => assignAudioCard(sKey, e.target.value)}
-                    className="w-full text-xs font-bold rounded-lg px-2.5 py-1.5 border border-surface-variant/60 bg-surface-container-lowest text-on-surface focus:outline-none focus:border-primary"
+                    className={`w-full text-xs font-bold rounded-xl px-3 py-2 transition-colors focus:outline-none ${
+                      assignedCardId
+                        ? `bg-surface-container-lowest dark:bg-[#1E1F22] ${lvlColor.text} shadow-sm`
+                        : 'bg-surface-container-lowest dark:bg-[#1E1F22] text-on-surface shadow-sm'
+                    }`}
                   >
-                    <option value="">— Hörtext wählen —</option>
+                    <option value="" className="bg-surface dark:bg-[#1E1F22] text-on-surface">
+                      — Hörtext wählen —
+                    </option>
                     {(question.audioCards || []).map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option
+                        key={c.id}
+                        value={c.id}
+                        className="bg-surface dark:bg-[#1E1F22] text-on-surface"
+                      >
                         {c.label}
                       </option>
                     ))}

@@ -1,9 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { motion } from 'framer-motion';
+import { ArrowRight, Compass, CheckCircle2, Sparkles } from 'lucide-react';
 import { fetchHomeworks } from '../store/homeworkSlice';
 import AdminDashboard from './AdminDashboard';
-import HomeworkPanel from '../components/HomeworkPanel';
+import { getLevelColor } from '../utils/levelColors';
+import { loadSavedLevelTestResults } from './LevelTestPage';
+
+const LEVEL_SHOWCASE_STEPS = [
+  {
+    id: 'a2',
+    target: 'A2',
+    exam: 'A1',
+    stageLabel: 'Grundlagen',
+    questions: 30,
+    minutes: 25
+  },
+  {
+    id: 'b1',
+    target: 'B1',
+    exam: 'A2',
+    stageLabel: 'Mittelstufe',
+    questions: 30,
+    minutes: 30
+  },
+  {
+    id: 'b2',
+    target: 'B2',
+    exam: 'B1',
+    stageLabel: 'Gute Mittelstufe',
+    questions: 30,
+    minutes: 35
+  }
+];
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -11,6 +41,11 @@ export default function Dashboard() {
   const { homeworks: pinnedHomeworks } = useSelector((state) => state.homework);
   const isTeacher = user?.role === 'teacher';
   const [courses, setCourses] = useState([]);
+  const [savedLevelTests, setSavedLevelTests] = useState({});
+
+  useEffect(() => {
+    setSavedLevelTests(loadSavedLevelTestResults());
+  }, []);
 
   useEffect(() => {
     // Replaced Live Classes with Mock "My Courses" for the new UI
@@ -66,7 +101,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="z-10 flex flex-col items-center justify-center p-6 sm:p-8 md:p-12 text-center bg-surface-container-lowest border border-surface-variant rounded-3xl md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl w-full relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="z-10 flex flex-col items-center justify-center p-6 sm:p-8 md:p-12 text-center bg-surface-container-lowest rounded-3xl md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl w-full relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Top accent */}
           <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-germany-black via-germany-red to-germany-gold"></div>
 
@@ -137,7 +172,7 @@ export default function Dashboard() {
           </div>
 
           <div className="w-full flex flex-col items-center gap-4 mt-2">
-            <div className="bg-surface-container-high rounded-xl p-3 md:p-4 flex items-start gap-2 md:gap-3 border border-surface-variant max-w-sm w-full text-left shadow-sm">
+            <div className="bg-surface-container-high rounded-2xl p-3 md:p-4 flex items-start gap-2 md:gap-3 max-w-sm w-full text-left shadow-sm">
               <span className="material-symbols-outlined text-germany-gold text-[20px] md:text-[24px]">
                 info
               </span>
@@ -149,10 +184,10 @@ export default function Dashboard() {
             {/* Level Test CTA available even for pending accounts */}
             <Link
               to="/level-test"
-              className="w-full max-w-sm px-6 py-3.5 rounded-2xl bg-germany-red hover:bg-red-700 text-white font-bold text-xs md:text-sm shadow-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5"
+              className="w-full max-w-md px-6 py-3.5 rounded-full bg-germany-red hover:bg-red-700 dark:hover:bg-red-500 text-white font-medium tracking-wide text-xs sm:text-sm whitespace-nowrap shadow-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5"
             >
               <span className="material-symbols-outlined text-[20px]">fact_check</span>
-              <span>Jetzt Deutsch-Einstufungstest starten (A2 • B1 • B2)</span>
+              <span>Jetzt Einstufungstest Deutsch starten</span>
             </Link>
           </div>
         </div>
@@ -212,7 +247,7 @@ export default function Dashboard() {
               </div>
 
               <div className="shrink-0 w-full md:w-auto">
-                <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-lg group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer backdrop-blur-sm border border-white/20">
+                <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-lg group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer backdrop-blur-sm">
                   <span className="material-symbols-outlined">meeting_room</span>
                   Campus betreten
                 </div>
@@ -273,12 +308,12 @@ export default function Dashboard() {
         {isTeacher ? (
           <section className="mb-4 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
             {/* Abstract Background Blobs */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-            <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs mb-3 border border-primary/20 backdrop-blur-md">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary dark:text-red-300 font-bold text-xs mb-3 border border-primary/20 backdrop-blur-md">
                 <span className="material-symbols-outlined text-[16px]">school</span>
                 Espace Professeur
               </div>
@@ -294,7 +329,7 @@ export default function Dashboard() {
             <div className="relative z-10 shrink-0 w-full md:w-auto flex flex-col items-center">
               <div className="w-24 h-24 mb-4 flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
                 <span
-                  className="material-symbols-outlined text-[48px] text-primary drop-shadow-sm"
+                  className="material-symbols-outlined text-[48px] text-primary dark:text-red-400 drop-shadow-sm"
                   style={{ fontVariationSettings: "'FILL' 1" }}
                 >
                   add_task
@@ -397,9 +432,9 @@ export default function Dashboard() {
         ) : (
           <section className="mb-4 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
             {/* Abstract Background Blobs */}
-            <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-germany-gold/20 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 md:w-56 md:h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4 dark:bg-germany-red/20"></div>
-            <div className="absolute top-1/2 left-1/2 w-24 h-24 md:w-32 md:h-32 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl md:blur-3xl opacity-50 animate-pulse -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-germany-gold/20 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 md:w-56 md:h-56 bg-germany-red/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-2xl md:blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4 dark:bg-germany-red/20"></div>
+            <div className="absolute top-1/2 left-1/2 w-24 h-24 md:w-32 md:h-32 bg-primary/20 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl md:blur-3xl opacity-50 animate-pulse -translate-x-1/2 -translate-y-1/2"></div>
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left flex-1 order-2 md:order-1 w-full">
@@ -454,47 +489,166 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* German Level Test Section (Accessible by every user account) */}
-        <section className="mb-4 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
-          {/* Abstract Background Blobs */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-germany-gold/15 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-56 h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+        {/* ═══════════════════════════════════════════════════════════════════════
+            EINSTUFUNGSTEST DEUTSCH — Minimalist, Animated, Borderless Tonal Tray
+            (Completely distinct from Homework section; no direct exam links;
+             follows German Level Color Rules: A1 Blue, A2 Green, B1 Yellow, B2 Orange)
+           ═══════════════════════════════════════════════════════════════════════ */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-4"
+        >
+          <Link
+            to="/level-test"
+            aria-label="Einstufungstest Deutsch öffnen"
+            className="group block w-full rounded-[2rem] bg-surface-container-low/80 dark:bg-[#191B1F] p-2 sm:p-3 shadow-[0_14px_40px_-14px_rgba(0,0,0,0.07)] dark:shadow-[0_20px_48px_-14px_rgba(0,0,0,0.55)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.11)] transition-all duration-300 focus:outline-none"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-3 items-stretch">
+              {/* Left Editorial Pod */}
+              <div className="lg:col-span-5 rounded-[1.5rem] bg-surface-container-lowest dark:bg-[#22242A] p-5 sm:p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between relative overflow-hidden">
+                <div className="space-y-3">
+                  {/* Minimalist Status Pill */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low dark:bg-white/[0.06]">
+                      <div className="flex items-center gap-1">
+                        {['A1', 'A2', 'B1', 'B2'].map((lvl, idx) => (
+                          <motion.span
+                            key={lvl}
+                            animate={{ scale: [1, 1.25, 1] }}
+                            transition={{
+                              duration: 2.4,
+                              repeat: Infinity,
+                              delay: idx * 0.35,
+                              ease: 'easeInOut'
+                            }}
+                            className={`w-1.5 h-1.5 rounded-full ${getLevelColor(lvl).dot}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-on-surface-variant">
+                        Sprachniveau-Analyse
+                      </span>
+                    </div>
 
-          {/* Left Content + Quick Level Buttons */}
-          <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-germany-gold/20 text-amber-800 dark:text-amber-300 font-bold text-xs mb-3 border border-germany-gold/30 backdrop-blur-md">
-              <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
-              Offizieller Einstufungstest • Test de Niveau
-            </div>
-            <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">
-              Einstufungstest Deutsch (A2 • B1 • B2)
-            </h4>
-            <p className="text-on-surface-variant text-sm md:text-base max-w-2xl font-medium leading-relaxed">
-              Teste dein aktuelles Sprachniveau für deinen Wunschkurs: Wer in den{' '}
-              <strong>A2-Kurs</strong> möchte, absolviert die <strong>A1-Prüfung</strong>{' '}
-              (für <strong>B1</strong> die A2-Prüfung, für <strong>B2</strong> die B1-Prüfung).
-            </p>
-          </div>
+                    <div className="w-8 h-8 rounded-full bg-surface-container-low dark:bg-white/[0.06] flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform duration-300">
+                      <Compass className="w-4 h-4" />
+                    </div>
+                  </div>
 
-          {/* Right Action Area */}
-          <div className="relative z-10 shrink-0 w-full lg:w-auto flex flex-col items-center">
-            <div className="w-24 h-24 mb-4 hidden lg:flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
-              <span
-                className="material-symbols-outlined text-[48px] text-germany-red drop-shadow-sm"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                fact_check
-              </span>
+                  {/* Clean Minimalist Title without (A2 • B1 • B2) */}
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black text-on-surface tracking-tight leading-snug">
+                      Einstufungstest Deutsch
+                    </h3>
+                    <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 leading-relaxed">
+                      Ermittle dein aktuelles Sprachniveau für deinen Wunschkurs mit offizieller Auswertung.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Minimalist Action Row */}
+                <div className="mt-5 pt-3 flex items-center justify-between gap-3">
+                  <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-on-surface-variant">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>Hören • Lesen • Grammatik</span>
+                  </div>
+
+                  <motion.div
+                    whileHover={{ x: 2 }}
+                    className="px-4 sm:px-5 py-2.5 rounded-full bg-on-surface dark:bg-white text-surface dark:text-germany-black text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap inline-flex items-center gap-2 shadow-sm group-hover:bg-germany-red dark:group-hover:bg-germany-red group-hover:text-white dark:group-hover:text-white transition-colors duration-300"
+                  >
+                    <span>Zum Einstufungstest</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Right 3-Column Visual Level Progression Showcase (No Direct Exam Links) */}
+              <div className="lg:col-span-7 grid grid-cols-3 gap-2 sm:gap-2.5">
+                {LEVEL_SHOWCASE_STEPS.map((step, idx) => {
+                  const targetClr = getLevelColor(step.target);
+                  const examClr = getLevelColor(step.exam);
+                  const saved = savedLevelTests[step.id];
+
+                  return (
+                    <motion.div
+                      key={step.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 0.08 + idx * 0.07,
+                        duration: 0.3,
+                        ease: 'easeOut'
+                      }}
+                      whileHover={{ y: -3 }}
+                      className="relative rounded-[1.5rem] bg-surface-container-lowest dark:bg-[#22242A] p-3 sm:p-4 shadow-[0_4px_18px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between overflow-hidden transition-transform duration-300"
+                    >
+                      {/* Soft Tonal Gradient Wash */}
+                      <div
+                        className={`absolute inset-x-0 top-0 h-20 bg-gradient-to-b ${targetClr.cardWash} pointer-events-none`}
+                      />
+
+                      {/* Top Badges */}
+                      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                        <span
+                          className={`inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-2xl font-black text-xs sm:text-sm ${targetClr.badge}`}
+                        >
+                          {step.target}
+                        </span>
+
+                        <span
+                          className={`self-start sm:self-auto inline-flex items-center px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold ${examClr.softBg} ${examClr.text}`}
+                        >
+                          Prüfung {step.exam}
+                        </span>
+                      </div>
+
+                      {/* Middle Stage Description */}
+                      <div className="relative z-10 my-3 sm:my-4">
+                        <p className={`text-[10px] font-black uppercase tracking-wider ${targetClr.accentText}`}>
+                          Zielkurs {step.target}
+                        </p>
+                        <h4 className="text-xs sm:text-sm font-extrabold text-on-surface truncate mt-0.5">
+                          {step.stageLabel}
+                        </h4>
+                        <p className="text-[10px] sm:text-[11px] text-on-surface-variant font-medium mt-0.5">
+                          {step.questions} Aufg. • ~{step.minutes}m
+                        </p>
+                      </div>
+
+                      {/* Bottom Visual Level Bar / Saved Score Indicator */}
+                      <div className="relative z-10">
+                        {saved ? (
+                          <div
+                            className={`px-2.5 py-1.5 rounded-xl ${targetClr.softBg} flex items-center justify-between gap-1`}
+                          >
+                            <span className={`text-[10px] font-black ${targetClr.text}`}>
+                              {saved.percentage}%
+                            </span>
+                            <CheckCircle2 className={`w-3.5 h-3.5 ${targetClr.accentText} shrink-0`} />
+                          </div>
+                        ) : (
+                          <div className="space-y-1.5">
+                            <div className="w-full h-1.5 rounded-full bg-surface-container-low dark:bg-white/[0.07] overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(idx + 1) * 32}%` }}
+                                transition={{ duration: 0.7, delay: 0.2 + idx * 0.1 }}
+                                className={`h-full rounded-full bg-gradient-to-r ${targetClr.barGradient}`}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
-            <Link
-              to="/level-test"
-              className="w-full lg:w-auto px-6 py-3.5 rounded-xl text-sm bg-germany-red text-white font-bold flex items-center justify-center gap-2 hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
-            >
-              <span>Zum Einstufungstest</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </Link>
-          </div>
-        </section>
+          </Link>
+        </motion.section>
 
         {/* Action Center & Stats (Horizontal Scroll on Mobile) */}
         <section>
@@ -506,7 +660,7 @@ export default function Dashboard() {
           <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 md:pb-0 md:grid md:grid-cols-3 md:grid-rows-2 snap-x snap-mandatory -mx-margin-mobile px-margin-mobile scroll-pl-margin-mobile md:mx-0 md:px-0 md:scroll-pl-0">
             {/* Completed Lessons Stat */}
             <div className="min-w-[140px] md:min-w-0 snap-start bg-surface-container-lowest rounded-xl p-4 md:p-5 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col justify-between hover:-translate-y-0.5 transition-transform duration-200 md:col-start-1 md:row-start-1">
-              <div className="w-10 h-10 rounded-full bg-primary-container/20 text-primary dark:bg-primary/10 dark:text-primary flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-primary-container/20 text-primary dark:bg-red-500/15 dark:text-red-400 flex items-center justify-center mb-3">
                 <span className="material-symbols-outlined icon-filled">check_circle</span>
               </div>
               <div>

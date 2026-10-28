@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Headphones, Play, Pause, RotateCcw, Volume2 } from 'lucide-react';
+import { getLevelColor } from '../../utils/levelColors';
 
 const formatTime = (timeInSeconds) => {
   if (isNaN(timeInSeconds) || timeInSeconds < 0) return '0:00';
@@ -13,10 +14,12 @@ export default function LevelTestAudioPlayer({
   src,
   audios,
   questionId,
-  title
+  title,
+  level = 'A2'
 }) {
   const audioRef = useRef(null);
   const progressRef = useRef(null);
+  const lvlColor = getLevelColor(level);
 
   const trackList = React.useMemo(() => {
     if (Array.isArray(audios) && audios.length > 0) {
@@ -156,13 +159,13 @@ export default function LevelTestAudioPlayer({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="bg-[#1F1F22] dark:bg-[#18181B] border border-surface-variant/20 dark:border-white/10 rounded-xl p-2.5 sm:p-3 flex flex-col gap-2 shadow-sm"
+      className="bg-[#1D1E22] dark:bg-[#141518] rounded-2xl p-3 flex flex-col gap-2.5 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.22)]"
     >
       <audio ref={audioRef} preload="metadata" />
 
       {/* Multi-track selector pills if multiple audios exist */}
       {trackList.length > 1 && (
-        <div className="flex flex-wrap gap-1.5 pb-1.5 border-b border-white/10">
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-white/[0.04]">
           {trackList.map((track, idx) => {
             const isActive = idx === activeTrackIdx;
             return (
@@ -171,10 +174,10 @@ export default function LevelTestAudioPlayer({
                 key={track.url + idx}
                 type="button"
                 onClick={() => handleTrackSwitch(idx)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                   isActive
-                    ? 'bg-primary text-white shadow-sm shadow-primary/40'
-                    : 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white'
+                    ? `${lvlColor.buttonBg} shadow-sm ${lvlColor.shadowGlow}`
+                    : 'bg-white/[0.06] text-white/75 hover:bg-white/12 hover:text-white'
                 }`}
               >
                 <Volume2 className="w-3 h-3 shrink-0" />
@@ -186,14 +189,14 @@ export default function LevelTestAudioPlayer({
       )}
 
       {/* Single Compact Player Bar */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         <motion.button
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.92 }}
           type="button"
           onClick={togglePlay}
           aria-label={isPlaying ? 'Pause' : 'Abspielen'}
-          className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(220,38,38,0.35)]"
+          className={`w-9 h-9 rounded-full ${lvlColor.buttonBg} flex items-center justify-center shrink-0 shadow-md ${lvlColor.shadowGlow} transition-transform`}
         >
           {isPlaying ? (
             <Pause className="w-4 h-4 fill-current" />
@@ -202,13 +205,13 @@ export default function LevelTestAudioPlayer({
           )}
         </motion.button>
 
-        <div className="flex-1 min-w-0 flex flex-col gap-1">
+        <div className="flex-1 min-w-0 flex flex-col gap-1.5">
           <div className="flex items-center justify-between gap-2 text-[11px]">
             <div className="flex items-center gap-1.5 text-white font-bold truncate">
-              <Headphones className="w-3.5 h-3.5 text-germany-gold shrink-0" />
+              <Headphones className={`w-3.5 h-3.5 shrink-0 ${lvlColor.accentText}`} />
               <span className="truncate">{currentTrack.label}</span>
             </div>
-            <span className="text-[10px] font-mono text-white/60 shrink-0 tabular-nums">
+            <span className="text-[10px] font-mono text-white/70 shrink-0 tabular-nums">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
           </div>
@@ -219,23 +222,23 @@ export default function LevelTestAudioPlayer({
             className="w-full h-1.5 rounded-full bg-white/15 cursor-pointer overflow-hidden flex items-center"
           >
             <div
-              className="h-full bg-gradient-to-r from-primary to-germany-gold transition-all duration-100 ease-linear rounded-full"
+              className={`h-full bg-gradient-to-r ${lvlColor.barGradient} transition-all duration-100 ease-linear rounded-full`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
 
         {/* Speed Selector */}
-        <div className="hidden xs:flex items-center gap-0.5 bg-white/5 rounded-lg p-0.5 border border-white/10 shrink-0">
+        <div className="hidden xs:flex items-center gap-0.5 bg-white/[0.07] rounded-xl p-1 shrink-0">
           {[0.8, 1.0, 1.2].map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => handleSpeedChange(s)}
-              className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
                 speed === s
-                  ? 'bg-primary text-white'
-                  : 'text-white/60 hover:text-white'
+                  ? `${lvlColor.solidBg} shadow-sm`
+                  : 'text-white/65 hover:text-white'
               }`}
             >
               {s}x
@@ -249,7 +252,7 @@ export default function LevelTestAudioPlayer({
           onClick={handleRestart}
           title="Von Anfang abspielen"
           aria-label="Von Anfang abspielen"
-          className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center shrink-0 transition-colors"
+          className="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/15 text-white/80 hover:text-white flex items-center justify-center shrink-0 transition-colors"
         >
           <RotateCcw className="w-3.5 h-3.5" />
         </motion.button>

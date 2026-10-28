@@ -62,14 +62,14 @@ export default function AdminDashboard() {
       </section>
 
       {/* Homework Banner */}
-      <section className="mb-2 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+      <section className="mb-2 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
         {/* Abstract Background Blobs */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs mb-3 border border-primary/20 backdrop-blur-md">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-red-500/15 text-primary dark:text-red-300 font-bold text-xs mb-3 border border-primary/20 dark:border-red-500/30 backdrop-blur-md">
             <span className="material-symbols-outlined text-[16px]">school</span>
             Espace Administrateur
           </div>
@@ -83,9 +83,9 @@ export default function AdminDashboard() {
 
         {/* Action Area */}
         <div className="relative z-10 shrink-0 w-full md:w-auto flex flex-col items-center">
-          <div className="w-24 h-24 mb-4 flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+          <div className="w-24 h-24 mb-4 flex items-center justify-center bg-surface dark:bg-[#26282E] rounded-full shadow-inner border border-surface-variant/50 dark:border-white/10 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
             <span
-              className="material-symbols-outlined text-[48px] text-primary drop-shadow-sm"
+              className="material-symbols-outlined text-[48px] text-primary dark:text-red-400 drop-shadow-sm"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               add_task
@@ -102,10 +102,10 @@ export default function AdminDashboard() {
       </section>
 
       {/* German Level Test Section (Accessible by every user account) */}
-      <section className="mb-6 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+      <section className="mb-6 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-lg bg-surface-container-lowest border border-surface-variant dark:border-white/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
         {/* Abstract Background Blobs */}
-        <div className="absolute top-0 right-0 w-52 h-52 bg-germany-gold/15 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+        <div className="absolute top-0 right-0 w-52 h-52 bg-germany-gold/15 dark:bg-germany-gold/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-germany-red/10 dark:bg-germany-red/15 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
 
         {/* Left Content + Level Quick Links */}
         <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
 
         {/* Right Action Area */}
         <div className="relative z-10 shrink-0 w-full lg:w-auto flex flex-col items-center">
-          <div className="w-24 h-24 mb-4 hidden lg:flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+          <div className="w-24 h-24 mb-4 hidden lg:flex items-center justify-center bg-surface dark:bg-[#26282E] rounded-full shadow-inner border border-surface-variant/50 dark:border-white/10 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
             <span
               className="material-symbols-outlined text-[48px] text-germany-red drop-shadow-sm"
               style={{ fontVariationSettings: "'FILL' 1" }}
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
           </div>
           <Link
             to="/level-test"
-            className="w-full lg:w-auto px-6 py-3.5 rounded-xl text-sm bg-germany-red text-white font-bold flex items-center justify-center gap-2 hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+            className="w-full lg:w-auto px-6 py-3 rounded-full text-sm bg-germany-red text-white font-light tracking-wide whitespace-nowrap flex items-center justify-center gap-2 hover:bg-red-700 dark:hover:bg-red-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
           >
             <span>Lancer un test de niveau</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
           to="/admin/admins"
           className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300"
         >
-          <div className="w-12 h-12 rounded-full bg-germany-black/10 text-germany-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-full bg-germany-black/10 dark:bg-white/10 text-germany-black dark:text-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <span className="material-symbols-outlined icon-filled text-[28px]">
               admin_panel_settings
             </span>
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
           <p className="text-on-surface-variant mb-6 flex-1">
             Gérez d'autres administrateurs avec des droits système étendus.
           </p>
-          <div className="flex items-center text-germany-black font-bold gap-2">
+          <div className="flex items-center text-germany-black dark:text-white font-bold gap-2">
             Gérer les administrateurs
             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
               arrow_forward
