@@ -18,24 +18,30 @@ export default function AdminDashboard() {
     <main className="flex-1 w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 md:gap-8">
       <section className="mb-2 md:mb-4 flex justify-between items-end">
         <div>
-          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Bonjour, Master Admin {user?.name}!</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Aperçu de la zone d'administration.</p>
+          <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
+            Bonjour, Master Admin {user?.name}!
+          </h2>
+          <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+            Aperçu de la zone d'administration.
+          </p>
         </div>
       </section>
 
       {/* Campus Entry Banner */}
       <section className="mb-4 md:mb-8">
-        <Link to="/campus" className="group block w-full rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden relative">
+        <Link
+          to="/campus"
+          className="group block w-full rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden relative"
+        >
           {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
             style={{ backgroundImage: "url('/images/malagasy_student_banner.png')" }}
           ></div>
           {/* Gradient Overlay for Text Readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-germany-black/90 via-germany-black/60 to-transparent"></div>
-          
+
           <div className="relative z-10 p-6 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between h-full gap-6 min-h-[220px]">
-            
             <div className="text-center md:text-left flex-1 max-w-xl">
               <h3 className="font-title-lg text-title-lg md:text-4xl text-white mb-3 font-bold tracking-tight drop-shadow-md">
                 Le <span className="text-germany-gold">Campus</span> virtuel
@@ -44,7 +50,7 @@ export default function AdminDashboard() {
                 Entrez dans l'école virtuelle pour superviser les classes en direct et gérer le campus.
               </p>
             </div>
-            
+
             <div className="shrink-0 w-full md:w-auto">
               <div className="w-full md:w-auto bg-germany-red text-white font-label-lg px-8 py-4 rounded-full shadow-lg group-hover:bg-red-700 transition-colors flex items-center justify-center gap-3 cursor-pointer backdrop-blur-sm border border-white/20">
                 <span className="material-symbols-outlined">meeting_room</span>
@@ -56,30 +62,80 @@ export default function AdminDashboard() {
       </section>
 
       {/* Homework Banner */}
-      <section className="mb-8 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+      <section className="mb-2 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
         {/* Abstract Background Blobs */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs mb-3 border border-primary/20 backdrop-blur-md">
             <span className="material-symbols-outlined text-[16px]">school</span>
             Espace Administrateur
           </div>
-          <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">Gestion des Devoirs</h4>
+          <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">
+            Gestion des Devoirs
+          </h4>
           <p className="text-on-surface-variant text-sm md:text-base max-w-lg font-medium leading-relaxed">
             Créez de nouveaux exercices, suivez la progression des élèves et gérez l'ensemble des travaux de vos classes.
           </p>
         </div>
-        
+
         {/* Action Area */}
         <div className="relative z-10 shrink-0 w-full md:w-auto flex flex-col items-center">
           <div className="w-24 h-24 mb-4 flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
-            <span className="material-symbols-outlined text-[48px] text-primary drop-shadow-sm" style={{ fontVariationSettings: "'FILL' 1" }}>add_task</span>
+            <span
+              className="material-symbols-outlined text-[48px] text-primary drop-shadow-sm"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              add_task
+            </span>
           </div>
-          <Link to="/homework" className="w-full md:w-auto px-6 py-3 rounded-xl text-sm bg-germany-black dark:bg-white text-white dark:text-germany-black font-bold flex items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+          <Link
+            to="/homework"
+            className="w-full md:w-auto px-6 py-3 rounded-xl text-sm bg-germany-black dark:bg-white text-white dark:text-germany-black font-bold flex items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+          >
             <span>Créer / Gérer les devoirs</span>
+            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* German Level Test Section (Accessible by every user account) */}
+      <section className="mb-6 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
+        {/* Abstract Background Blobs */}
+        <div className="absolute top-0 right-0 w-52 h-52 bg-germany-gold/15 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-germany-red/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
+
+        {/* Left Content + Level Quick Links */}
+        <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-germany-gold/20 text-amber-800 dark:text-amber-300 font-bold text-xs mb-3 border border-germany-gold/30 backdrop-blur-md">
+            <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
+            Einstufungstest • Test de Niveau
+          </div>
+          <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">
+            Test de Niveau d'Allemand (A2 • B1 • B2)
+          </h4>
+          <p className="text-on-surface-variant text-sm md:text-base max-w-2xl font-medium leading-relaxed">
+            Évaluez le niveau d'allemand d'un étudiant avec les examens officiels prérequis : pour intégrer la classe <strong>A2</strong> (examen A1), <strong>B1</strong> (examen A2) ou <strong>B2</strong> (examen B1).
+          </p>
+        </div>
+
+        {/* Right Action Area */}
+        <div className="relative z-10 shrink-0 w-full lg:w-auto flex flex-col items-center">
+          <div className="w-24 h-24 mb-4 hidden lg:flex items-center justify-center bg-surface rounded-full shadow-inner border border-surface-variant/50 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
+            <span
+              className="material-symbols-outlined text-[48px] text-germany-red drop-shadow-sm"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              fact_check
+            </span>
+          </div>
+          <Link
+            to="/level-test"
+            className="w-full lg:w-auto px-6 py-3.5 rounded-xl text-sm bg-germany-red text-white font-bold flex items-center justify-center gap-2 hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+          >
+            <span>Lancer un test de niveau</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </Link>
         </div>
@@ -87,45 +143,78 @@ export default function AdminDashboard() {
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Students Card */}
-        <Link to="/admin/students" className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300">
+        <Link
+          to="/admin/students"
+          className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300"
+        >
           <div className="w-12 h-12 rounded-full bg-germany-gold/10 text-germany-gold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <span className="material-symbols-outlined icon-filled text-[28px]">school</span>
           </div>
           <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Étudiants</h3>
-          <p className="text-on-surface-variant mb-4 flex-1">Gérez tous les étudiants. Ajoutez-en de nouveaux, modifiez les niveaux ou mettez à jour les profils.</p>
+          <p className="text-on-surface-variant mb-4 flex-1">
+            Gérez tous les étudiants. Ajoutez-en de nouveaux, modifiez les niveaux ou mettez à jour les profils.
+          </p>
           <div className="bg-surface-variant rounded-lg p-3 mb-6 flex justify-between items-center">
-            <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Total</span>
-            <span className="text-xl font-black text-germany-gold">{students?.length || 0}</span>
+            <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">
+              Total
+            </span>
+            <span className="text-xl font-black text-germany-gold">
+              {students?.length || 0}
+            </span>
           </div>
           <div className="flex items-center text-germany-gold font-bold gap-2">
             Gérer les étudiants
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
           </div>
         </Link>
 
         {/* Teachers Card */}
-        <Link to="/admin/teachers" className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300">
+        <Link
+          to="/admin/teachers"
+          className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300"
+        >
           <div className="w-12 h-12 rounded-full bg-germany-red/10 text-germany-red flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined icon-filled text-[28px]">history_edu</span>
+            <span className="material-symbols-outlined icon-filled text-[28px]">
+              history_edu
+            </span>
           </div>
-          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Professeurs</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Gérez le personnel enseignant. Attribuez des droits et maintenez les profils des professeurs.</p>
+          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">
+            Professeurs
+          </h3>
+          <p className="text-on-surface-variant mb-6 flex-1">
+            Gérez le personnel enseignant. Attribuez des droits et maintenez les profils des professeurs.
+          </p>
           <div className="flex items-center text-germany-red font-bold gap-2">
             Gérer les professeurs
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
           </div>
         </Link>
 
         {/* Admins Card */}
-        <Link to="/admin/admins" className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300">
+        <Link
+          to="/admin/admins"
+          className="group bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-surface-subtle flex flex-col hover:-translate-y-1 transition-all duration-300"
+        >
           <div className="w-12 h-12 rounded-full bg-germany-black/10 text-germany-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined icon-filled text-[28px]">admin_panel_settings</span>
+            <span className="material-symbols-outlined icon-filled text-[28px]">
+              admin_panel_settings
+            </span>
           </div>
-          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">Administrateurs</h3>
-          <p className="text-on-surface-variant mb-6 flex-1">Gérez d'autres administrateurs avec des droits système étendus.</p>
+          <h3 className="font-title-lg text-title-lg text-on-surface mb-2">
+            Administrateurs
+          </h3>
+          <p className="text-on-surface-variant mb-6 flex-1">
+            Gérez d'autres administrateurs avec des droits système étendus.
+          </p>
           <div className="flex items-center text-germany-black font-bold gap-2">
             Gérer les administrateurs
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
           </div>
         </Link>
       </section>

@@ -29,6 +29,7 @@ import AdminManagement from './pages/AdminManagement';
 
 import HomeworkExercise from './pages/HomeworkExercise';
 import ExerciseTestPage from './pages/ExerciseTestPage';
+import LevelTestPage from './pages/LevelTestPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -72,10 +73,10 @@ function App() {
   return (
     <>
       <Router>
-          <Routes>
+        <Routes>
           {/* Landing Page */}
           <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} />
-          
+
           {/* Authenticated Routes */}
           {isAuthenticated ? (
             <>
@@ -94,12 +95,14 @@ function App() {
                   } />
                 </>
               )}
-              
+
               <Route path="*" element={
                 <Navbar>
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    
+                    <Route path="/level-test" element={<LevelTestPage />} />
+                    <Route path="/level-test/:levelId" element={<LevelTestPage />} />
+
                     {/* Route Guards for non-dashboard pages */}
                     {user?.status !== 'pending' ? (
                       <>
@@ -123,7 +126,7 @@ function App() {
                       // If pending user tries to visit any of these, redirect to dashboard
                       <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     )}
-                    
+
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </Navbar>
