@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAdminUsers } from '../store/adminUsersSlice';
 import { fetchAdminStudents } from '../store/adminStudentsSlice';
+import LevelTestSection from '../components/LevelTestSection';
 
 export default function AdminDashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -101,45 +102,8 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* German Level Test Section (Accessible by every user account) */}
-      <section className="mb-6 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-lg bg-surface-container-lowest border border-surface-variant dark:border-white/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
-        {/* Abstract Background Blobs */}
-        <div className="absolute top-0 right-0 w-52 h-52 bg-germany-gold/15 dark:bg-germany-gold/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-germany-red/10 dark:bg-germany-red/15 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-70 group-hover:scale-110 transition-transform duration-700 translate-y-1/3 -translate-x-1/4"></div>
-
-        {/* Left Content + Level Quick Links */}
-        <div className="relative z-10 flex flex-col items-start text-left flex-1 w-full">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-germany-gold/20 text-amber-800 dark:text-amber-300 font-bold text-xs mb-3 border border-germany-gold/30 backdrop-blur-md">
-            <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
-            Einstufungstest • Test de Niveau
-          </div>
-          <h4 className="text-2xl md:text-3xl font-black text-on-surface mb-2 tracking-tight">
-            Test de Niveau d'Allemand (A2 • B1 • B2)
-          </h4>
-          <p className="text-on-surface-variant text-sm md:text-base max-w-2xl font-medium leading-relaxed">
-            Évaluez le niveau d'allemand d'un étudiant avec les examens officiels prérequis : pour intégrer la classe <strong>A2</strong> (examen A1), <strong>B1</strong> (examen A2) ou <strong>B2</strong> (examen B1).
-          </p>
-        </div>
-
-        {/* Right Action Area */}
-        <div className="relative z-10 shrink-0 w-full lg:w-auto flex flex-col items-center">
-          <div className="w-24 h-24 mb-4 hidden lg:flex items-center justify-center bg-surface dark:bg-[#26282E] rounded-full shadow-inner border border-surface-variant/50 dark:border-white/10 backdrop-blur-xl group-hover:scale-105 transition-transform duration-500">
-            <span
-              className="material-symbols-outlined text-[48px] text-germany-red drop-shadow-sm"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              fact_check
-            </span>
-          </div>
-          <Link
-            to="/level-test"
-            className="w-full lg:w-auto px-6 py-3 rounded-full text-sm bg-germany-red text-white font-light tracking-wide whitespace-nowrap flex items-center justify-center gap-2 hover:bg-red-700 dark:hover:bg-red-500 hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
-          >
-            <span>Lancer un test de niveau</span>
-            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </Link>
-        </div>
-      </section>
+      {/* German Level Test Section - Unified UI */}
+      <LevelTestSection className="mb-2" />
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Students Card */}
