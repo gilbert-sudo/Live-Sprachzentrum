@@ -49,6 +49,27 @@ code {
   scrollbar-width: none;
 }
 
+/* Custom slim scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(140, 140, 140, 0.4);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(213, 31, 38, 0.7);
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 140, 140, 0.4) transparent;
+}
+
 /* Germany Flag Accent */
 .germany-accent-bar {
     background: linear-gradient(to right, #000000 33.3%, #D51F26 33.3%, #D51F26 66.6%, #FFCC00 66.6%);

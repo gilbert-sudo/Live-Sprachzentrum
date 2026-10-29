@@ -59,6 +59,14 @@ export default function TeacherTrainingProgram() {
 
   // Scroll to top of content when module changes
   const contentTopRef = useRef(null);
+  const activeItemRef = useRef(null);
+
+  // Auto-scroll active item into view inside sidebar
+  useEffect(() => {
+    if (activeItemRef.current) {
+      activeItemRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeModuleId]);
 
   useEffect(() => {
     try {
@@ -264,13 +272,19 @@ export default function TeacherTrainingProgram() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Sidebar Navigation */}
-        <aside className={`
-          lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24 z-30 transition-all duration-300
-          ${isMobileMenuOpen 
-            ? 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col justify-end p-4 lg:p-0 lg:static lg:bg-transparent lg:backdrop-blur-none' 
-            : 'hidden lg:block'}
-        `}>
-          <div className="bg-surface-container-lowest rounded-3xl border border-surface-variant p-4 shadow-lg lg:shadow-sm max-h-[85vh] flex flex-col">
+        <aside 
+          data-lenis-prevent="true"
+          className={`
+            lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24 z-30 transition-all duration-300
+            ${isMobileMenuOpen 
+              ? 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col justify-end p-4 lg:p-0 lg:static lg:bg-transparent lg:backdrop-blur-none' 
+              : 'hidden lg:block'}
+          `}
+        >
+          <div 
+            data-lenis-prevent="true"
+            className="bg-surface-container-lowest rounded-3xl border border-surface-variant p-4 shadow-lg lg:shadow-sm max-h-[calc(100vh-7.5rem)] h-[calc(100vh-7.5rem)] flex flex-col overflow-hidden"
+          >
             
             {/* Sidebar Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-surface-variant">
@@ -311,8 +325,12 @@ export default function TeacherTrainingProgram() {
               )}
             </div>
 
-            {/* Modules List */}
-            <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 hide-scrollbar">
+            {/* Modules List (Scrollable) */}
+            <div 
+              data-lenis-prevent="true"
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-1.5 pr-1.5 custom-scrollbar"
+              style={{ touchAction: 'pan-y' }}
+            >
               {filteredModules.map((mod) => {
                 const isActive = mod.id === activeModuleId;
                 const isCompleted = completedModules.includes(mod.id);
@@ -320,6 +338,7 @@ export default function TeacherTrainingProgram() {
                 return (
                   <button
                     key={mod.id}
+                    ref={isActive ? activeItemRef : null}
                     onClick={() => handleSelectModule(mod.id)}
                     className={`
                       w-full text-left p-3 rounded-2xl transition-all duration-200 flex items-start gap-3 relative group
