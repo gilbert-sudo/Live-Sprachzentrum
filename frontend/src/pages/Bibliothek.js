@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PdfReaderModal from '../components/EBook/PdfReaderModal';
 import UploadModal from '../components/Library/UploadModal';
 import EditModal from '../components/Library/EditModal';
@@ -100,6 +101,15 @@ export default function Bibliothek({ readOnly = false }) {
               Dein virtueller Lesesaal und Hörbuch-Bereich.
             </p>
           </div>
+          {(user?.role === 'teacher' || user?.role === 'admin') && (
+            <Link 
+              to="/lehrer-training"
+              className="bg-surface-container-high border border-surface-variant text-on-surface px-3.5 py-2 rounded-xl font-label-md flex items-center gap-2 hover:bg-surface-container-low hover:border-germany-red transition-all text-xs font-bold shadow-sm"
+            >
+              <span className="material-symbols-outlined text-[18px] text-germany-red">menu_book</span>
+              <span className="hidden sm:inline">Lehrerhandbuch</span>
+            </Link>
+          )}
           {isAdmin && (
             <button 
               onClick={() => setIsUploadModalOpen(true)}

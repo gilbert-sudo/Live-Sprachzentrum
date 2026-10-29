@@ -32,6 +32,7 @@ import ExerciseTestPage from './pages/ExerciseTestPage';
 import LevelTestPage from './pages/LevelTestPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
+import TeacherTrainingProgram from './pages/TeacherTrainingProgram';
 
 import Lenis from 'lenis';
 
@@ -114,6 +115,9 @@ function App() {
                         <Route path="/stammtisch" element={<Stammtisch />} />
                         <Route path="/profil" element={<Profile />} />
                         <Route path="/homework" element={<HomeworkPage />} />
+                        <Route path="/lehrer-training" element={<TeacherTrainingProgram />} />
+                        <Route path="/teacher-training" element={<TeacherTrainingProgram />} />
+                        <Route path="/lehrerhandbuch" element={<TeacherTrainingProgram />} />
 
                         {/* Admin Routes */}
                         <Route path="/admin" element={<AdminDashboard />} />

@@ -47,6 +47,12 @@ const UserMenu = () => {
             <span className="material-symbols-outlined text-[20px]">person</span>
             {t('navbar.my_profile', 'Mein Profil')}
           </Link>
+          {(user.role === 'teacher' || user.role === 'admin') && (
+            <Link to="/lehrer-training" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-all">
+              <span className="material-symbols-outlined text-[20px] text-germany-red">menu_book</span>
+              Lehrerhandbuch & Training
+            </Link>
+          )}
           <button onClick={() => { setIsOpen(false); dispatch(logout()); }} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-germany-red hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-left w-full">
             <span className="material-symbols-outlined text-[20px]">logout</span>
             {t('navbar.logout', 'Abmelden')}
