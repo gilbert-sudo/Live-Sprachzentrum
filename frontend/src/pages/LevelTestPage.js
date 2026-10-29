@@ -42,10 +42,33 @@ export function loadSavedLevelTestResults() {
   return readCachedLevelTestResults();
 }
 
-function formatDuration(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+function formatDuration(seconds, forceHours = false) {
+  const safeSecs = Math.max(0, Number(seconds) || 0);
+  const hrs = Math.floor(safeSecs / 3600);
+  const mins = Math.floor((safeSecs % 3600) / 60);
+  const secs = safeSecs % 60;
+  if (hrs > 0 || forceHours) {
+    return `${hrs < 10 ? '0' : ''}${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
   return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+function formatTestDurationLabel(minutes) {
+  if (!minutes) return '~1h 15m';
+  const hrs = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  if (hrs > 0 && rem > 0) return `${hrs}h ${rem}m`;
+  if (hrs > 0) return `${hrs}h`;
+  return `${rem}m`;
+}
+
+function formatTestDurationLong(minutes) {
+  if (!minutes) return '1 Std. 15 Min.';
+  const hrs = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  if (hrs > 0 && rem > 0) return `${hrs} Std. ${rem} Min.`;
+  if (hrs > 0) return `${hrs} Std.`;
+  return `${rem} Min.`;
 }
 
 function stripHtmlTags(html) {
@@ -147,8 +170,8 @@ const LevelTestPage = () => {
   const [answers, setAnswers] = useState({});
   const [flaggedIds, setFlaggedIds] = useState([]);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [timeLimitSeconds, setTimeLimitSeconds] = useState(1800);
-  const [remainingSeconds, setRemainingSeconds] = useState(1800);
+  const [timeLimitSeconds, setTimeLimitSeconds] = useState(4500);
+  const [remainingSeconds, setRemainingSeconds] = useState(4500);
   const [isTimedOut, setIsTimedOut] = useState(false);
   const [timeReminderBanner, setTimeReminderBanner] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
@@ -238,7 +261,7 @@ const LevelTestPage = () => {
       }
     });
 
-    const totalSecs = (currentTest.estimatedMinutes || 30) * 60;
+    const totalSecs = (currentTest.estimatedMinutes || 75) * 60;
 
     setAnswers(initialAnswers);
     setFlaggedIds([]);
@@ -343,16 +366,17 @@ const LevelTestPage = () => {
       return;
     }
 
-    if (remainingSeconds === 600) {
+    if (remainingSeconds === 900) {
       setTimeReminderBanner({
         level: 'info',
-        message: 'Hinweis: Noch 10 Minuten verbleibende Bearbeitungszeit.'
+        message:
+          'Hinweis: Noch 15 Minuten verbleibende Bearbeitungszeit. Beginnen Sie bald mit der Durchsicht Ihrer Antworten.'
       });
     } else if (remainingSeconds === 300) {
       setTimeReminderBanner({
         level: 'warning',
         message:
-          'Erinnerung: Noch 5 Minuten übrig! Bitte überprüfen Sie Ihre offenen Fragen.'
+          'Erinnerung: Noch 5 Minuten übrig! Bitte überprüfen Sie Ihre noch offenen oder markierten Fragen.'
       });
     } else if (remainingSeconds === 60) {
       setTimeReminderBanner({
@@ -509,7 +533,7 @@ const LevelTestPage = () => {
                       </div>
                       <div className="py-2 px-2 rounded-2xl bg-surface-container-low/85 dark:bg-[#26282E] text-center">
                         <p className={`text-xs font-black ${lvlColor.accentText}`}>
-                          ~{test.estimatedMinutes}m
+                          ~{formatTestDurationLabel(test.estimatedMinutes)}
                         </p>
                         <p className="text-[9px] font-bold uppercase text-on-surface-variant mt-0.5">
                           Dauer
@@ -629,7 +653,7 @@ const LevelTestPage = () => {
                   </div>
                   <div>
                     <h3 className="text-xs font-extrabold text-on-surface">
-                      {currentTest.estimatedMinutes}:00 Min. Countdown
+                      {formatTestDurationLong(currentTest.estimatedMinutes)} Bearbeitungszeit
                     </h3>
                     <p className="text-[11px] text-on-surface-variant mt-0.5">
                       {currentTest.totalQuestions} Aufgaben • Automatische Auswertung
@@ -798,7 +822,7 @@ const LevelTestPage = () => {
                     }`}
                   />
                   <Clock className="w-3.5 h-3.5 shrink-0" />
-                  <span className="tabular-nums">{formatDuration(remainingSeconds)}</span>
+                  <span className="tabular-nums">{formatDuration(remainingSeconds, timeLimitSeconds >= 3600)}</span>
                 </div>
 
                 <motion.button
@@ -1616,7 +1640,7 @@ const LevelTestPage = () => {
                   <div className="flex items-center justify-between px-2.5 py-1 rounded-sm bg-white">
                     <span className="text-slate-600 font-medium">Dauer:</span>
                     <span className="font-mono font-bold text-slate-900">
-                      {formatDuration(elapsedSeconds)} Min.
+                      {formatDuration(elapsedSeconds)} {elapsedSeconds >= 3600 ? 'Std.' : 'Min.'}
                     </span>
                   </div>
                   <div className="text-[10px] font-semibold text-slate-600 pt-0.5">
@@ -1934,8 +1958,7 @@ const LevelTestPage = () => {
                   Zeit abgelaufen! Der Test wurde automatisch beendet.
                 </h2>
                 <p className="text-[11px] sm:text-xs opacity-90 leading-relaxed">
-                  Die vorgesehene Bearbeitungszeit von {currentTest.estimatedMinutes}{' '}
-                  Minuten ist abgelaufen. Ihr Test wurde automatisch abgeschlossen und
+                  Die vorgesehene Bearbeitungszeit von {formatTestDurationLong(currentTest.estimatedMinutes)} ({currentTest.estimatedMinutes} Min.) ist abgelaufen. Ihr Test wurde automatisch abgeschlossen und
                   auf Basis Ihrer bis dahin eingegebenen Antworten ausgewertet.
                 </p>
               </div>

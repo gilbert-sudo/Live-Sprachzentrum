@@ -10,7 +10,7 @@ export const LEVEL_TESTS = {
     "shortDescription": "Absolvieren Sie die A1-Prüfung, um Ihre Berechtigung für den A2-Kurs zu testen.",
     "soundCheckAudio": "/level-tests/a2/media/audio_q03.mp3",
     "totalQuestions": 30,
-    "estimatedMinutes": 25,
+    "estimatedMinutes": 75,
     "quellen": "A1-Test Quellenverzeichnis:\nS. 1: Cornelsen / Karin Wagenblatt\nS. 2: Shutterstock.com / nickpeps\nS. 3: Shutterstock.com / nickpeps\nS. 4: Cornelsen / Roland Beier\nS. 5: Cornelsen / Roland Beier\nS. 6: Cornelsen / Roland Beier\nS. 7: Cornelsen / Shutterstock.com / kanate\nS. 8: BVG / Oliver Lang\nS. 9: Shutterstock.com / Iakov Filimonov\nS. 10: Shutterstock.com / Alisa24\nS. 11: Shutterstock.com / Antonio Guillem\nS. 12: Shutterstock.com / Iakov Filimonov\nS. 13: Shutterstock.com / Beate22\nS. 14: Shutterstock.com / Olena Yakobchuk\nS. 15: Shutterstock.com / lightwavemedia\nS. 16: Shutterstock.com / David Papazian\nS. 17: Shutterstock.com / lightwavemedia\nS. 18: Shutterstock.com / wavebreakmedia\nS. 19: Cornelsen / Shutterstock.com / Boris15\nS. 20: Deutsche Bahn AG / Oliver Lauer\nS. 21: Shutterstock.com / linerpics\nS. 22: Cornelsen / Shutterstock.com / RossHelen (Hausmannsturm); Alexander Erdbeer (Semperoper); mauritius images / Ernst Wrba (Palais im Großen Garten)\nS. 23: Shutterstock.com / vitmark\nS. 24: Shutterstock.com / sirtravelalot\nS. 25: Shutterstock.com / Shooting Star Studio\nS. 26: Cornelsen / Karin Wagenblatt\nS. 27: Shutterstock.com / Monkey Business Images\nS. 28: Shutterstock.com / Monkey Business Images\nS. 29: Shutterstock.com / fizkes\nS. 30: Lotto Rheinland-Pfalz GmbH / Cornelsen / Deutscher Genossenschafts-Verlag eG",
     "evaluationScale": [
       {
@@ -1605,7 +1605,7 @@ export const LEVEL_TESTS = {
     "shortDescription": "Absolvieren Sie die A2-Prüfung, um Ihre Berechtigung für den B1-Kurs zu testen.",
     "soundCheckAudio": "/level-tests/b1/media/S3_63584_GER-Test_A2_2.mp3",
     "totalQuestions": 29,
-    "estimatedMinutes": 30,
+    "estimatedMinutes": 80,
     "quellen": "A2-Test Quellenverzeichnis:\nS. 1: Shutterstock.com/ WAYHOME studio\nS. 2: Shutterstock.com/ Rob Bouwman\nS. 3: Shutterstock.com/ Iakov Filimonov\nS. 4: Shutterstock.com/ Iakov Filimonov\nS. 5: Cornelsen/ Karin Wagenblatt\nS. 6/Papier: Shutterstock.com/ Feng Yu; S. 6/Anzeigen: Cornelsen/ Karin Wagenblatt\nS. 7: Cornelsen/ Karin Wagenblatt\nS. 8: Shutterstock.com/ ASDF_MEDIA\nS. 9: Cornelsen/ Karin Wagenblatt\nS. 10: Shutterstock.com/ g-stockstudio\nS. 11: Shutterstock.com/ Oleg Golovnev\nS. 12: Cornelsen/ Karin Wagenblatt\nS. 13: Shutterstock.com/ Jacob Lund\nS. 14: Cornelsen/ Roland Beier\nS. 15: Shutterstock.com/ iiinuthiii\nS. 16: Shutterstock.com/ puhhha\nS. 17: Shutterstock.com/ Dean Drobot\nS. 18: Cornelsen/ Shutterstock.com/ Thana Thanadechakul\nS. 19: Cornelsen/ Shutterstock.com/ viviamo\nS. 20: Cornelsen/ Roland Beier\nS. 21: Shutterstock.com/ Tyler Olson\nS. 22: Cornelsen/ Shutterstock.com/ Thana Thanadechakul\nS. 23: Shutterstock.com/ Billion Photos\nS. 24: Cornelsen/ Shutterstock.com/ (Skyline) Sky and glass/ (Telefon) Boris15\nS. 25: Shutterstock.com/ Cristi Lucaci\nS. 26: Shutterstock.com/ Dragon Images\nS. 27: Shutterstock.com/ Pressmaster\nS. 28: Shutterstock.com/ CatwalkPhotos\nS. 29: Shutterstock.com/ Tatiana Popova",
     "evaluationScale": [
       {
@@ -3121,7 +3121,7 @@ export const LEVEL_TESTS = {
     "shortDescription": "Absolvieren Sie die B1-Prüfung, um Ihre Berechtigung für den B2-Kurs zu testen.",
     "soundCheckAudio": "/level-tests/b2/media/S3_63591_GER-Test_B1_3.mp3",
     "totalQuestions": 30,
-    "estimatedMinutes": 35,
+    "estimatedMinutes": 90,
     "quellen": "B1-Test Quellenverzeichnis:\nS. 1: Cornelsen/ Karin Wagenblatt\nS. 2: Cornelsen/ Roland Beier\nS. 3: Cornelsen/ Roland Beier\nS. 4: Shutterstock.com/ hbpictures\nS. 5: Cornelsen/ Roland Beier\nS. 6: Cornelsen/ Karin Wagenblatt\nS. 7: Cornelsen/ Shutterstock.com/ (Hintergrund) nanano/ (Auto) Siberica\nS. 8: Cornelsen/ Shutterstock.com/ Feng Yu\nS. 9: Cornelsen/ Shutterstock.com/ Roman Samokhin\nS. 10: Shutterstock.com/ Kolbakova Olga\nS. 11: Cornelsen/ Karin Wagenblatt\nS. 12: Cornelsen/ Karin Wagenblatt\nS. 13: Shutterstock.com/ Kolbakova Olga\nS. 14: Cornelsen/ Karin Wagenblatt\nS. 15: Cornelsen/ Shutterstock.com/ Henrik Winther Andersen\nS. 16: Cornelsen/ Shutterstock.com/ (Kolibri) Aniko Gerendi Enderle/ (Lightbox) Enmaler\nS. 17: Shutterstock.com/ Prostock-studio\nS. 18: Cornelsen/ Roland Beier\nS. 19: Cornelsen/ Roland Beier\nS. 20: Cornelsen/ Shutterstock.com/ NatalieBakunina\nS. 21: Cornelsen/ Karin Wagenblatt\nS. 22: Cornelsen/ Roland Beier\nS. 23: Cornelsen/ Roland Beier\nS. 24: Cornelsen/ Roland Beier\nS. 25: Shutterstock.com/ Olena Hromova\nS. 26: Shutterstock.com/ Kolbakova Olga\nS. 27: Cornelsen/ Karin Wagenblatt\nS. 28: Cornelsen/ Karin Wagenblatt\nS. 29: Cornelsen/ Karin Wagenblatt\nS. 30: Cornelsen/ Karin Wagenblatt",
     "evaluationScale": [
       {

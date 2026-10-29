@@ -13,15 +13,17 @@ export const LEVEL_SHOWCASE_STEPS = [
     exam: 'A1',
     stageLabel: 'Grundlagen',
     questions: 30,
-    minutes: 25
+    minutes: 75,
+    durationLabel: '1h 15m'
   },
   {
     id: 'b1',
     target: 'B1',
     exam: 'A2',
     stageLabel: 'Mittelstufe',
-    questions: 30,
-    minutes: 30
+    questions: 29,
+    minutes: 80,
+    durationLabel: '1h 20m'
   },
   {
     id: 'b2',
@@ -29,7 +31,8 @@ export const LEVEL_SHOWCASE_STEPS = [
     exam: 'B1',
     stageLabel: 'Gute Mittelstufe',
     questions: 30,
-    minutes: 35
+    minutes: 90,
+    durationLabel: '1h 30m'
   }
 ];
 
@@ -166,7 +169,7 @@ export default function LevelTestSection({ className = 'mb-4' }) {
                       {step.stageLabel}
                     </h4>
                     <p className="text-[10px] sm:text-[11px] text-on-surface-variant font-medium mt-0.5">
-                      {step.questions} Aufg. • ~{step.minutes}m
+                      {step.questions} Aufg. • ~{step.durationLabel || `${step.minutes}m`}
                     </p>
                   </div>
 
