@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchAdminUsers } from '../store/adminUsersSlice';
 import { fetchAdminStudents } from '../store/adminStudentsSlice';
 import LevelTestSection from '../components/LevelTestSection';
+import TeacherTrainingBanner from '../components/TeacherTrainingBanner';
 
 
 export default function AdminDashboard() {
@@ -62,6 +63,9 @@ export default function AdminDashboard() {
           </div>
         </Link>
       </section>
+
+      {/* Teacher Formation Training Program */}
+      <TeacherTrainingBanner className="mb-4" />
 
       {/* Homework Banner */}
       <section className="mb-2 relative w-full overflow-hidden rounded-3xl p-5 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] bg-surface-container-lowest border border-surface-variant dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-500">
