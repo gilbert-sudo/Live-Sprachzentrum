@@ -54,7 +54,7 @@ function formatDuration(seconds, forceHours = false) {
 }
 
 function formatTestDurationLabel(minutes) {
-  if (!minutes) return '~1h 15m';
+  if (!minutes) return '~1h 30m';
   const hrs = Math.floor(minutes / 60);
   const rem = minutes % 60;
   if (hrs > 0 && rem > 0) return `${hrs}h ${rem}m`;
@@ -63,7 +63,7 @@ function formatTestDurationLabel(minutes) {
 }
 
 function formatTestDurationLong(minutes) {
-  if (!minutes) return '1 Std. 15 Min.';
+  if (!minutes) return '1 Std. 30 Min.';
   const hrs = Math.floor(minutes / 60);
   const rem = minutes % 60;
   if (hrs > 0 && rem > 0) return `${hrs} Std. ${rem} Min.`;
@@ -170,8 +170,8 @@ const LevelTestPage = () => {
   const [answers, setAnswers] = useState({});
   const [flaggedIds, setFlaggedIds] = useState([]);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [timeLimitSeconds, setTimeLimitSeconds] = useState(4500);
-  const [remainingSeconds, setRemainingSeconds] = useState(4500);
+  const [timeLimitSeconds, setTimeLimitSeconds] = useState(5400);
+  const [remainingSeconds, setRemainingSeconds] = useState(5400);
   const [isTimedOut, setIsTimedOut] = useState(false);
   const [timeReminderBanner, setTimeReminderBanner] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
@@ -261,7 +261,7 @@ const LevelTestPage = () => {
       }
     });
 
-    const totalSecs = (currentTest.estimatedMinutes || 75) * 60;
+    const totalSecs = (currentTest.estimatedMinutes || 90) * 60;
 
     setAnswers(initialAnswers);
     setFlaggedIds([]);

@@ -13,8 +13,8 @@ export const LEVEL_SHOWCASE_STEPS = [
     exam: 'A1',
     stageLabel: 'Grundlagen',
     questions: 30,
-    minutes: 75,
-    durationLabel: '1h 15m'
+    minutes: 90,
+    durationLabel: '1h 30m'
   },
   {
     id: 'b1',
@@ -22,8 +22,8 @@ export const LEVEL_SHOWCASE_STEPS = [
     exam: 'A2',
     stageLabel: 'Mittelstufe',
     questions: 29,
-    minutes: 80,
-    durationLabel: '1h 20m'
+    minutes: 90,
+    durationLabel: '1h 30m'
   },
   {
     id: 'b2',
@@ -31,8 +31,8 @@ export const LEVEL_SHOWCASE_STEPS = [
     exam: 'B1',
     stageLabel: 'Gute Mittelstufe',
     questions: 30,
-    minutes: 90,
-    durationLabel: '1h 30m'
+    minutes: 120,
+    durationLabel: '2h'
   }
 ];
 
