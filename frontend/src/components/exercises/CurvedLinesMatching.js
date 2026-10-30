@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Link2, RotateCcw, Scissors } from 'lucide-react';
+import { Link2, RotateCcw, Scissors, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getLevelColor } from '../../utils/levelColors';
 
 /**
@@ -22,7 +22,9 @@ export default function CurvedLinesMatching({
   question,
   answer,
   onChange,
-  level = 'B1'
+  level = 'B1',
+  isSubmitted = false,
+  correctPairs = null
 }) {
   const lvlColor = getLevelColor(level);
   const containerRef = useRef(null);
@@ -42,6 +44,13 @@ export default function CurvedLinesMatching({
   const rightItems = useMemo(() => question?.rightItems || [], [question]);
   const pairs = useMemo(() => (Array.isArray(answer) ? answer : []), [answer]);
 
+  // Target correct pairs reference for validation
+  const targetCorrectPairs = useMemo(() => {
+    if (correctPairs && Array.isArray(correctPairs)) return correctPairs;
+    if (question?.correctPairs && Array.isArray(question.correctPairs)) return question.correctPairs;
+    return leftItems.map((it) => `${it.id} ${it.id}`);
+  }, [correctPairs, question, leftItems]);
+
   // Assign distinct theme colors per pair
   const pairColorMap = useMemo(() => {
     const map = {};
@@ -50,6 +59,15 @@ export default function CurvedLinesMatching({
     });
     return map;
   }, [pairs]);
+
+  // Calculate score when submitted
+  const correctCount = useMemo(() => {
+    if (!isSubmitted) return 0;
+    return pairs.filter((pStr) => {
+      const [l, r] = pStr.split(' ');
+      return targetCorrectPairs.includes(pStr) || targetCorrectPairs.includes(`${r} ${l}`) || l === r;
+    }).length;
+  }, [isSubmitted, pairs, targetCorrectPairs]);
 
   /**
    * Recalculates exact dot centers relative to container top-left.
@@ -121,7 +139,7 @@ export default function CurvedLinesMatching({
    * Connect a left item and a right item
    */
   const connectPair = (lId, rId) => {
-    if (!lId || !rId) return;
+    if (isSubmitted || !lId || !rId) return;
     const filtered = pairs.filter((p) => {
       const [l, r] = p.split(' ');
       return l !== lId && r !== rId;
@@ -135,6 +153,7 @@ export default function CurvedLinesMatching({
    * Removes an existing pair
    */
   const removePair = (pairStr) => {
+    if (isSubmitted) return;
     onChange(pairs.filter((p) => p !== pairStr));
     if (hoveredPairStr === pairStr) setHoveredPairStr(null);
   };
@@ -143,6 +162,8 @@ export default function CurvedLinesMatching({
    * Click on Left Item / Dot
    */
   const handleLeftClick = (lId) => {
+    if (isSubmitted) return;
+
     if (selectedRightId) {
       connectPair(lId, selectedRightId);
       return;
@@ -167,6 +188,8 @@ export default function CurvedLinesMatching({
    * Click on Right Item / Dot
    */
   const handleRightClick = (rId) => {
+    if (isSubmitted) return;
+
     if (selectedLeftId) {
       connectPair(selectedLeftId, rId);
       return;
@@ -191,6 +214,7 @@ export default function CurvedLinesMatching({
   // DRAG & DROP POINTER HANDLING (Tactile Drawing of Curved Lines)
   // ═════════════════════════════════════════════════════════════
   const handlePointerDown = (e, side, id) => {
+    if (isSubmitted) return;
     e.stopPropagation();
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -277,18 +301,34 @@ export default function CurvedLinesMatching({
       <div className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-surface-container-low/90 dark:bg-[#22242A] shadow-sm flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-on-surface">
           <span className={`w-7 h-7 rounded-xl ${lvlColor.softBg} ${lvlColor.accentText} flex items-center justify-center shrink-0`}>
-            <Link2 className="w-4 h-4" />
+            {isSubmitted ? (
+              correctCount === leftItems.length ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              )
+            ) : (
+              <Link2 className="w-4 h-4" />
+            )}
           </span>
           <span className="leading-snug">
-            Aussage antippen, dann passende Antwort verbinden. Linien können mit ✂ getrennt werden.
+            {isSubmitted
+              ? `Auswertung: ${correctCount} von ${leftItems.length} Zuordnungen korrekt (${Math.round((correctCount / (leftItems.length || 1)) * 100)}%)`
+              : 'Aussage antippen, dann passende Antwort verbinden. Linien können mit ✂ getrennt werden.'}
           </span>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
-          <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider px-2 sm:px-2.5 py-1 rounded-full bg-surface-container dark:bg-white/[0.08] text-on-surface-variant">
-            {pairs.length} / {leftItems.length} verbunden
+          <div className={`text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider px-2 sm:px-2.5 py-1 rounded-full ${
+            isSubmitted
+              ? correctCount === leftItems.length
+                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                : 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
+              : 'bg-surface-container dark:bg-white/[0.08] text-on-surface-variant'
+          }`}>
+            {isSubmitted ? `${correctCount}/${leftItems.length} richtig` : `${pairs.length} / ${leftItems.length} verbunden`}
           </div>
-          {pairs.length > 0 && (
+          {!isSubmitted && pairs.length > 0 && (
             <motion.button
               whileTap={{ scale: 0.94 }}
               type="button"
@@ -324,23 +364,34 @@ export default function CurvedLinesMatching({
             const c2 = coords[`R_${rId}`];
             if (!c1 || !c2) return null;
 
-            const palette = pairColorMap[pStr] || CURVE_PALETTE[idx % CURVE_PALETTE.length];
-            const isHovered = hoveredPairStr === pStr;
+            const isCorrect = isSubmitted
+              ? targetCorrectPairs.includes(pStr) || targetCorrectPairs.includes(`${rId} ${lId}`) || lId === rId
+              : null;
+
+            const palette = isSubmitted
+              ? isCorrect
+                ? { stroke: '#10b981', fill: '#10b981' }
+                : { stroke: '#f43f5e', fill: '#f43f5e' }
+              : pairColorMap[pStr] || CURVE_PALETTE[idx % CURVE_PALETTE.length];
+
+            const isHovered = !isSubmitted && hoveredPairStr === pStr;
             const { path, mx, my } = computeBezierPath(c1.x, c1.y, c2.x, c2.y);
 
             return (
               <g key={pStr} className="group">
-                {/* Wide invisible path for comfortable touch-to-cut */}
-                <path
-                  d={path}
-                  fill="none"
-                  stroke="transparent"
-                  strokeWidth="28"
-                  className="pointer-events-auto cursor-pointer"
-                  onMouseEnter={() => setHoveredPairStr(pStr)}
-                  onMouseLeave={() => setHoveredPairStr((cur) => (cur === pStr ? null : cur))}
-                  onClick={() => removePair(pStr)}
-                />
+                {/* Wide invisible path for comfortable touch-to-cut (disabled when submitted) */}
+                {!isSubmitted && (
+                  <path
+                    d={path}
+                    fill="none"
+                    stroke="transparent"
+                    strokeWidth="28"
+                    className="pointer-events-auto cursor-pointer"
+                    onMouseEnter={() => setHoveredPairStr(pStr)}
+                    onMouseLeave={() => setHoveredPairStr((cur) => (cur === pStr ? null : cur))}
+                    onClick={() => removePair(pStr)}
+                  />
+                )}
 
                 {/* Ambient Glow Effect */}
                 <path
@@ -360,16 +411,44 @@ export default function CurvedLinesMatching({
                   stroke={palette.stroke}
                   strokeWidth={isHovered ? '4.5' : '3.5'}
                   strokeLinecap="round"
-                  className="transition-all duration-200 pointer-events-auto cursor-pointer"
-                  onMouseEnter={() => setHoveredPairStr(pStr)}
-                  onMouseLeave={() => setHoveredPairStr((cur) => (cur === pStr ? null : cur))}
-                  onClick={() => removePair(pStr)}
+                  className={`transition-all duration-200 ${isSubmitted ? '' : 'pointer-events-auto cursor-pointer'}`}
+                  onMouseEnter={() => !isSubmitted && setHoveredPairStr(pStr)}
+                  onMouseLeave={() => !isSubmitted && setHoveredPairStr((cur) => (cur === pStr ? null : cur))}
+                  onClick={() => !isSubmitted && removePair(pStr)}
                 />
 
                 {/* ═════════════════════════════════════════════════════════════ */}
-                {/* LINE CUT BADGE: THEMED SCISSORS NODE (NO RED, NO ERROR LOOK)  */}
+                {/* BADGE ON THE CURVE (POST-SUBMISSION RESULT OR SCISSOR NODE)    */}
                 {/* ═════════════════════════════════════════════════════════════ */}
-                {isHovered ? (
+                {isSubmitted ? (
+                  /* Graded Result Badge: Green Checkmark or Red Cross */
+                  <g transform={`translate(${mx}, ${my})`} className="pointer-events-none">
+                    <circle
+                      r="12"
+                      fill={isCorrect ? '#10b981' : '#f43f5e'}
+                      stroke="#ffffff"
+                      strokeWidth="2"
+                      className="shadow-md"
+                    />
+                    {isCorrect ? (
+                      /* Crisp White Checkmark */
+                      <path
+                        d="M -4 0 L -1 3 L 4 -3"
+                        fill="none"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ) : (
+                      /* Crisp White Cross */
+                      <g>
+                        <line x1="-3" y1="-3" x2="3" y2="3" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                        <line x1="3" y1="-3" x2="-3" y2="3" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                      </g>
+                    )}
+                  </g>
+                ) : isHovered ? (
                   /* Expanded Capsule on Hover/Active Touch */
                   <g
                     transform={`translate(${mx}, ${my})`}
@@ -458,7 +537,7 @@ export default function CurvedLinesMatching({
           })}
 
           {/* Render In-Progress Drag Bezier Curve */}
-          {dragState && (() => {
+          {!isSubmitted && dragState && (() => {
             const isLeft = dragState.fromSide === 'left';
             const originCoord = isLeft
               ? coords[`L_${dragState.fromId}`]
@@ -507,17 +586,23 @@ export default function CurvedLinesMatching({
               <h4 className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-on-surface-variant truncate">
                 Spalte A
               </h4>
-              <span className="text-[9px] sm:text-[10px] font-bold text-sky-600 dark:text-sky-400">
-                Punkte antippen
-              </span>
+              {!isSubmitted && (
+                <span className="text-[9px] sm:text-[10px] font-bold text-sky-600 dark:text-sky-400">
+                  Punkte antippen
+                </span>
+              )}
             </div>
 
             <div className="space-y-2 sm:space-y-2.5">
               {leftItems.map((item, idx) => {
                 const pairStr = getPairForLeft(item.id);
                 const isPaired = Boolean(pairStr);
-                const isSelected = selectedLeftId === item.id;
+                const isSelected = !isSubmitted && selectedLeftId === item.id;
                 const palette = pairStr ? pairColorMap[pairStr] : null;
+
+                const isItemCorrect = isSubmitted && pairStr
+                  ? targetCorrectPairs.includes(pairStr) || targetCorrectPairs.includes(`${pairStr.split(' ')[1]} ${pairStr.split(' ')[0]}`) || pairStr.split(' ')[0] === pairStr.split(' ')[1]
+                  : null;
 
                 return (
                   <motion.div
@@ -527,12 +612,18 @@ export default function CurvedLinesMatching({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.02 }}
                     onClick={() => handleLeftClick(item.id)}
-                    className={`group relative p-2 sm:p-3 rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-1.5 sm:gap-2.5 ${
-                      isSelected
-                        ? 'bg-sky-50 dark:bg-sky-950/45 border-2 border-sky-500 shadow-md ring-2 ring-sky-500/25'
+                    className={`group relative p-2 sm:p-3 rounded-2xl transition-all duration-200 flex items-center justify-between gap-1.5 sm:gap-2.5 ${
+                      isSubmitted
+                        ? isItemCorrect
+                          ? 'border border-emerald-500/50 bg-emerald-500/10 dark:bg-emerald-500/15 shadow-sm'
+                          : isPaired
+                          ? 'border border-rose-500/50 bg-rose-500/10 dark:bg-rose-500/15 shadow-sm'
+                          : 'border border-dashed border-amber-500/40 bg-amber-500/5'
+                        : isSelected
+                        ? 'bg-sky-50 dark:bg-sky-950/45 border-2 border-sky-500 shadow-md ring-2 ring-sky-500/25 cursor-pointer'
                         : isPaired
-                        ? 'bg-surface-container-low/95 dark:bg-[#25272D] border border-surface-variant/50 shadow-sm'
-                        : 'bg-surface-container-low/75 dark:bg-[#202227] hover:bg-surface-container dark:hover:bg-[#272930] border border-transparent shadow-sm'
+                        ? 'bg-surface-container-low/95 dark:bg-[#25272D] border border-surface-variant/50 shadow-sm cursor-pointer'
+                        : 'bg-surface-container-low/75 dark:bg-[#202227] hover:bg-surface-container dark:hover:bg-[#272930] border border-transparent shadow-sm cursor-pointer'
                     }`}
                   >
                     {/* Item Text */}
@@ -553,30 +644,44 @@ export default function CurvedLinesMatching({
                         e.stopPropagation();
                         handleLeftClick(item.id);
                       }}
-                      className="shrink-0 p-2 -mr-1.5 flex items-center justify-center cursor-pointer touch-none select-none"
-                      title="Gelenkpunkt zum Verbinden klicken oder ziehen"
+                      className={`shrink-0 p-2 -mr-1.5 flex items-center justify-center select-none ${isSubmitted ? 'cursor-default' : 'cursor-pointer touch-none'}`}
+                      title={isSubmitted ? undefined : "Gelenkpunkt zum Verbinden klicken oder ziehen"}
                     >
                       <motion.div
-                        whileHover={{ scale: 1.25 }}
-                        whileTap={{ scale: 0.9 }}
+                        whileHover={isSubmitted ? undefined : { scale: 1.25 }}
+                        whileTap={isSubmitted ? undefined : { scale: 0.9 }}
                         style={{
-                          backgroundColor: isSelected
+                          backgroundColor: isSubmitted
+                            ? isItemCorrect
+                              ? '#10b981'
+                              : isPaired
+                              ? '#f43f5e'
+                              : 'transparent'
+                            : isSelected
                             ? '#0284c7'
                             : isPaired
                             ? palette?.fill || '#0284c7'
                             : '#0ea5e9',
-                          borderColor: isSelected
+                          borderColor: isSubmitted
+                            ? isItemCorrect
+                              ? '#10b981'
+                              : isPaired
+                              ? '#f43f5e'
+                              : '#f59e0b'
+                            : isSelected
                             ? '#0284c7'
                             : isPaired
                             ? palette?.stroke || '#0284c7'
                             : '#38bdf8'
                         }}
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all flex items-center justify-center shadow-sm cursor-pointer ${
-                          isSelected
-                            ? 'ring-4 ring-sky-500/35 scale-125'
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all flex items-center justify-center shadow-sm ${
+                          isSubmitted
+                            ? ''
+                            : isSelected
+                            ? 'ring-4 ring-sky-500/35 scale-125 cursor-pointer'
                             : isPaired
-                            ? 'ring-2 ring-black/10 dark:ring-white/15'
-                            : 'opacity-90 hover:opacity-100 hover:scale-115'
+                            ? 'ring-2 ring-black/10 dark:ring-white/15 cursor-pointer'
+                            : 'opacity-90 hover:opacity-100 hover:scale-115 cursor-pointer'
                         }`}
                       >
                         {isPaired && (
@@ -598,17 +703,23 @@ export default function CurvedLinesMatching({
               <h4 className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-on-surface-variant truncate">
                 Spalte B
               </h4>
-              <span className="text-[9px] sm:text-[10px] font-bold text-sky-600 dark:text-sky-400">
-                Punkte antippen
-              </span>
+              {!isSubmitted && (
+                <span className="text-[9px] sm:text-[10px] font-bold text-sky-600 dark:text-sky-400">
+                  Punkte antippen
+                </span>
+              )}
             </div>
 
             <div className="space-y-2 sm:space-y-2.5">
               {rightItems.map((item, idx) => {
                 const pairStr = getPairForRight(item.id);
                 const isPaired = Boolean(pairStr);
-                const isSelected = selectedRightId === item.id;
+                const isSelected = !isSubmitted && selectedRightId === item.id;
                 const palette = pairStr ? pairColorMap[pairStr] : null;
+
+                const isItemCorrect = isSubmitted && pairStr
+                  ? targetCorrectPairs.includes(pairStr) || targetCorrectPairs.includes(`${pairStr.split(' ')[1]} ${pairStr.split(' ')[0]}`) || pairStr.split(' ')[0] === pairStr.split(' ')[1]
+                  : null;
 
                 return (
                   <motion.div
@@ -618,14 +729,20 @@ export default function CurvedLinesMatching({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.02 }}
                     onClick={() => handleRightClick(item.id)}
-                    className={`group relative p-2 sm:p-3 rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-1.5 sm:gap-2.5 ${
-                      isSelected
-                        ? 'bg-sky-50 dark:bg-sky-950/45 border-2 border-sky-500 shadow-md ring-2 ring-sky-500/25'
+                    className={`group relative p-2 sm:p-3 rounded-2xl transition-all duration-200 flex items-center justify-between gap-1.5 sm:gap-2.5 ${
+                      isSubmitted
+                        ? isItemCorrect
+                          ? 'border border-emerald-500/50 bg-emerald-500/10 dark:bg-emerald-500/15 shadow-sm'
+                          : isPaired
+                          ? 'border border-rose-500/50 bg-rose-500/10 dark:bg-rose-500/15 shadow-sm'
+                          : 'border border-dashed border-amber-500/40 bg-amber-500/5'
+                        : isSelected
+                        ? 'bg-sky-50 dark:bg-sky-950/45 border-2 border-sky-500 shadow-md ring-2 ring-sky-500/25 cursor-pointer'
                         : isPaired
-                        ? 'bg-surface-container-low/95 dark:bg-[#25272D] border border-surface-variant/50 shadow-sm'
+                        ? 'bg-surface-container-low/95 dark:bg-[#25272D] border border-surface-variant/50 shadow-sm cursor-pointer'
                         : selectedLeftId
-                        ? 'bg-sky-500/[0.08] dark:bg-sky-500/[0.15] border border-sky-500/40 hover:border-sky-500 shadow-sm'
-                        : 'bg-surface-container-low/75 dark:bg-[#202227] hover:bg-surface-container dark:hover:bg-[#272930] border border-transparent shadow-sm'
+                        ? 'bg-sky-500/[0.08] dark:bg-sky-500/[0.15] border border-sky-500/40 hover:border-sky-500 shadow-sm cursor-pointer'
+                        : 'bg-surface-container-low/75 dark:bg-[#202227] hover:bg-surface-container dark:hover:bg-[#272930] border border-transparent shadow-sm cursor-pointer'
                     }`}
                   >
                     {/* Circular Connector Dot / Joint Point on Left Edge */}
@@ -639,30 +756,44 @@ export default function CurvedLinesMatching({
                         e.stopPropagation();
                         handleRightClick(item.id);
                       }}
-                      className="shrink-0 p-2 -ml-1.5 flex items-center justify-center cursor-pointer touch-none select-none"
-                      title="Gelenkpunkt zum Verbinden klicken oder ziehen"
+                      className={`shrink-0 p-2 -ml-1.5 flex items-center justify-center select-none ${isSubmitted ? 'cursor-default' : 'cursor-pointer touch-none'}`}
+                      title={isSubmitted ? undefined : "Gelenkpunkt zum Verbinden klicken oder ziehen"}
                     >
                       <motion.div
-                        whileHover={{ scale: 1.25 }}
-                        whileTap={{ scale: 0.9 }}
+                        whileHover={isSubmitted ? undefined : { scale: 1.25 }}
+                        whileTap={isSubmitted ? undefined : { scale: 0.9 }}
                         style={{
-                          backgroundColor: isSelected
+                          backgroundColor: isSubmitted
+                            ? isItemCorrect
+                              ? '#10b981'
+                              : isPaired
+                              ? '#f43f5e'
+                              : 'transparent'
+                            : isSelected
                             ? '#0284c7'
                             : isPaired
                             ? palette?.fill || '#0284c7'
                             : '#0ea5e9',
-                          borderColor: isSelected
+                          borderColor: isSubmitted
+                            ? isItemCorrect
+                              ? '#10b981'
+                              : isPaired
+                              ? '#f43f5e'
+                              : '#f59e0b'
+                            : isSelected
                             ? '#0284c7'
                             : isPaired
                             ? palette?.stroke || '#0284c7'
                             : '#38bdf8'
                         }}
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all flex items-center justify-center shadow-sm cursor-pointer ${
-                          isSelected
-                            ? 'ring-4 ring-sky-500/35 scale-125'
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all flex items-center justify-center shadow-sm ${
+                          isSubmitted
+                            ? ''
+                            : isSelected
+                            ? 'ring-4 ring-sky-500/35 scale-125 cursor-pointer'
                             : isPaired
-                            ? 'ring-2 ring-black/10 dark:ring-white/15'
-                            : 'opacity-90 hover:opacity-100 hover:scale-115'
+                            ? 'ring-2 ring-black/10 dark:ring-white/15 cursor-pointer'
+                            : 'opacity-90 hover:opacity-100 hover:scale-115 cursor-pointer'
                         }`}
                       >
                         {isPaired && (
@@ -685,15 +816,17 @@ export default function CurvedLinesMatching({
         </div>
 
         {/* ═════════════════════════════════════════════════════════════ */}
-        {/* MOBILE-OPTIMIZED ACTIVE CONNECTIONS TRAY WITH NEUTRAL TRENEN  */}
+        {/* MOBILE-OPTIMIZED ACTIVE CONNECTIONS TRAY WITH NEUTRAL TRENNEN */}
         {/* ═════════════════════════════════════════════════════════════ */}
         {pairs.length > 0 && (
           <div className="mt-4 pt-3 border-t border-surface-variant/40 space-y-2">
             <div className="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-on-surface-variant px-1">
-              <span>Ihre Zuordnungen ({pairs.length})</span>
-              <span className="text-[10px] lowercase font-semibold opacity-75">
-                Tippen zum Trennen
-              </span>
+              <span>{isSubmitted ? `Auswertung Ihrer Zuordnungen (${correctCount}/${leftItems.length})` : `Ihre Zuordnungen (${pairs.length})`}</span>
+              {!isSubmitted && (
+                <span className="text-[10px] lowercase font-semibold opacity-75">
+                  Tippen zum Trennen
+                </span>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -701,16 +834,31 @@ export default function CurvedLinesMatching({
                 const [lId, rId] = pStr.split(' ');
                 const lItem = leftItems.find((i) => i.id === lId);
                 const rItem = rightItems.find((i) => i.id === rId);
-                const palette = pairColorMap[pStr] || CURVE_PALETTE[idx % CURVE_PALETTE.length];
+
+                const isCorrect = isSubmitted
+                  ? targetCorrectPairs.includes(pStr) || targetCorrectPairs.includes(`${rId} ${lId}`) || lId === rId
+                  : null;
+
+                const palette = isSubmitted
+                  ? isCorrect
+                    ? { stroke: '#10b981' }
+                    : { stroke: '#f43f5e' }
+                  : pairColorMap[pStr] || CURVE_PALETTE[idx % CURVE_PALETTE.length];
 
                 return (
                   <motion.button
                     key={pStr}
                     type="button"
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => removePair(pStr)}
-                    className="group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-surface-container-low dark:bg-[#25272D] hover:bg-surface-container-high border border-surface-variant/60 transition-all text-left shadow-sm cursor-pointer"
-                    title="Verbindung trennen"
+                    whileTap={isSubmitted ? undefined : { scale: 0.95 }}
+                    onClick={() => !isSubmitted && removePair(pStr)}
+                    className={`group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border transition-all text-left shadow-sm ${
+                      isSubmitted
+                        ? isCorrect
+                          ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/40 text-emerald-800 dark:text-emerald-200 cursor-default'
+                          : 'bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/40 text-rose-800 dark:text-rose-200 cursor-default'
+                        : 'bg-surface-container-low dark:bg-[#25272D] hover:bg-surface-container-high border-surface-variant/60 cursor-pointer'
+                    }`}
+                    title={isSubmitted ? undefined : "Verbindung trennen"}
                   >
                     <span
                       className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -723,10 +871,21 @@ export default function CurvedLinesMatching({
                     <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant truncate max-w-[90px] sm:max-w-[150px]">
                       {rItem ? rItem.text : rId}
                     </span>
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-[10px] font-bold shrink-0 group-hover:text-rose-500 transition-colors">
-                      <Scissors className="w-2.5 h-2.5" />
-                      <span>Trennen</span>
-                    </span>
+
+                    {isSubmitted ? (
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-black shrink-0 ${
+                        isCorrect
+                          ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                          : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
+                      }`}>
+                        {isCorrect ? '✓ Richtig' : '✕ Falsch'}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-[10px] font-bold shrink-0 group-hover:text-rose-500 transition-colors">
+                        <Scissors className="w-2.5 h-2.5" />
+                        <span>Trennen</span>
+                      </span>
+                    )}
                   </motion.button>
                 );
               })}

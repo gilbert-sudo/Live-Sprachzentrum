@@ -1,36 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import { Reorder } from 'framer-motion';
-import { GripVertical, CheckCircle2, XCircle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
 import ExerciseShell from './ExerciseShell';
+import CurvedLinesMatching from './CurvedLinesMatching';
 
 const Matching = ({ index, exercise, savedAnswers, onScoreReport }) => {
-  const { title, instruction, pairs, tag, context } = exercise;
+  const { title, instruction, pairs = [], tag, context } = exercise;
 
-  const [leftItems]  = useState(pairs.map(p => ({ id: p.id, text: p.left })));
-  const [rightItems, setRightItems] = useState(savedAnswers || []);
-  const [isSubmitted, setIsSubmitted] = useState(!!savedAnswers);
+  // Stable left items from exercise definition
+  const leftItems = useMemo(
+    () => pairs.map((p) => ({ id: p.id, text: p.left })),
+    [pairs]
+  );
 
-  useEffect(() => {
-    if (!savedAnswers) {
-      setRightItems([...pairs.map(p => ({ id: p.id, text: p.right }))].sort(() => Math.random() - 0.5));
+  // Restore savedAnswers if previously submitted (supporting legacy array & new format)
+  const { initialPairs, initialRightItems } = useMemo(() => {
+    let p = [];
+    let r = null;
+    if (savedAnswers) {
+      if (Array.isArray(savedAnswers)) {
+        if (typeof savedAnswers[0] === 'string') {
+          // New format: array of pair strings e.g. ["m1 m1", "m2 m2"]
+          p = savedAnswers;
+        } else if (savedAnswers[0]?.id) {
+          // Legacy format: array of { id, text } in user order
+          r = savedAnswers;
+          p = pairs.map((pair, idx) => `${pair.id} ${savedAnswers[idx]?.id}`).filter(Boolean);
+        }
+      } else if (savedAnswers.pairs && Array.isArray(savedAnswers.pairs)) {
+        p = savedAnswers.pairs;
+        if (savedAnswers.rightItems) r = savedAnswers.rightItems;
+      }
     }
-  }, [pairs, savedAnswers]);
+    return { initialPairs: p, initialRightItems: r };
+  }, [savedAnswers, pairs]);
 
-  let score = 0;
-  if (isSubmitted) {
-    leftItems.forEach((leftItem, idx) => {
-      if (rightItems[idx]?.id === leftItem.id) score++;
+  // Shuffled right items for interactive matching
+  const [rightItems] = useState(() => {
+    if (initialRightItems) return initialRightItems;
+    const base = pairs.map((p) => ({ id: p.id, text: p.right }));
+    if (base.length <= 1) return base;
+
+    const copy = [...base];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = (i * 3 + 1) % (i + 1);
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    // Ensure not trivially pre-aligned
+    if (copy.every((it, idx) => it.id === base[idx].id)) {
+      [copy[0], copy[1]] = [copy[1], copy[0]];
+    }
+    return copy;
+  });
+
+  const [userPairs, setUserPairs] = useState(initialPairs);
+  const [isSubmitted, setIsSubmitted] = useState(Boolean(savedAnswers));
+
+  // Target correct pairs (identical IDs on both sides)
+  const correctPairs = useMemo(
+    () => pairs.map((p) => `${p.id} ${p.id}`),
+    [pairs]
+  );
+
+  // Calculate score when submitted
+  const score = useMemo(() => {
+    if (!isSubmitted) return 0;
+    let hits = 0;
+    leftItems.forEach((lItem) => {
+      const match = userPairs.find((p) => p.split(' ')[0] === lItem.id);
+      if (match) {
+        const rId = match.split(' ')[1];
+        if (rId === lItem.id) hits++;
+      }
     });
-  }
+    return hits;
+  }, [isSubmitted, leftItems, userPairs]);
 
   const handleCheck = () => {
-    let s = 0;
-    leftItems.forEach((leftItem, idx) => {
-      if (rightItems[idx]?.id === leftItem.id) s++;
+    let hits = 0;
+    leftItems.forEach((lItem) => {
+      const match = userPairs.find((p) => p.split(' ')[0] === lItem.id);
+      if (match) {
+        const rId = match.split(' ')[1];
+        if (rId === lItem.id) hits++;
+      }
     });
+
     setIsSubmitted(true);
-    if (onScoreReport) onScoreReport(s, leftItems.length, rightItems);
+    if (onScoreReport) {
+      onScoreReport(hits, leftItems.length, {
+        pairs: userPairs,
+        rightItems
+      });
+    }
   };
+
+  const questionObj = useMemo(
+    () => ({
+      leftItems,
+      rightItems,
+      correctPairs
+    }),
+    [leftItems, rightItems, correctPairs]
+  );
 
   return (
     <ExerciseShell
@@ -39,69 +109,21 @@ const Matching = ({ index, exercise, savedAnswers, onScoreReport }) => {
       tag={tag}
       context={context}
       title={title}
-      instruction={instruction}
+      instruction={instruction || 'Verbinden Sie die zusammengehörigen Aussagen mit geschwungenen Linien.'}
       onCheck={handleCheck}
-      canCheck={!isSubmitted}
+      canCheck={!isSubmitted && userPairs.length > 0}
       isSubmitted={isSubmitted}
       score={score}
       total={leftItems.length}
     >
-      {!isSubmitted && (
-        <p className="text-xs text-secondary/70 italic mb-4 flex items-center gap-1">
-          <GripVertical className="w-4 h-4" />
-          Rechte Spalte durch Ziehen neu anordnen
-        </p>
-      )}
-
-      <div className="flex gap-3">
-        {/* Left Column — static printed items */}
-        <div className="flex-1 flex flex-col gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-1">Begriff</p>
-          {leftItems.map(item => (
-            <div key={`l-${item.id}`}
-              className="px-4 py-2 rounded-lg border border-surface-variant/40 bg-surface-variant/10 text-body-md text-on-surface min-h-[48px] flex items-center">
-              {item.text}
-            </div>
-          ))}
-        </div>
-
-        {/* Connector dots */}
-        <div className="flex flex-col pt-8 gap-3">
-          {leftItems.map((_, i) => (
-            <div key={i} className="min-h-[48px] flex items-center">
-              <div className="w-4 border-t border-dashed border-surface-variant/50" />
-            </div>
-          ))}
-        </div>
-
-        {/* Right Column — draggable */}
-        <div className="flex-1 flex flex-col gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-1">Zuordnung</p>
-          <Reorder.Group axis="y" values={rightItems} onReorder={isSubmitted ? () => {} : setRightItems} className="flex flex-col gap-3">
-            {rightItems.map((item, idx) => {
-              const isCorrect = isSubmitted && item.id === leftItems[idx].id;
-              const isWrong   = isSubmitted && !isCorrect;
-              return (
-                <Reorder.Item
-                  key={`r-${item.id}`}
-                  value={item}
-                  className={`px-4 py-2 rounded-lg border flex items-center gap-3 min-h-[48px] text-body-md
-                    ${isSubmitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing hover:border-primary/50 hover:bg-primary/5'}
-                    ${isCorrect ? 'border-success-green/50 bg-success-green/20 text-success-green font-bold' : ''}
-                    ${isWrong   ? 'border-error/50 bg-error/20 text-error font-bold'     : ''}
-                    ${!isSubmitted ? 'border-surface-variant/40 bg-surface text-on-surface shadow-sm' : ''}
-                  `}
-                >
-                  {!isSubmitted && <GripVertical className="w-4 h-4 text-secondary/50 shrink-0" />}
-                  <span className="flex-1">{item.text}</span>
-                  {isCorrect && <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />}
-                  {isWrong   && <XCircle      className="w-4 h-4 text-red-400 shrink-0"  />}
-                </Reorder.Item>
-              );
-            })}
-          </Reorder.Group>
-        </div>
-      </div>
+      <CurvedLinesMatching
+        question={questionObj}
+        answer={userPairs}
+        onChange={isSubmitted ? () => {} : setUserPairs}
+        isSubmitted={isSubmitted}
+        correctPairs={correctPairs}
+        level="A2"
+      />
     </ExerciseShell>
   );
 };
