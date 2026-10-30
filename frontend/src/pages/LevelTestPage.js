@@ -934,7 +934,7 @@ const LevelTestPage = () => {
               {hasLeftContext && (
                 <div
                   className={
-                    currentQuestion.type === 'associate-pairs' ? 'lg:col-span-4' : isWideLandscapeQuestion ? 'lg:col-span-7' : 'lg:col-span-6'
+                    currentQuestion.type === 'associate-pairs' ? 'lg:col-span-4' : (currentQuestion.type === 'text-gap' && currentQuestion.wordBank?.length > 0) ? 'lg:col-span-5' : isWideLandscapeQuestion ? 'lg:col-span-7' : 'lg:col-span-6'
                   }
                 >
                   <div className="rounded-3xl bg-surface-container-lowest dark:bg-[#1E1F22] p-4 sm:p-5 shadow-[0_10px_32px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_14px_36px_-10px_rgba(0,0,0,0.45)] space-y-3">
@@ -1047,7 +1047,11 @@ const LevelTestPage = () => {
               <div
                 className={
                   hasLeftContext
-                    ? currentQuestion.type === 'associate-pairs' ? 'lg:col-span-8' : isWideLandscapeQuestion
+                    ? currentQuestion.type === 'associate-pairs'
+                      ? 'lg:col-span-8'
+                      : (currentQuestion.type === 'text-gap' && currentQuestion.wordBank?.length > 0)
+                      ? 'lg:col-span-7'
+                      : isWideLandscapeQuestion
                       ? 'lg:col-span-5'
                       : 'lg:col-span-6'
                     : 'lg:col-span-12 max-w-3xl mx-auto w-full'

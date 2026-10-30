@@ -1,4 +1,5 @@
 import CurvedLinesMatching from './CurvedLinesMatching';
+import WordBankCloze from './WordBankCloze';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -566,6 +567,22 @@ const LevelTestTaskRenderer = ({ question, answer, onChange, level = 'A2' }) => 
     question.type === 'text-gap' ||
     question.type === 'grouped-choice'
   ) {
+    // If it's a text-gap question with a wordBank, use the specialized WordBankCloze component
+    if (
+      question.type === 'text-gap' &&
+      Array.isArray(question.wordBank) &&
+      question.wordBank.length > 0
+    ) {
+      return (
+        <WordBankCloze
+          question={question}
+          answer={answer}
+          onChange={onChange}
+          level={level}
+        />
+      );
+    }
+
     const currentObj = typeof answer === 'object' && answer !== null ? answer : {};
     const blocks = parseTemplateBlocks(question.templateHtml);
     const renderedGroupIds = new Set();
