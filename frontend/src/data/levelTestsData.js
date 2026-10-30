@@ -2392,7 +2392,7 @@ export const LEVEL_TESTS = {
         "type": "associate-pairs",
         "rubricHtml": "<p><strong>Sie finden eine sehr gute Waschmaschine in einem Katalog und möchten diese bestellen. Sie rufen dort an.</strong></p>\n\n<p><i>Verbinden Sie.</i></p>",
         "promptHtml": "",
-        "help": "Zur Bearbeitung der Aufgabe geben Sie in die Schreibfelder die passenden Angaben ein. Achten Sie bitte auf die Rechtschreibung und verwenden Sie bitte keine zusätzlichen Leerzeichen. Sie können die Angaben oben markieren und mit der Maus an die richtige Stelle ziehen.",
+        "help": "Verbinden Sie die zusammengehörigen Aussagen mit geschwungenen Linien. Klicken Sie auf eine Aussage oder ihren Punkt in Spalte A und anschließend auf die passende Antwort in Spalte B (oder ziehen Sie die Linie direkt mit der Maus bzw. dem Finger).",
         "images": [
           "/level-tests/b1/media/S3_61831_11.96120500-H.jpg"
         ],
@@ -2400,28 +2400,28 @@ export const LEVEL_TESTS = {
         "audios": null,
         "leftItems": [
           {
-            "id": "A1",
-            "text": "Was möchten Sie bestellen?"
-          },
-          {
-            "id": "A2",
-            "text": "Wie lautet die Bestellnummer?"
+            "id": "A6",
+            "text": "Wie lautet Ihre Handynummer?"
           },
           {
             "id": "A3",
             "text": "Wie möchten Sie zahlen? Bitte wählen Sie aus: Kreditkarte, Rechnung, Überweisungsauftrag."
           },
           {
-            "id": "A4",
-            "text": "Welche Farbe soll die Waschmachine haben?"
+            "id": "A2",
+            "text": "Wie lautet die Bestellnummer?"
           },
           {
             "id": "A5",
             "text": "Möchten Sie in Raten zahlen?"
           },
           {
-            "id": "A6",
-            "text": "Wie lautet Ihre Handynummer?"
+            "id": "A1",
+            "text": "Was möchten Sie bestellen?"
+          },
+          {
+            "id": "A4",
+            "text": "Welche Farbe soll die Waschmaschine haben?"
           },
           {
             "id": "A7",
@@ -2430,16 +2430,8 @@ export const LEVEL_TESTS = {
         ],
         "rightItems": [
           {
-            "id": "B1",
-            "text": "Eine Waschmaschine, bitte."
-          },
-          {
-            "id": "B2",
-            "text": "XH7994"
-          },
-          {
-            "id": "B3",
-            "text": "Rechnung, bitte."
+            "id": "B6",
+            "text": "01622082784"
           },
           {
             "id": "B4",
@@ -2450,12 +2442,20 @@ export const LEVEL_TESTS = {
             "text": "Ja."
           },
           {
-            "id": "B6",
-            "text": "01622082784"
+            "id": "B2",
+            "text": "XH7994"
+          },
+          {
+            "id": "B1",
+            "text": "Eine Waschmaschine, bitte."
           },
           {
             "id": "B7",
             "text": "Sofort."
+          },
+          {
+            "id": "B3",
+            "text": "Rechnung, bitte."
           }
         ],
         "correctPairs": [
@@ -2471,7 +2471,7 @@ export const LEVEL_TESTS = {
           "Was möchten Sie bestellen? ➔ Eine Waschmaschine, bitte.",
           "Wie lautet die Bestellnummer? ➔ XH7994",
           "Wie möchten Sie zahlen? Bitte wählen Sie aus: Kreditkarte, Rechnung, Überweisungsauftrag. ➔ Rechnung, bitte.",
-          "Welche Farbe soll die Waschmachine haben? ➔ weiß",
+          "Welche Farbe soll die Waschmaschine haben? ➔ weiß",
           "Möchten Sie in Raten zahlen? ➔ Ja.",
           "Wie lautet Ihre Handynummer? ➔ 01622082784",
           "Wann sollen wir die Waschmaschine liefern? ➔ Sofort."
