@@ -147,7 +147,7 @@ class StorageService {
   async deleteFile(fileUrl) {
     if (!fileUrl) return;
 
-    if (fileUrl.includes('utfs.io')) {
+    if (fileUrl.includes('utfs.io') || fileUrl.includes('ufs.sh')) {
       try {
         const fileKey = fileUrl.split('/').pop();
         if (fileKey) {

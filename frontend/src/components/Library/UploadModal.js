@@ -27,12 +27,17 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
   const lastLoaded = useRef(0);
 
   
+  const MAX_FILE_SIZE = 300 * 1024 * 1024; // 300 MB limit
+
   const { startUpload } = useUploadThing("libraryUploader", {
     onUploadProgress: (progress) => {
       setUploadProgress(progress);
       
-      if (mediaFile) {
-        const total = mediaFile.size;
+      const total = mediaFile
+        ? mediaFile.size
+        : (mediaFiles && mediaFiles.length > 0 ? mediaFiles.reduce((acc, f) => acc + f.size, 0) : 0) + (coverFile ? coverFile.size : 0);
+
+      if (total > 0) {
         const loaded = (progress / 100) * total;
         const now = Date.now();
         const timeElapsed = (now - lastProgressTime.current) / 1000;
@@ -82,17 +87,17 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
     if (e.target.files && e.target.files.length > 0) {
       if (formData.type === 'album') {
         const filesArray = Array.from(e.target.files);
-        const oversized = filesArray.some(f => f.size > 100 * 1024 * 1024);
+        const oversized = filesArray.some(f => f.size > MAX_FILE_SIZE);
         if (oversized) {
-          setError('Eine oder mehrere Dateien sind größer als 100MB.');
+          setError('Eine oder mehrere Dateien sind größer als 300MB.');
           return;
         }
         setMediaFiles(prev => [...prev, ...filesArray]);
         setError('');
       } else {
         const file = e.target.files[0];
-        if (file.size > 100 * 1024 * 1024) {
-          setError('Die Datei darf maximal 100MB groß sein.');
+        if (file.size > MAX_FILE_SIZE) {
+          setError('Die Datei darf maximal 300MB groß sein.');
           return;
         }
         setMediaFile(file);
@@ -356,7 +361,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
               </div>
               <div>
                 <h2 className="text-title-md font-bold text-on-surface leading-tight">Neues Material</h2>
-                <p className="text-secondary text-[10px] mt-0.5 font-medium">Bücher (bis 100MB) oder Audio hinzufügen</p>
+                <p className="text-secondary text-[10px] mt-0.5 font-medium">Bücher (bis 300MB) oder Audio hinzufügen</p>
               </div>
             </div>
             <button onClick={onClose} className="text-secondary hover:text-on-surface p-1.5 rounded-full hover:bg-surface-variant transition-colors group">
@@ -507,6 +512,9 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
                           <span className="px-1.5 py-0.5 bg-surface-variant/50 rounded text-[9px] font-bold text-secondary uppercase tracking-wider">
                             MP3, WAV
                           </span>
+                          <span className="text-[10px] font-medium text-secondary">
+                            bis zu 300MB pro Datei
+                          </span>
                         </div>
                       </div>
                       <input
@@ -562,7 +570,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
                           {formData.type === 'book' ? 'PDF' : 'MP3, WAV'}
                         </span>
                         <span className="text-xs font-medium text-secondary">
-                          bis zu 100MB
+                          bis zu 300MB
                         </span>
                       </div>
                     </div>
