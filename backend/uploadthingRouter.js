@@ -6,8 +6,10 @@ const f = createUploadthing();
 const uploadRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   libraryUploader: f({
+    blob: { maxFileSize: "512MB", maxFileCount: 100 },
     pdf: { maxFileSize: "512MB", maxFileCount: 1 },
     audio: { maxFileSize: "512MB", maxFileCount: 100 },
+    video: { maxFileSize: "512MB", maxFileCount: 100 },
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     // Set permissions and file types for this FileRoute

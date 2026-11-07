@@ -32,9 +32,20 @@ exports.createLibraryItem = async (req, res) => {
       coverUrl = await storageService.uploadFile(coverFile, 'Library/Covers');
     }
 
+    // Clean audio titles in album if present
+    let cleanedAudios = audios;
+    if (type === 'album' && Array.isArray(audios)) {
+      cleanedAudios = audios.map(a => ({
+        ...a,
+        title: a.title ? a.title.replace(/(?:\.(?:mp3|wav|mpeg|mpg|m4a|aac|ogg|weba|flac))+$/i, '').trim() : a.title
+      }));
+    }
+
+    const cleanedTitle = title ? title.replace(/(?:\.(?:mp3|wav|mpeg|mpg|m4a|aac|ogg|weba|flac))+$/i, '').trim() : title;
+
     // Save to database
     const newItem = new LibraryItem({
-      title,
+      title: cleanedTitle,
       author,
       description,
       type,
@@ -43,7 +54,7 @@ exports.createLibraryItem = async (req, res) => {
       coverUrl,
       fileUrl: type !== 'album' ? mediaFileUrl : undefined,
       linkedBook: type === 'album' ? linkedBook : undefined,
-      audios: type === 'album' ? audios : undefined,
+      audios: type === 'album' ? cleanedAudios : undefined,
       uploadedBy: req.user ? req.user._id : undefined
     });
 

@@ -38,13 +38,34 @@ const fileFilter = (req, file, cb) => {
     'audio/mpeg',
     'audio/mp3',
     'audio/wav',
-    'audio/x-m4a'
+    'audio/x-wav',
+    'audio/wave',
+    'audio/x-pn-wav',
+    'audio/x-m4a',
+    'audio/m4a',
+    'audio/aac',
+    'audio/ogg',
+    'audio/webm',
+    'audio/flac',
+    'audio/mp4',
+    'video/mpeg' // MPEG audio files are frequently identified as video/mpeg by browsers/OS
   ];
 
-  if (allowedMimeTypes.includes(file.mimetype)) {
+  const ext = path.extname(file.originalname || '').toLowerCase();
+  const allowedExtensions = [
+    '.jpg', '.jpeg', '.png', '.webp', '.pdf',
+    '.mp3', '.wav', '.mpeg', '.mpg', '.m4a', '.aac', '.ogg', '.weba', '.flac'
+  ];
+
+  const isAudioOrMedia =
+    (file.mimetype && (file.mimetype.startsWith('audio/') || allowedMimeTypes.includes(file.mimetype))) ||
+    allowedExtensions.includes(ext) ||
+    /\.(mp3|wav|mpeg|mpg|m4a|aac|ogg|weba|flac)$/i.test(file.originalname || '');
+
+  if (isAudioOrMedia) {
     cb(null, true);
   } else {
-    cb(new Error(`Invalid file type: ${file.mimetype}. Only JPEG, PNG, WEBP, PDF, and Audio files are allowed.`), false);
+    cb(new Error(`Invalid file type: ${file.mimetype}. Only JPEG, PNG, WEBP, PDF, and Audio files (MP3, WAV, MPEG, M4A) are allowed.`), false);
   }
 };
 

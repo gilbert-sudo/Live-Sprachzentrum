@@ -2,6 +2,33 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useUploadThing } from '../../utils/uploadthing';
 
+// Clean audio extensions (including chained ones like .mp3.mpeg) from titles
+const cleanAudioTitle = (fileName) => {
+  if (!fileName) return '';
+  return fileName
+    .replace(/(?:\.(?:mp3|wav|mpeg|mpg|m4a|aac|ogg|weba|flac))+$/i, '')
+    .trim();
+};
+
+// Normalize MPEG/audio files so browsers and UploadThing identify them properly as audio
+const normalizeAudioFile = (file) => {
+  if (!file) return file;
+  const isMpeg = /\.(mpeg|mpg)$/i.test(file.name);
+  const isAudioExt = /\.(mp3|wav|mpeg|mpg|m4a|aac|ogg|weba|flac)$/i.test(file.name);
+  if (isMpeg || (isAudioExt && (!file.type || file.type.startsWith('video/') || file.type === 'application/octet-stream'))) {
+    try {
+      const audioMime = isMpeg ? 'audio/mpeg' : (file.type && file.type.startsWith('audio/') ? file.type : 'audio/mpeg');
+      return new File([file], file.name, {
+        type: audioMime,
+        lastModified: file.lastModified || Date.now()
+      });
+    } catch {
+      return file;
+    }
+  }
+  return file;
+};
+
 export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) {
   const [formData, setFormData] = useState({
     title: '',
@@ -86,7 +113,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
   const handleMediaChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       if (formData.type === 'album') {
-        const filesArray = Array.from(e.target.files);
+        const filesArray = Array.from(e.target.files).map(normalizeAudioFile);
         const oversized = filesArray.some(f => f.size > MAX_FILE_SIZE);
         if (oversized) {
           setError('Eine oder mehrere Dateien sind größer als 300MB.');
@@ -95,16 +122,20 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
         setMediaFiles(prev => [...prev, ...filesArray]);
         setError('');
       } else {
-        const file = e.target.files[0];
-        if (file.size > MAX_FILE_SIZE) {
+        const rawFile = e.target.files[0];
+        if (rawFile.size > MAX_FILE_SIZE) {
           setError('Die Datei darf maximal 300MB groß sein.');
           return;
         }
+        const file = formData.type === 'audio' ? normalizeAudioFile(rawFile) : rawFile;
         setMediaFile(file);
         setError('');
         
         // Auto-calculate duration behind the scenes
-        if (file.type.startsWith('audio/')) {
+        const isAudio = file.type.startsWith('audio/') || 
+                        file.type.startsWith('video/') || 
+                        /\.(mp3|wav|m4a|aac|ogg|mpeg|mpg|weba|flac)$/i.test(file.name);
+        if (isAudio) {
           const objectUrl = URL.createObjectURL(file);
           const audio = new Audio(objectUrl);
           audio.onloadedmetadata = () => {
@@ -117,6 +148,17 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
             }
             URL.revokeObjectURL(objectUrl);
           };
+          audio.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+          };
+        }
+
+        // Auto-populate title if empty for single audio
+        if (formData.type === 'audio' && !formData.title) {
+          setFormData(prev => ({
+            ...prev,
+            title: prev.title || cleanAudioTitle(file.name)
+          }));
         }
       }
     }
@@ -193,13 +235,13 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
 
       // 1. Upload file directly to UploadThing from the client
       if (formData.type === 'album') {
-        const filesToUpload = [...mediaFiles];
+        const filesToUpload = mediaFiles.map(normalizeAudioFile);
         if (coverFile) filesToUpload.push(coverFile);
         
         const uploadRes = await startUpload(filesToUpload);
         if (uploadRes && uploadRes.length >= mediaFiles.length) {
           audios = uploadRes.slice(0, mediaFiles.length).map((res, index) => ({
-            title: mediaFiles[index].name.replace(/\.[^/.]+$/, ""),
+            title: cleanAudioTitle(mediaFiles[index].name),
             fileUrl: res.url || res.ufsUrl,
             originalName: mediaFiles[index].name
           }));
@@ -211,7 +253,8 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
           throw new Error('Upload fehlgeschlagen');
         }
       } else if (mediaFile) {
-        const filesToUpload = [mediaFile];
+        const fileToUpload = formData.type === 'audio' ? normalizeAudioFile(mediaFile) : mediaFile;
+        const filesToUpload = [fileToUpload];
         if (coverFile) filesToUpload.push(coverFile);
         
         const uploadRes = await startUpload(filesToUpload);
@@ -227,7 +270,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
 
       // 2. Send metadata and fileUrl to our backend
       const data = {
-        title: formData.title,
+        title: cleanAudioTitle(formData.title) || formData.title,
         author: formData.author,
         description: formData.description,
         type: formData.type,
@@ -264,7 +307,9 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
     }
   };
 
-  const acceptType = formData.type === 'book' ? 'application/pdf' : 'audio/mpeg, audio/mp3, audio/wav, audio/x-m4a';
+  const acceptType = formData.type === 'book' 
+    ? 'application/pdf,.pdf' 
+    : 'audio/*,.mp3,.wav,.mpeg,.mpg,.m4a,.aac,.ogg,.weba,.webm,audio/mpeg,audio/mp3,audio/wav,audio/x-m4a,video/mpeg';
   const isUploadingOrProcessing = uploadState === 'uploading' || uploadState === 'processing' || uploadState === 'success';
 
   return (
@@ -510,7 +555,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
                         <p className="text-xs font-bold text-on-surface mb-0.5">Audiodateien hinzufügen</p>
                         <div className="flex items-center justify-center sm:justify-start gap-2">
                           <span className="px-1.5 py-0.5 bg-surface-variant/50 rounded text-[9px] font-bold text-secondary uppercase tracking-wider">
-                            MP3, WAV
+                            MP3, WAV, MPEG
                           </span>
                           <span className="text-[10px] font-medium text-secondary">
                             bis zu 300MB pro Datei
@@ -567,7 +612,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, books = [] }) 
                       <p className="text-sm font-bold text-on-surface mb-1">Datei auswählen oder hierher ziehen</p>
                       <div className="flex items-center justify-center sm:justify-start gap-2">
                         <span className="px-1.5 py-0.5 bg-surface-variant/50 rounded text-[10px] font-bold text-secondary uppercase tracking-wider">
-                          {formData.type === 'book' ? 'PDF' : 'MP3, WAV'}
+                          {formData.type === 'book' ? 'PDF' : 'MP3, WAV, MPEG'}
                         </span>
                         <span className="text-xs font-medium text-secondary">
                           bis zu 300MB

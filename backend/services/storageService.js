@@ -67,7 +67,10 @@ class StorageService {
       try {
         console.log(`File size is ${file.size}, routing to UploadThing...`);
         const FileConstructor = global.File || require('buffer').File;
-        const utFile = new FileConstructor([file.buffer], file.originalname || 'file.pdf', { type: file.mimetype });
+        const mimeType = (file.mimetype && file.mimetype !== 'application/octet-stream')
+          ? file.mimetype
+          : (/\.(mpeg|mpg)$/i.test(file.originalname || '') ? 'audio/mpeg' : (file.mimetype || ''));
+        const utFile = new FileConstructor([file.buffer], file.originalname || 'file.pdf', { type: mimeType });
         
         const response = await utapi.uploadFiles([utFile]);
         if (response && response[0] && response[0].data) {
